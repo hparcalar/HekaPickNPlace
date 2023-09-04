@@ -42,6 +42,10 @@ namespace PickNPlace.Plc
         public bool Set_ServoStartFlag { get; set; }
         public bool Set_ServoJogPlus { get; set; }
         public bool Set_ServoJogMinus { get; set; }
+        public bool Set_ServoSpeed { get; set; }
+        public bool Set_ServoPosCam1 { get; set; }
+        public bool Set_ServoPosCam2 { get; set; }
+        public bool Set_SystemAuto { get; set; }
 
         public void Start()
         {
@@ -115,6 +119,15 @@ namespace PickNPlace.Plc
                         // write datablock
                         bool doWrite = false;
 
+                        #region writing variables to plc
+                        if (Set_SystemAuto)
+                        {
+                            S7.SetBitAt(ref DB_HMI_WR, 14, 0, _db.System_Auto);
+                            this.Set_SystemAuto = false;
+
+                            doWrite = true;
+                        }
+
                         if (Set_ServoHome)
                         {
                             S7.SetBitAt(ref DB_HMI_WR, 0, 0, _db.Servo_Home);
@@ -162,6 +175,31 @@ namespace PickNPlace.Plc
                             doWrite = true;
                         }
 
+                        if (Set_ServoSpeed)
+                        {
+                            S7.SetIntAt(DB_HMI_WR, 8, (short)_db.Servo_Speed);
+                            this.Set_ServoSpeed = false;
+
+                            doWrite = true;
+                        }
+
+                        if (Set_ServoPosCam1)
+                        {
+                            S7.SetIntAt(DB_HMI_WR, 10, (short)_db.Servo_PosCam1);
+                            this.Set_ServoPosCam1 = false;
+
+                            doWrite = true;
+                        }
+
+                        if (Set_ServoPosCam2)
+                        {
+                            S7.SetIntAt(DB_HMI_WR, 12, (short)_db.Servo_PosCam2);
+                            this.Set_ServoPosCam2 = false;
+
+                            doWrite = true;
+                        }
+                        #endregion
+
                         if (doWrite)
                         {
                             Writer.Write();
@@ -172,6 +210,7 @@ namespace PickNPlace.Plc
                         // read datablock
                         if (!HoldReading)
                         {
+                            _db.System_Auto = S7.GetBitAt(DB_HMI, 14, 0);
                             _db.Servo_CurrentPos = S7.GetIntAt(DB_HMI, 6);
                             _db.Servo_Home = S7.GetBitAt(DB_HMI, 0, 0);
                             _db.Servo_Reset = S7.GetBitAt(DB_HMI, 4, 1);
@@ -179,6 +218,9 @@ namespace PickNPlace.Plc
                             _db.Servo_StartFlag = S7.GetBitAt(DB_HMI, 4, 0);
                             _db.Servo_JogPlus = S7.GetBitAt(DB_HMI, 4, 2);
                             _db.Servo_JogMinus = S7.GetBitAt(DB_HMI, 4, 3);
+                            _db.Servo_Speed = S7.GetIntAt(DB_HMI, 8);
+                            _db.Servo_PosCam1 = S7.GetIntAt(DB_HMI, 10);
+                            _db.Servo_PosCam2 = S7.GetIntAt(DB_HMI, 12);
                         }
 
                         //this._plc.Disconnect();

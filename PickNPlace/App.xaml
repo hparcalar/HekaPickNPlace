@@ -4,6 +4,17 @@
              xmlns:local="clr-namespace:PickNPlace"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-
+        <ResourceDictionary>
+            <Style x:Key="hkTextBox"
+                TargetType="{x:Type TextBox}">
+                <Style.Triggers>
+                    <Trigger Property="IsFocused"
+                   Value="true">
+                        <Setter Property="Background"
+                       Value= "#b3d3f2" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

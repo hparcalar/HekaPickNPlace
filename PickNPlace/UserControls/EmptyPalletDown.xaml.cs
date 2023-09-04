@@ -24,5 +24,15 @@ namespace PickNPlace.UserControls
         {
             InitializeComponent();
         }
+
+        public int PalletNo
+        {
+            get { return (int)GetValue(PalletNoProperty); }
+            set { SetValue(PalletNoProperty, value); }
+        }
+        public static readonly DependencyProperty PalletNoProperty =
+            DependencyProperty.Register("PalletNo", typeof(int),
+            typeof(EmptyPalletDown), new PropertyMetadata(0)
+        );
     }
 }

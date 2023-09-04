@@ -20,6 +20,8 @@
     <None Remove="robot_int.png" />
     <None Remove="servo_double.png" />
     <None Remove="settings.png" />
+    <None Remove="start.png" />
+    <None Remove="stop.png" />
     <None Remove="urun_recetesi.png" />
     <None Remove="UserControls\layout.png" />
     <None Remove="UserControls\weighing.png" />
@@ -47,6 +49,8 @@
     <Resource Include="robot_int.png" />
     <Resource Include="servo_double.png" />
     <Resource Include="settings.png" />
+    <Resource Include="start.png" />
+    <Resource Include="stop.png" />
     <Resource Include="urun_recetesi.png" />
     <Resource Include="UserControls\layout.png" />
     <Resource Include="UserControls\weighing.png" />

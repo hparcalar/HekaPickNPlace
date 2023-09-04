@@ -1,4 +1,6 @@
 ﻿using PickNPlace.Plc;
+using PickNPlace.Plc.Data;
+using PickNPlace.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,13 @@ namespace PickNPlace
     /// </summary>
     public partial class MainWindow : Window
     {
+        // local variables
+        private bool _isStarted = false;
+        private PlcWorker _plc;
+        private Task _flagListener;
+        private bool _runFlagListener = false;
+        private PalletStateDTO[] _palletList;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,6 +44,109 @@ namespace PickNPlace
             this._plc.Start();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.CreateInitialData();
+            this.BindLivePalletStates();
+
+            _runFlagListener = true;
+            _flagListener = Task.Run(this.LoopFlagListen);
+        }
+
+        private void CreateInitialData()
+        {
+            using (HekaDbContext db = SchemaFactory.CreateContext())
+            {
+                if (!db.PalletStateLive.Any())
+                {
+                    // create 6 pallet records
+                    for (int i = 1; i <= 6; i++)
+                    {
+                        var dbPallet = new PalletStateLive
+                        {
+                            PalletNo = i,
+                            IsPickable = (i == 1 || i == 2),
+                            IsDropable = (i != 1 && i != 2),
+                        };
+
+                        db.PalletStateLive.Add(dbPallet);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        private void BindLivePalletStates()
+        {
+            // get instant pallet data from database
+            using (HekaDbContext db = SchemaFactory.CreateContext())
+            {
+                _palletList = db.PalletStateLive.Select(d => new PalletStateDTO
+                {
+                    Id = d.Id,
+                    CompletedBatchCount = d.CompletedBatchCount,
+                    CurrentBatchIsCompleted = d.CurrentBatchIsCompleted,
+                    CurrentBatchIsStarted = d.CurrentBatchIsStarted,
+                    CurrentBatchNo = d.CurrentBatchNo,
+                    CurrentItemIsCompleted = d.CurrentItemIsCompleted,
+                    CurrentItemIsStarted = d.CurrentItemIsStarted,
+                    CurrentItemNo = d.CurrentItemNo,
+                    IsDropable = d.IsDropable,
+                    IsPickable = d.IsPickable,
+                    PalletNo = d.PalletNo,
+                    PalletRecipeId = d.PalletRecipeId,
+                    PlaceRequestId = d.PlaceRequestId,
+                }).ToArray();
+            }
+
+            // update pallet visuals
+            foreach (var item in _palletList)
+            {
+                if (item.PalletNo == 1)
+                {
+                    plt1.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
+                    plt1.PickingColor = item.IsPickable == true ? "#FFEAE00D" : "#FF2BEA0D";
+                }
+                else if (item.PalletNo == 2)
+                {
+                    plt2.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
+                    plt2.PickingColor = item.IsPickable == true ? "#FFEAE00D" : "#FF2BEA0D";
+                }
+            }
+        }
+
+        private void plt_OnPickingStatusChanged(int palletNo)
+        {
+            var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (pallet != null)
+            {
+                using (HekaDbContext db = SchemaFactory.CreateContext())
+                {
+                    var dbPallet = db.PalletStateLive.FirstOrDefault(d => d.Id == pallet.Id);
+                    if (dbPallet != null)
+                    {
+                        dbPallet.IsPickable = !(dbPallet.IsPickable ?? false);
+                        dbPallet.IsDropable = !dbPallet.IsPickable;
+
+                        // check at least 1 pallet exists for picking or cancel toggle process
+                        if (dbPallet.IsPickable == false)
+                        {
+                            if (!db.PalletStateLive.Any(d => d.Id != dbPallet.Id && d.IsPickable == true))
+                            {
+                                MessageBox.Show("En az 1 palet HAMMADDE olarak seçilmelidir.", "UYARI", MessageBoxButton.OK);
+                                return;
+                            }
+                        }
+
+                        db.SaveChanges();
+                    }
+                }
+
+                this.BindLivePalletStates();
+            }
+        }
+
         private void _plc_OnPlcConnectionChanged(bool connected)
         {
             this.Dispatcher.BeginInvoke((Action)delegate
@@ -43,17 +155,73 @@ namespace PickNPlace
             });
         }
 
-        private PlcWorker _plc;
-
         private void btnManagement_Click(object sender, RoutedEventArgs e)
         {
             ManagementWindow wnd = new ManagementWindow();
-            wnd.ShowDialog();
+            wnd.Show();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _runFlagListener = false;
             this._plc.Stop();
+
+            try
+            {
+                this._flagListener.Dispose();
+            }
+            catch (Exception)
+            {
+
+            }
         }
+
+        private void btnStartToggle_Click(object sender, RoutedEventArgs e)
+        {
+            _isStarted = !_isStarted;
+
+            this.UpdateSystemStatus();
+        }
+
+        private void UpdateSystemStatus()
+        {
+            if (_isStarted)
+            {
+                txtStart.Text = "SİSTEMİ DURDUR";
+                imgStart.Source = new BitmapImage(new Uri("/stop.png", UriKind.Relative));
+            }
+            else
+            {
+                txtStart.Text = "SİSTEMİ BAŞLAT";
+                imgStart.Source = new BitmapImage(new Uri("/start.png", UriKind.Relative));
+            }
+        }
+
+        #region CONTINUOUS FLAG LISTENING
+        private async Task LoopFlagListen()
+        {
+            while (_runFlagListener)
+            {
+                try
+                {
+                    PlcDB _plcDb = PlcDB.Instance();
+                    _isStarted = _plcDb.System_Auto;
+
+                    await this.Dispatcher.BeginInvoke((Action)delegate
+                    {
+                        this.UpdateSystemStatus();
+                    });
+                }
+                catch (Exception)
+                {
+
+                }
+
+                await Task.Delay(200);
+            }
+        }
+        #endregion
+
+        
     }
 }

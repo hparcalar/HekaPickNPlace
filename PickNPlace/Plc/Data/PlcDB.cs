@@ -17,8 +17,10 @@ namespace PickNPlace.Plc.Data
         public bool Servo_JogPlus { get; set; }
         public bool Servo_JogMinus { get; set; }
         public int Servo_CurrentPos { get; set; }
-
-
+        public int Servo_Speed { get; set; }
+        public int Servo_PosCam1 { get; set; }
+        public int Servo_PosCam2 { get; set; }
+        public bool System_Auto { get; set; }
         #endregion
 
         private static PlcDB _instance;

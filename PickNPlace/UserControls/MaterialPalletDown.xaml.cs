@@ -24,5 +24,47 @@ namespace PickNPlace.UserControls
         {
             InitializeComponent();
         }
+
+        // events
+        public delegate void PickingStatusChangeEvent(int palletNo);
+        public event PickingStatusChangeEvent OnPickingStatusChanged;
+
+
+        // public properties
+        public int PalletNo
+        {
+            get { return (int)GetValue(PalletNoProperty); }
+            set { SetValue(PalletNoProperty, value); }
+        }
+        public static readonly DependencyProperty PalletNoProperty =
+            DependencyProperty.Register("PalletNo", typeof(int),
+            typeof(MaterialPalletDown), new PropertyMetadata(0)
+        );
+
+        public string PickingText
+        {
+            get { return (string)GetValue(PickingTextProperty); }
+            set { SetValue(PickingTextProperty, value); }
+        }
+        public static readonly DependencyProperty PickingTextProperty =
+            DependencyProperty.Register("PickingText", typeof(string),
+            typeof(MaterialPalletDown), new PropertyMetadata("")
+        );
+
+        public string PickingColor
+        {
+            get { return (string)GetValue(PickingColorProperty); }
+            set { SetValue(PickingColorProperty, value); }
+        }
+        public static readonly DependencyProperty PickingColorProperty =
+            DependencyProperty.Register("PickingColor", typeof(string),
+            typeof(MaterialPalletDown), new PropertyMetadata("")
+        );
+
+        // handlers
+        private void btnPickingStatus_Click(object sender, RoutedEventArgs e)
+        {
+            OnPickingStatusChanged?.Invoke(this.PalletNo);
+        }
     }
 }

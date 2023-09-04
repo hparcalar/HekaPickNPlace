@@ -5,22 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Ayarlar" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+        Title="Ayarlar" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
         <Button Content="JOG +" Name="btnJogPlus" HorizontalAlignment="Left" Margin="172,59,0,0" VerticalAlignment="Top" Height="75" Width="124" Click="btnJogPlus_Click"/>
         <Button Content="JOG -" Name="btnJogMinus" HorizontalAlignment="Left" Margin="23,59,0,0" VerticalAlignment="Top" Height="75" Width="124" Click="btnJogMinus_Click"/>
-        <TextBox Name="txtTargetPos" HorizontalAlignment="Left" Margin="23,151,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
+        <TextBox Name="txtTargetPos" Style="{StaticResource hkTextBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="23,151,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
         <Button Content="POZİSYONA GİT" HorizontalContentAlignment="Center" Name="btnSendTargetPos" HorizontalAlignment="Left" Margin="172,151,0,0" VerticalAlignment="Top" Height="45" Width="124" Click="btnSendTargetPos_Click" />
         <Label Content="Servo Motor Kontrol" HorizontalAlignment="Left" Margin="17,16,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="234"/>
-        <TextBox x:Name="txtServoSpeed" HorizontalAlignment="Left" Margin="23,212,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
+        <TextBox x:Name="txtServoSpeed" Style="{StaticResource hkTextBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="23,212,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
         <Button Content="HIZI AYARLA" HorizontalContentAlignment="Center" x:Name="btnSetServoSpeed" HorizontalAlignment="Left" Margin="172,212,0,0" VerticalAlignment="Top" Height="45" Width="124" Click="btnSetServoSpeed_Click" />
-        <TextBox x:Name="txtTargetPos_Copy" HorizontalAlignment="Left" Margin="362,213,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
-        <TextBox x:Name="txtTargetPos_Copy1" HorizontalAlignment="Left" Margin="651,213,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
+        <TextBox x:Name="txtServoPosCam1" Style="{StaticResource hkTextBox}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="362,213,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
+        <TextBox x:Name="txtServoPosCam2" Style="{StaticResource hkTextBox}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="651,213,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
         <Button Content="POZİSYONLARI KAYDET" HorizontalContentAlignment="Center" x:Name="btnSaveServoPositions" HorizontalAlignment="Left" Margin="487,278,0,0" VerticalAlignment="Top" Height="45" Width="163" Click="btnSaveServoPositions_Click" />
         <Image HorizontalAlignment="Left" Height="164" Margin="341,10,0,0" VerticalAlignment="Top" Width="451" Source="/servo_double.png"/>
         <Label Content="PALET 1" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="362,182,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="124"/>
         <Label Content="PALET 2" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="651,182,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="124"/>
-        <Button x:Name="btnBackTome" Click="btnBackTome_Click" Padding="20,0,20,0" FontWeight="Bold" Margin="23,325,653,22">
+        <Button x:Name="btnBackTome" Click="btnBackTome_Click" Padding="20,0,20,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontWeight="Bold" Margin="23,0,0,20" Height="89">
             <Button.Background>
                 <RadialGradientBrush>
                     <GradientStop Color="#FFD4EDFB"/>
