@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>heka-large.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="back_jotun.png" />
+    <None Remove="heka-small.jpg" />
+    <None Remove="heka.bmp" />
+    <None Remove="heka.jpg" />
+    <None Remove="palet_recete.png" />
+    <None Remove="pallet_horz.png" />
+    <None Remove="pallet_vert.png" />
+    <None Remove="red_circle.png" />
+    <None Remove="robot.png" />
+    <None Remove="robot_int.png" />
+    <None Remove="servo_double.png" />
+    <None Remove="settings.png" />
+    <None Remove="urun_recetesi.png" />
+    <None Remove="UserControls\layout.png" />
+    <None Remove="UserControls\weighing.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.17">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="back_jotun.png" />
+    <Resource Include="heka-small.jpg" />
+    <Resource Include="heka.bmp" />
+    <Resource Include="heka.jpg" />
+    <Resource Include="palet_recete.png" />
+    <Resource Include="pallet_horz.png" />
+    <Resource Include="pallet_vert.png" />
+    <Resource Include="red_circle.png" />
+    <Resource Include="robot.png" />
+    <Resource Include="robot_int.png" />
+    <Resource Include="servo_double.png" />
+    <Resource Include="settings.png" />
+    <Resource Include="urun_recetesi.png" />
+    <Resource Include="UserControls\layout.png" />
+    <Resource Include="UserControls\weighing.png" />
+  </ItemGroup>
+
+</Project>

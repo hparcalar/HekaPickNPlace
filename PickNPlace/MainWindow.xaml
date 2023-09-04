@@ -1,0 +1,161 @@
+﻿<Window x:Class="PickNPlace.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:PickNPlace.UserControls"
+        xmlns:local="clr-namespace:PickNPlace"
+        mc:Ignorable="d"
+        Title="Heka Pick N Place" Height="450" Width="800" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"></RowDefinition>
+            <RowDefinition Height="75*"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <!-- ÜST KONTROL BUTON PANELİ -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <StackPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFADD5F7" Offset="0.007"/>
+                    <GradientStop Color="White" Offset="1"/>
+                    <GradientStop Color="#FFC6E1F9" Offset="0.054"/>
+                </LinearGradientBrush>
+            </StackPanel.Background>
+
+            <Image Source="/heka.jpg" Stretch="Uniform"></Image>
+            
+            <Button Padding="20,0,20,0" FontWeight="Bold">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="/urun_recetesi.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock>ÜRÜN REÇETELERİ</TextBlock>
+                </StackPanel>
+            </Button>
+
+            <Button Padding="20,0,20,0" Margin="1,0,0,0" FontWeight="Bold">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="/palet_recete.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock>PALET DİZİLİMLERİ</TextBlock>
+                </StackPanel>
+            </Button>
+
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <Button Name="btnManagement" Click="btnManagement_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="/settings.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock>AYARLAR</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+
+        <!-- PALET DİZİLİM KONTROL ARAYÜZÜ -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*"></RowDefinition>
+                <RowDefinition Height="40*"></RowDefinition>
+                <RowDefinition Height="20*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="0" />
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="0" Grid.Row="0"/>
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="1" />
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="1" Grid.Row="0"/>
+
+
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="0" />
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="0" Grid.Row="2"/>
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="1" />
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="1" Grid.Row="2"/>
+
+            <!-- ROBOT IMAGE -->
+            <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="/robot_int.png" Stretch="Uniform"></Image>
+
+            <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50*"></RowDefinition>
+                    <RowDefinition Height="50*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <uc:MaterialPallet Grid.Row="0" />
+                <uc:MaterialPalletDown Grid.Row="1" />
+            </Grid>
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" />
+        </Grid>
+
+
+        <!-- UYARI BİLDİRİM ÇUBUĞU -->
+        <Grid Grid.Row="2">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFABC3EC" Offset="0"/>
+                    <GradientStop Color="#FF135DDE" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
+                <ColumnDefinition Width="80*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!-- PLC OK STATUS -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">PLC</Label>
+                <Image Name="imgPlcOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
+            </StackPanel>
+            
+            <!-- ROBOT OK STATUS -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">ROBOT</Label>
+                <Image Name="imgRobotOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
+            </StackPanel>
+            
+        </Grid>
+    </Grid>
+</Window>
