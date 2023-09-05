@@ -256,8 +256,13 @@ namespace PickNPlace
                 await Task.Delay(100);
             }
         }
+
         #endregion
 
-        
+        private void btnShowPalletRecipes_Click(object sender, RoutedEventArgs e)
+        {
+            PalletRecipeWindow wnd = new PalletRecipeWindow();
+            wnd.ShowDialog();
+        }
     }
 }

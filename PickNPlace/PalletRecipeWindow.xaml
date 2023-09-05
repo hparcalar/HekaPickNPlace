@@ -1,0 +1,133 @@
+﻿<Window x:Class="PickNPlace.PalletRecipeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PickNPlace"
+        mc:Ignorable="d"
+        Title="Dizilim Reçetesi" Height="450" Width="800" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"></RowDefinition>
+            <RowDefinition Height="10*"></RowDefinition>
+            <RowDefinition Height="70*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <StackPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFADD5F7" Offset="0.007"/>
+                    <GradientStop Color="White" Offset="1"/>
+                    <GradientStop Color="#FFC6E1F9" Offset="0.054"/>
+                </LinearGradientBrush>
+            </StackPanel.Background>
+
+            <Image Source="/heka.jpg" Stretch="Uniform"></Image>
+
+            <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="16" FontStyle="Italic" Foreground="#FF07377C">DİZİLİM REÇETELERİ</TextBlock>
+
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20*"></ColumnDefinition>
+                <ColumnDefinition Width="80*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <Button Name="btnSelectRecipe" Click="btnSelectRecipe_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Name="imgStart" Source="/select.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock Name="txtStart" HorizontalAlignment="Center">REÇETE SEÇ</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Name="btnNewRecipe" Click="btnNewRecipe_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="/new.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock HorizontalAlignment="Center">YENİ REÇETE</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Name="btnDeleteRecipe" Click="btnDeleteRecipe_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="/delete.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock HorizontalAlignment="Center">SİL</TextBlock>
+                    </StackPanel>
+                </Button>
+
+
+            </StackPanel>
+        </Grid>
+
+        <!-- RECIPE HEADER FORM -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="5">
+            <Label VerticalAlignment="Center" Padding="20,0,0,0" FontWeight="Bold">Reçete Kodu:</Label>
+            <TextBox Name="txtRecipeCode"  Style="{StaticResource hkTextBox}" Margin="10,0,0,0"  Width="150"></TextBox>
+
+            <Label VerticalAlignment="Center" Padding="40,0,0,0" FontWeight="Bold">Açıklama:</Label>
+            <TextBox Name="txtExplanation"  Style="{StaticResource hkTextBox}" Margin="10,0,0,0"  Width="300"></TextBox>
+        </StackPanel>
+
+        <!-- RECIPE FLOOR LINEUP DESIGN -->
+        <Grid Grid.Row="2" Margin="5" Background="#FFEFEFEF">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="15*"></RowDefinition>
+                <RowDefinition Height="85*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0">
+                <Button Name="btnNewFloor" Margin="2" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image  Source="/new.png" Stretch="Uniform" Height="20"></Image>
+                        <TextBlock VerticalAlignment="Center">YENİ KAT</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- FLOORS LIST -->
+            <WrapPanel Name="floorsWrapper" Grid.Row="1" Background="White">
+                <ItemsControl ItemsSource="{Binding Path=Floors}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Label>test</Label>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </WrapPanel>
+        </Grid>
+    </Grid>
+</Window>

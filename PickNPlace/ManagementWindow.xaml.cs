@@ -1,6 +1,7 @@
 ﻿using PickNPlace.Plc;
 using PickNPlace.Plc.Data;
 using PickNPlace.DataAccess;
+using PickNPlace.Camera;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -155,6 +156,23 @@ namespace PickNPlace
             this._plc.Set_ServoJogMinus(0);
         }
 
-        
+        private void btnGotoPos1_Click(object sender, RoutedEventArgs e)
+        {
+            this._plc.Set_ServoTargetPos(_db.Servo_PosCam1);
+        }
+
+        private void btnGotoPos2_Click(object sender, RoutedEventArgs e)
+        {
+            this._plc.Set_ServoTargetPos(_db.Servo_PosCam2);
+        }
+
+        private void btnTriggerCamera_Click(object sender, RoutedEventArgs e)
+        {
+            MechWorker camera = new MechWorker();
+            if (camera.TriggerCamera(txtCameraProgramId.Text))
+            {
+                txtCameraVisionResult.Text = camera.GetVisionTargets(txtCameraProgramId.Text);
+            }
+        }
     }
 }

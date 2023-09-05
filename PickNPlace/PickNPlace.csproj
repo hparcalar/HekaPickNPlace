@@ -9,15 +9,19 @@
 
   <ItemGroup>
     <None Remove="back_jotun.png" />
+    <None Remove="come.png" />
+    <None Remove="delete.png" />
     <None Remove="heka-small.jpg" />
     <None Remove="heka.bmp" />
     <None Remove="heka.jpg" />
+    <None Remove="new.png" />
     <None Remove="palet_recete.png" />
     <None Remove="pallet_horz.png" />
     <None Remove="pallet_vert.png" />
     <None Remove="red_circle.png" />
     <None Remove="robot.png" />
     <None Remove="robot_int.png" />
+    <None Remove="select.png" />
     <None Remove="servo_double.png" />
     <None Remove="settings.png" />
     <None Remove="start.png" />
@@ -38,15 +42,19 @@
 
   <ItemGroup>
     <Resource Include="back_jotun.png" />
+    <Resource Include="come.png" />
+    <Resource Include="delete.png" />
     <Resource Include="heka-small.jpg" />
     <Resource Include="heka.bmp" />
     <Resource Include="heka.jpg" />
+    <Resource Include="new.png" />
     <Resource Include="palet_recete.png" />
     <Resource Include="pallet_horz.png" />
     <Resource Include="pallet_vert.png" />
     <Resource Include="red_circle.png" />
     <Resource Include="robot.png" />
     <Resource Include="robot_int.png" />
+    <Resource Include="select.png" />
     <Resource Include="servo_double.png" />
     <Resource Include="settings.png" />
     <Resource Include="start.png" />

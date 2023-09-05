@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Ayarlar" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Ayarlar" Height="450" Width="1171" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
         <Button Content="JOG +" Name="btnJogPlus" HorizontalAlignment="Left" Margin="172,59,0,0" VerticalAlignment="Top" Height="75" Width="124" PreviewMouseUp="btnJogPlus_PreviewMouseUp" PreviewMouseDown="btnJogPlus_PreviewMouseDown"/>
         <Button Content="JOG -" Name="btnJogMinus" HorizontalAlignment="Left" Margin="23,59,0,0" VerticalAlignment="Top" Height="75" Width="124" PreviewMouseDown="btnJogMinus_PreviewMouseDown" PreviewMouseUp="btnJogMinus_PreviewMouseUp"/>
@@ -33,6 +33,43 @@
                 <TextBlock Margin="0,10,0,0"><Run Text="GERİ DÖN"/></TextBlock>
             </StackPanel>
         </Button>
+        <Label Content="Kamera Kontrol" HorizontalAlignment="Left" Margin="899,16,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="234"/>
+        <Button Content="TETİK VER" HorizontalContentAlignment="Center" x:Name="btnTriggerCamera" HorizontalAlignment="Left" Margin="919,49,0,0" VerticalAlignment="Top" Height="45" Width="162" Click="btnTriggerCamera_Click" />
+        <RichTextBox Margin="824,115,90,176"  IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Name="txtCameraVisionResult" Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Button x:Name="btnGotoPos1" Click="btnGotoPos1_Click" Padding="20,0,20,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="383,278,0,0" Height="45">
+            <Button.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#FFD4EDFB"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </RadialGradientBrush>
+            </Button.Background>
+
+            <StackPanel VerticalAlignment="Center">
+                <Image Source="/come.png" Stretch="Uniform" Height="40"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="btnGotoPos2" Click="btnGotoPos2_Click" Padding="20,0,20,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="671,278,0,0" Height="45">
+            <Button.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#FFD4EDFB"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </RadialGradientBrush>
+            </Button.Background>
+
+            <StackPanel VerticalAlignment="Center">
+                <Image Source="/come.png" Stretch="Uniform" Height="40"/>
+            </StackPanel>
+        </Button>
+        <TextBox x:Name="txtCameraProgramId" 
+                 Style="{StaticResource hkTextBox}" 
+                 HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="824,49,0,0" Text=""
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="45" FontWeight="Bold" FontSize="18"/>
 
     </Grid>
 </Window>

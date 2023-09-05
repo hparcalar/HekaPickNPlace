@@ -43,7 +43,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Padding="20,0,20,0" Margin="1,0,0,0" FontWeight="Bold">
+            <Button Padding="20,0,20,0" Margin="1,0,0,0" Name="btnShowPalletRecipes" Click="btnShowPalletRecipes_Click" FontWeight="Bold">
                 <Button.Background>
                     <RadialGradientBrush>
                         <GradientStop Color="#FFD4EDFB"/>
