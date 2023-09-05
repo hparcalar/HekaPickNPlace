@@ -33,19 +33,7 @@ namespace PickNPlace.Plc
         private PlcDB _db;
         private S7Client _plc;
         private bool _stateIsConnected = false;
-
-        public bool HoldReading { get; set; }
-
-        public bool Set_ServoHome { get; set; }
-        public bool Set_ServoTargetPos { get; set; }
-        public bool Set_ServoReset { get; set; }
-        public bool Set_ServoStartFlag { get; set; }
-        public bool Set_ServoJogPlus { get; set; }
-        public bool Set_ServoJogMinus { get; set; }
-        public bool Set_ServoSpeed { get; set; }
-        public bool Set_ServoPosCam1 { get; set; }
-        public bool Set_ServoPosCam2 { get; set; }
-        public bool Set_SystemAuto { get; set; }
+        private const int DB_NUMBER = 2;
 
         public void Start()
         {
@@ -80,6 +68,218 @@ namespace PickNPlace.Plc
             }
         }
 
+        #region VARIABLES TO BE SENT TO THE PLC
+
+        public bool Set_ServoHome(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 0, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_SystemAuto(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 14 * 8, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoReset(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, (4 * 8) + 1, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoTargetPos(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 2, 2, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoStart(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, (4 * 8), 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoJogPlus(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, (4 * 8) + 2, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoJogMinus(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, (4 * 8) + 3, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoSpeed(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 8, 2, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoPosCam1(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 10, 2, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_ServoPosCam2(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 12, 2, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        #endregion
+
         private async Task _ListenLoop()
         {
             while (_runListener)
@@ -107,121 +307,24 @@ namespace PickNPlace.Plc
                     if (isConnected)
                     {
                         S7MultiVar Reader = new S7MultiVar(this._plc);
-                        S7MultiVar Writer = new S7MultiVar(this._plc);
 
                         byte[] DB_HMI = new byte[1024];
-                        byte[] DB_HMI_WR = new byte[1024];
-                        int DBNumber_HMI = 2;
 
-                        Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DBNumber_HMI, 0, 8, ref DB_HMI);
-                        Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DBNumber_HMI, 0, 6, ref DB_HMI_WR);
-
-                        // write datablock
-                        bool doWrite = false;
-
-                        #region writing variables to plc
-                        if (Set_SystemAuto)
-                        {
-                            S7.SetBitAt(ref DB_HMI_WR, 14, 0, _db.System_Auto);
-                            this.Set_SystemAuto = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoHome)
-                        {
-                            S7.SetBitAt(ref DB_HMI_WR, 0, 0, _db.Servo_Home);
-                            this.Set_ServoHome = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoReset) {
-                            S7.SetBitAt(ref DB_HMI_WR, 4, 1, _db.Servo_Reset);
-                            this.Set_ServoReset = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoTargetPos)
-                        {
-                            S7.SetIntAt(DB_HMI_WR, 2, (short)_db.Servo_TargetPos);
-                            this.Set_ServoTargetPos = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoStartFlag)
-                        {
-                            S7.SetBitAt(ref DB_HMI_WR, 4, 0, _db.Servo_StartFlag);
-                            this.Set_ServoStartFlag = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoJogPlus)
-                        {
-                            S7.SetBitAt(ref DB_HMI_WR, 4, 2, _db.Servo_JogPlus);
-                            this.Set_ServoJogPlus = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoJogMinus)
-                        {
-                            S7.SetBitAt(ref DB_HMI_WR, 4, 3, _db.Servo_JogMinus);
-                            this.Set_ServoJogMinus = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoSpeed)
-                        {
-                            S7.SetIntAt(DB_HMI_WR, 8, (short)_db.Servo_Speed);
-                            this.Set_ServoSpeed = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoPosCam1)
-                        {
-                            S7.SetIntAt(DB_HMI_WR, 10, (short)_db.Servo_PosCam1);
-                            this.Set_ServoPosCam1 = false;
-
-                            doWrite = true;
-                        }
-
-                        if (Set_ServoPosCam2)
-                        {
-                            S7.SetIntAt(DB_HMI_WR, 12, (short)_db.Servo_PosCam2);
-                            this.Set_ServoPosCam2 = false;
-
-                            doWrite = true;
-                        }
-                        #endregion
-
-                        if (doWrite)
-                        {
-                            Writer.Write();
-                        }
+                        Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 0, 15, ref DB_HMI);
 
                         int Result = Reader.Read();
 
-                        // read datablock
-                        if (!HoldReading)
-                        {
-                            _db.System_Auto = S7.GetBitAt(DB_HMI, 14, 0);
-                            _db.Servo_CurrentPos = S7.GetIntAt(DB_HMI, 6);
-                            _db.Servo_Home = S7.GetBitAt(DB_HMI, 0, 0);
-                            _db.Servo_Reset = S7.GetBitAt(DB_HMI, 4, 1);
-                            _db.Servo_TargetPos = S7.GetIntAt(DB_HMI, 2);
-                            _db.Servo_StartFlag = S7.GetBitAt(DB_HMI, 4, 0);
-                            _db.Servo_JogPlus = S7.GetBitAt(DB_HMI, 4, 2);
-                            _db.Servo_JogMinus = S7.GetBitAt(DB_HMI, 4, 3);
-                            _db.Servo_Speed = S7.GetIntAt(DB_HMI, 8);
-                            _db.Servo_PosCam1 = S7.GetIntAt(DB_HMI, 10);
-                            _db.Servo_PosCam2 = S7.GetIntAt(DB_HMI, 12);
-                        }
+                        _db.System_Auto = S7.GetBitAt(DB_HMI, 14, 0);
+                        _db.Servo_CurrentPos = S7.GetIntAt(DB_HMI, 6);
+                        _db.Servo_Home = S7.GetBitAt(DB_HMI, 0, 0);
+                        _db.Servo_Reset = S7.GetBitAt(DB_HMI, 4, 1);
+                        _db.Servo_TargetPos = S7.GetIntAt(DB_HMI, 2);
+                        _db.Servo_StartFlag = S7.GetBitAt(DB_HMI, 4, 0);
+                        _db.Servo_JogPlus = S7.GetBitAt(DB_HMI, 4, 2);
+                        _db.Servo_JogMinus = S7.GetBitAt(DB_HMI, 4, 3);
+                        _db.Servo_Speed = S7.GetIntAt(DB_HMI, 8);
+                        _db.Servo_PosCam1 = S7.GetIntAt(DB_HMI, 10);
+                        _db.Servo_PosCam2 = S7.GetIntAt(DB_HMI, 12);                        
 
                         //this._plc.Disconnect();
                     }

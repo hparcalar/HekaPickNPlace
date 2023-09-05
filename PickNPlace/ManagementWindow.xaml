@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="Ayarlar" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
-        <Button Content="JOG +" Name="btnJogPlus" HorizontalAlignment="Left" Margin="172,59,0,0" VerticalAlignment="Top" Height="75" Width="124" Click="btnJogPlus_Click"/>
-        <Button Content="JOG -" Name="btnJogMinus" HorizontalAlignment="Left" Margin="23,59,0,0" VerticalAlignment="Top" Height="75" Width="124" Click="btnJogMinus_Click"/>
+        <Button Content="JOG +" Name="btnJogPlus" HorizontalAlignment="Left" Margin="172,59,0,0" VerticalAlignment="Top" Height="75" Width="124" PreviewMouseUp="btnJogPlus_PreviewMouseUp" PreviewMouseDown="btnJogPlus_PreviewMouseDown"/>
+        <Button Content="JOG -" Name="btnJogMinus" HorizontalAlignment="Left" Margin="23,59,0,0" VerticalAlignment="Top" Height="75" Width="124" PreviewMouseDown="btnJogMinus_PreviewMouseDown" PreviewMouseUp="btnJogMinus_PreviewMouseUp"/>
         <TextBox Name="txtTargetPos" Style="{StaticResource hkTextBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="23,151,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="124" Height="45" FontWeight="Bold" FontSize="18"/>
         <Button Content="POZİSYONA GİT" HorizontalContentAlignment="Center" Name="btnSendTargetPos" HorizontalAlignment="Left" Margin="172,151,0,0" VerticalAlignment="Top" Height="45" Width="124" Click="btnSendTargetPos_Click" />
         <Label Content="Servo Motor Kontrol" HorizontalAlignment="Left" Margin="17,16,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="234"/>

@@ -62,47 +62,19 @@ namespace PickNPlace
                     txtServoPosCam2.Text = prmData.ParamValue;
                 }
             }
+
+            txtTargetPos.Text = this._db.Servo_CurrentPos.ToString();
         }
 
         private void btnSendTargetPos_Click(object sender, RoutedEventArgs e)
         {
-            this._plc.HoldReading = true;
-
-            this._db.Servo_TargetPos = Convert.ToInt32(txtTargetPos.Text);
-            this._plc.Set_ServoTargetPos = true;
-
-            this._plc.HoldReading = false;
-        }
-
-        private void btnJogPlus_Click(object sender, RoutedEventArgs e)
-        {
-            this._plc.HoldReading = true;
-
-            this._db.Servo_JogPlus = true;
-            this._plc.Set_ServoJogPlus = true;
-
-            this._plc.HoldReading = false;
-        }
-
-        private void btnJogMinus_Click(object sender, RoutedEventArgs e)
-        {
-            this._plc.HoldReading = true;
-
-            this._db.Servo_JogMinus = true;
-            this._plc.Set_ServoJogMinus = true;
-
-            this._plc.HoldReading = false;
+            this._plc.Set_ServoTargetPos(Convert.ToInt32(txtTargetPos.Text));
         }
 
         private void btnSetServoSpeed_Click(object sender, RoutedEventArgs e)
         {
             // send data to plc
-            this._plc.HoldReading = true;
-
-            this._db.Servo_Speed = Convert.ToInt32(txtServoSpeed.Text);
-            this._plc.Set_ServoSpeed = true;
-
-            this._plc.HoldReading = false;
+            this._plc.Set_ServoSpeed(Convert.ToInt32(txtServoSpeed.Text));
 
             // save to database
             using (HekaDbContext db = SchemaFactory.CreateContext())
@@ -124,15 +96,8 @@ namespace PickNPlace
         private void btnSaveServoPositions_Click(object sender, RoutedEventArgs e)
         {
             // send data to plc
-            this._plc.HoldReading = true;
-
-            this._db.Servo_PosCam1 = Convert.ToInt32(txtServoPosCam1.Text);
-            this._plc.Set_ServoPosCam1 = true;
-
-            this._db.Servo_PosCam2 = Convert.ToInt32(txtServoPosCam2.Text);
-            this._plc.Set_ServoPosCam2 = true;
-
-            this._plc.HoldReading = false;
+            this._plc.Set_ServoPosCam1(Convert.ToInt32(txtServoPosCam1.Text));
+            this._plc.Set_ServoPosCam2(Convert.ToInt32(txtServoPosCam2.Text));
 
             // save to database
             using (HekaDbContext db = SchemaFactory.CreateContext())
@@ -167,5 +132,29 @@ namespace PickNPlace
         {
             this.Close();
         }
+
+        private void btnJogPlus_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this._plc.Set_ServoTargetPos(Convert.ToInt32(txtTargetPos.Text) + 10);
+            this._plc.Set_ServoJogPlus(1);
+        }
+
+        private void btnJogPlus_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            this._plc.Set_ServoJogPlus(0);
+        }
+
+        private void btnJogMinus_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this._plc.Set_ServoTargetPos(Convert.ToInt32(txtTargetPos.Text) - 10);
+            this._plc.Set_ServoJogMinus(1);
+        }
+
+        private void btnJogMinus_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            this._plc.Set_ServoJogMinus(0);
+        }
+
+        
     }
 }

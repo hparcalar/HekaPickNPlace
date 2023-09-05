@@ -27,6 +27,7 @@ namespace PickNPlace
         // local variables
         private bool _isStarted = false;
         private PlcWorker _plc;
+        private PlcDB _plcDB;
         private Task _flagListener;
         private bool _runFlagListener = false;
         private PalletStateDTO[] _palletList;
@@ -42,6 +43,9 @@ namespace PickNPlace
             this._plc = PlcWorker.Instance();
             this._plc.OnPlcConnectionChanged += _plc_OnPlcConnectionChanged;
             this._plc.Start();
+
+            // prepare datablocks
+            this._plcDB = PlcDB.Instance();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -178,14 +182,46 @@ namespace PickNPlace
 
         private void btnStartToggle_Click(object sender, RoutedEventArgs e)
         {
+            this.BindDefaults();
+
             _isStarted = !_isStarted;
+
+            this._plc.Set_SystemAuto((byte)(_isStarted ? 1 : 0));
 
             this.UpdateSystemStatus();
         }
 
+        private void BindDefaults()
+        {
+            using (HekaDbContext db = SchemaFactory.CreateContext())
+            {
+                int tryValue = 0;
+
+                var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
+                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                {
+                    this._plc.Set_ServoSpeed(Convert.ToInt32(prmData.ParamValue));
+                }
+
+                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
+                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                {
+                    this._plc.Set_ServoPosCam1(Convert.ToInt32(prmData.ParamValue));
+                }
+
+                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
+                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                {
+                    this._plc.Set_ServoPosCam2(Convert.ToInt32(prmData.ParamValue));
+                }
+
+                this._plc.Set_ServoStart(1);
+            }
+        }
+
         private void UpdateSystemStatus()
         {
-            if (_isStarted)
+            if (_plcDB.System_Auto)
             {
                 txtStart.Text = "SİSTEMİ DURDUR";
                 imgStart.Source = new BitmapImage(new Uri("/stop.png", UriKind.Relative));
@@ -217,7 +253,7 @@ namespace PickNPlace
 
                 }
 
-                await Task.Delay(200);
+                await Task.Delay(100);
             }
         }
         #endregion
