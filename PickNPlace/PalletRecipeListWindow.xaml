@@ -1,0 +1,73 @@
+﻿<Window x:Class="PickNPlace.PalletRecipeListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PickNPlace"
+        mc:Ignorable="d"
+        Title="Dizilim Reçete Listesi" Height="450" Width="800" Loaded="Window_Loaded" WindowState="Maximized" WindowStartupLocation="CenterScreen" Icon="/heka.jpg">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="100*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"></ColumnDefinition>
+            <ColumnDefinition Width="30*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <!-- header -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFADD5F7" Offset="0.007"/>
+                    <GradientStop Color="White" Offset="1"/>
+                    <GradientStop Color="#FFC6E1F9" Offset="0.054"/>
+                </LinearGradientBrush>
+            </StackPanel.Background>
+
+            <Image Source="/heka.jpg" Stretch="Uniform"></Image>
+
+            <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="22" FontStyle="Italic" Foreground="#FF07377C">DİZİLİM REÇETESİ SEÇ</TextBlock>
+
+        </StackPanel>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <Button Name="btnSelectRecipe" Click="btnSelectRecipe_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image  Source="/check_box.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock HorizontalAlignment="Center">SEÇ</TextBlock>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </Grid>
+
+
+        <!-- list -->
+        <DataGrid Grid.Row="1" Grid.Column="0" Name="dgRecipe" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="35*" Header="Reçete No" Binding="{Binding RecipeCode}"></DataGridTextColumn>
+                <DataGridTextColumn Width="50*" Header="Açıklama" Binding="{Binding Explanation}"></DataGridTextColumn>
+                <DataGridTextColumn Width="15*" Header="Kat Sayısı" Binding="{Binding TotalFloors}"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <!-- floor details -->
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            
+        </StackPanel>
+    </Grid>
+</Window>

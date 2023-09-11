@@ -110,12 +110,12 @@ namespace PickNPlace
                 if (item.PalletNo == 1)
                 {
                     plt1.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
-                    plt1.PickingColor = item.IsPickable == true ? "#FFEAE00D" : "#FF2BEA0D";
+                    plt1.PickingColor = item.IsPickable == true ? "#FFF2FBBB" : "#FF93C1F0";
                 }
                 else if (item.PalletNo == 2)
                 {
                     plt2.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
-                    plt2.PickingColor = item.IsPickable == true ? "#FFEAE00D" : "#FF2BEA0D";
+                    plt2.PickingColor = item.IsPickable == true ? "#FFF2FBBB" : "#FF93C1F0";
                 }
             }
         }

@@ -35,7 +35,7 @@
         </Button>
         <Label Content="Kamera Kontrol" HorizontalAlignment="Left" Margin="899,16,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="234"/>
         <Button Content="TETİK VER" HorizontalContentAlignment="Center" x:Name="btnTriggerCamera" HorizontalAlignment="Left" Margin="919,49,0,0" VerticalAlignment="Top" Height="45" Width="162" Click="btnTriggerCamera_Click" />
-        <RichTextBox Margin="824,115,90,176"  IsReadOnly="True">
+        <RichTextBox Margin="824,115,90,0" VerticalAlignment="Top" IsReadOnly="True" Height="142">
             <FlowDocument>
                 <Paragraph>
                     <Run Name="txtCameraVisionResult" Text=""/>
@@ -70,6 +70,7 @@
                  Style="{StaticResource hkTextBox}" 
                  HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="824,49,0,0" Text=""
                  TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="45" FontWeight="Bold" FontSize="18"/>
+        <Button Content="BOŞ PALETE BIRAK" HorizontalContentAlignment="Center" x:Name="btnPlaceAnItem" HorizontalAlignment="Left" Margin="824,278,0,0" VerticalAlignment="Top" Height="45" Width="162" Click="btnPlaceAnItem_Click" />
 
     </Grid>
 </Window>

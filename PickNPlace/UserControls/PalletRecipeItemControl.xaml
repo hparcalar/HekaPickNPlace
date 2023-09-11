@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="PickNPlace.UserControls.PalletRecipeItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PickNPlace.UserControls"
+             mc:Ignorable="d" Name="PalletFloorWnd"
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="PalletFloorWnd_Loaded">
+    <Grid DataContext="{Binding ElementName=PalletFloorWnd, Path=Floor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15*"></RowDefinition>
+            <RowDefinition Height="70*"></RowDefinition>
+            <RowDefinition Height="15*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15*"></ColumnDefinition>
+            <ColumnDefinition Width="70*"></ColumnDefinition>
+            <ColumnDefinition Width="15*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <!-- pallet image -->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15*"></ColumnDefinition>
+                <ColumnDefinition Width="70*"></ColumnDefinition>
+                <ColumnDefinition Width="15*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50*"></RowDefinition>
+                <RowDefinition Height="50*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Image Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Source="/UserControls/pallet-new-horz.png" Stretch="Fill"></Image>
+
+            <!-- row 2 pallet source -->
+            <Grid Grid.Row="0" Grid.Column="1" Name="pnlPalletUp">
+                <ItemsControl Name="containerPalletUp">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Name="btnCellRow2" Click="btnCellRow2_Click" Tag="{Binding Col}" Initialized="btnCellRow2_Initialized">
+                                <Image Source="/UserControls/sack-jotun-horz.png"></Image>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            
+            <!-- row 1 pallet source -->
+            <Grid Grid.Row="1" Grid.Column="1" Name="pnlPalletDown">
+                <ItemsControl Name="containerPalletDown">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Name="stckPnlDown" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Name="btnCellRow1" Click="btnCellRow1_Click" Tag="{Binding Col}" Initialized="btnCellRow1_Initialized">
+                                <Image Source="/UserControls/sack-jotun-vertical.png"></Image>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+            <Button Name="btnNewProductRow2" Click="btnNewProductRow2_Click" Padding="20,0,20,0" Grid.Row="0" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="/new.png" Stretch="Uniform" Height="40"></Image>
+                </StackPanel>
+            </Button>
+
+            <Button Name="btnNewProductRow1" Click="btnNewProductRow1_Click" Padding="20,0,20,0" Grid.Row="1" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="/new.png" Stretch="Uniform" Height="40"></Image>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- floor number title -->
+        <Label Name="txtFloorNumber" Content="{Binding FloorNumber}" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Foreground="Black" Background="White"></Label>
+        
+        <!--  -->
+    </Grid>
+</UserControl>

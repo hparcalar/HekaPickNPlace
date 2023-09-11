@@ -2,6 +2,7 @@
 using PickNPlace.Plc.Data;
 using PickNPlace.DataAccess;
 using PickNPlace.Camera;
+using PickNPlace.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,7 +100,7 @@ namespace PickNPlace
             // send data to plc
             this._plc.Set_ServoPosCam1(Convert.ToInt32(txtServoPosCam1.Text));
             this._plc.Set_ServoPosCam2(Convert.ToInt32(txtServoPosCam2.Text));
-
+            
             // save to database
             using (HekaDbContext db = SchemaFactory.CreateContext())
             {
@@ -171,7 +172,218 @@ namespace PickNPlace
             MechWorker camera = new MechWorker();
             if (camera.TriggerCamera(txtCameraProgramId.Text))
             {
-                txtCameraVisionResult.Text = camera.GetVisionTargets(txtCameraProgramId.Text);
+                this._plc.Set_PlaceCalculationOk(0);
+
+                string posRaw = camera.GetVisionTargets(txtCameraProgramId.Text);
+                txtCameraVisionResult.Text = posRaw;
+
+                int[] posData = new int[0];
+
+                try
+                {
+                    posData = (posRaw.Split(',')).Skip(5).Take(6).Select(d => Convert.ToInt32(Convert.ToSingle(d))).ToArray();
+                }
+                catch (Exception)
+                {
+
+                }
+
+                if (posData.Length > 0)
+                {
+                    this._plc.Set_RobotX(posData[0]);
+                    this._plc.Set_RobotY(posData[1]);
+                    this._plc.Set_RobotZ(posData[2]);
+                    this._plc.Set_RobotRX(posData[3]);
+                    this._plc.Set_RobotRY(posData[4]);
+                    this._plc.Set_RobotRZ(posData[5]);
+
+                    this._plc.Set_CaptureOk(1);
+                }
+            }
+        }
+
+        // temporary placing variables
+        private int _currentFloor = 1;
+        private int _currentItemNo = 0;
+
+        private PalletRecipeDTO _palletRecipe = new PalletRecipeDTO
+        {
+            Explanation = "Test",
+            PalletWidth = 120, // x
+            PalletLength = 100, // y
+            RecipeCode = "0001",
+            TotalFloors = 3,
+            Floors = new PalletRecipeFloorDTO[]
+            {
+                // 1. floor
+                new PalletRecipeFloorDTO
+                {
+                    FloorNumber = 1,
+                    Rows = 2,
+                    Cols = 3,
+                    Items = new PalletRecipeFloorItemDTO[]
+                    {
+                        // 1. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 1,
+                            Row = 1,
+                            Col = 1,
+                            IsVertical = true,
+                        },
+                        // 2. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 2,
+                            IsVertical = true,
+                            Row = 1,
+                            Col = 2,
+                        },
+                        // 3. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 3,
+                            IsVertical = false,
+                            Row = 2,
+                            Col = 1,
+                        },
+                        // 4. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 4,
+                            IsVertical = false,
+                            Row = 2,
+                            Col = 2,
+                        },
+                        // 5.item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 5,
+                            IsVertical = false,
+                            Row=2,
+                            Col=3,
+                        }
+                    },
+                },
+                // 2. floor
+                new PalletRecipeFloorDTO
+                {
+                    FloorNumber = 2,
+                    Rows = 2,
+                    Cols = 3,
+                    Items = new PalletRecipeFloorItemDTO[]
+                    {
+                        // 6. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 6,
+                            IsVertical = false,
+                            Row = 1,
+                            Col = 1,
+                        },
+                        // 7. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 7,
+                            IsVertical = false,
+                            Row = 1,
+                            Col = 2,
+                        },
+                        // 8. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 8,
+                            IsVertical = false,
+                            Row = 1,
+                            Col = 3,
+                        },
+                        // 9. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 9,
+                            IsVertical = true,
+                            Row = 2,
+                            Col = 1,
+                        },
+                        // 10. item
+                        new PalletRecipeFloorItemDTO
+                        {
+                            ItemOrder = 10,
+                            IsVertical = true,
+                            Row = 2,
+                            Col = 2,
+                        }
+                    }
+                }
+            },
+        };
+
+        private RobotPositionDTO CalculateCurrentItemDropPosition()
+        {
+            RobotPositionDTO pos = null;
+
+            try
+            {
+                var floor = _palletRecipe.Floors.FirstOrDefault(d => d.FloorNumber == _currentFloor);
+                if (floor != null)
+                {
+                    var item = floor.Items.FirstOrDefault(d => d.ItemOrder == _currentItemNo);
+                    if (item != null)
+                    {
+                        var totalItemsOfCurrentRow = floor.Items.Where(d => d.Row == item.Row).Count();
+                        var totalRowsOfCurrentFloor = floor.Rows ?? 1;
+
+                        pos = new RobotPositionDTO
+                        {
+                            X = ((_palletRecipe.PalletWidth / totalItemsOfCurrentRow) * ((item.Col ?? 1) - 1)) + (_palletRecipe.PalletWidth / totalItemsOfCurrentRow / 2),
+                            Y =  ( (_palletRecipe.PalletLength / totalRowsOfCurrentFloor) * ((item.Row ?? 1) - 1) ) + (_palletRecipe.PalletLength / totalRowsOfCurrentFloor / 2),
+                            Z = _currentFloor * 15,
+                            RX = 0,
+                            RY = 0,
+                            RZ = item.IsVertical ? 178 : -102,
+                        };
+
+                        pos.X *= 10;
+                        pos.Y *= 10;
+                        pos.Z *= 10;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                pos = null;
+            }
+
+            return pos;
+        }
+
+        private void btnPlaceAnItem_Click(object sender, RoutedEventArgs e)
+        {
+            this._plc.Set_CaptureOk(0);
+
+            _currentItemNo++;
+            if (_currentItemNo == 6)
+            {
+                _currentFloor = 2;
+            }
+
+            var pos = CalculateCurrentItemDropPosition();
+            if (pos != null)
+            {
+                this._plc.Set_RobotX(pos.X);
+                this._plc.Set_RobotY(pos.Y);
+                this._plc.Set_RobotZ(pos.Z);
+                this._plc.Set_RobotRX(pos.RX);
+                this._plc.Set_RobotRY(pos.RY);
+                this._plc.Set_RobotRZ(pos.RZ);
+
+                this._plc.Set_EmptyPalletNo(3);
+                this._plc.Set_PlaceCalculationOk(1);
+            }
+            else
+            {
+                _currentFloor = 1;
+                _currentItemNo = 0;
             }
         }
     }

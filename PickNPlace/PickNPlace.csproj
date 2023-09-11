@@ -8,9 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="back.png" />
     <None Remove="back_jotun.png" />
+    <None Remove="check_box.png" />
     <None Remove="come.png" />
     <None Remove="delete.png" />
+    <None Remove="green_circle.png" />
     <None Remove="heka-small.jpg" />
     <None Remove="heka.bmp" />
     <None Remove="heka.jpg" />
@@ -21,13 +24,18 @@
     <None Remove="red_circle.png" />
     <None Remove="robot.png" />
     <None Remove="robot_int.png" />
+    <None Remove="save.png" />
     <None Remove="select.png" />
     <None Remove="servo_double.png" />
     <None Remove="settings.png" />
     <None Remove="start.png" />
     <None Remove="stop.png" />
     <None Remove="urun_recetesi.png" />
+    <None Remove="UserControls\euro_pallet.png" />
     <None Remove="UserControls\layout.png" />
+    <None Remove="UserControls\pallet-new-horz.png" />
+    <None Remove="UserControls\sack-jotun-horz.png" />
+    <None Remove="UserControls\sack-jotun-vertical.png" />
     <None Remove="UserControls\weighing.png" />
   </ItemGroup>
 
@@ -41,9 +49,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="back.png" />
     <Resource Include="back_jotun.png" />
+    <Resource Include="check_box.png" />
     <Resource Include="come.png" />
     <Resource Include="delete.png" />
+    <Resource Include="green_circle.png" />
     <Resource Include="heka-small.jpg" />
     <Resource Include="heka.bmp" />
     <Resource Include="heka.jpg" />
@@ -54,13 +65,18 @@
     <Resource Include="red_circle.png" />
     <Resource Include="robot.png" />
     <Resource Include="robot_int.png" />
+    <Resource Include="save.png" />
     <Resource Include="select.png" />
     <Resource Include="servo_double.png" />
     <Resource Include="settings.png" />
     <Resource Include="start.png" />
     <Resource Include="stop.png" />
     <Resource Include="urun_recetesi.png" />
+    <Resource Include="UserControls\euro_pallet.png" />
     <Resource Include="UserControls\layout.png" />
+    <Resource Include="UserControls\pallet-new-horz.png" />
+    <Resource Include="UserControls\sack-jotun-horz.png" />
+    <Resource Include="UserControls\sack-jotun-vertical.png" />
     <Resource Include="UserControls\weighing.png" />
   </ItemGroup>
 

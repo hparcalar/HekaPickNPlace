@@ -9,7 +9,7 @@
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF9E9797" Offset="1"/>
+                <GradientStop Color="#FFB9B9B9" Offset="1"/>
                 <GradientStop Color="White"/>
             </LinearGradientBrush>
         </Grid.Background>
@@ -17,7 +17,15 @@
             <RowDefinition Height="70*"></RowDefinition>
             <RowDefinition Height="30*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Image Source="/pallet_vert.png" Stretch="Uniform" Grid.Row="0" Grid.Column="0">
+        <Image Source="/UserControls/euro_pallet.png" Stretch="Uniform" Grid.Row="0" Grid.Column="0" RenderTransformOrigin="0.9,0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
             <Image.Effect>
                 <DropShadowEffect/>
             </Image.Effect>
@@ -28,24 +36,17 @@
                 <ColumnDefinition Width="25*"></ColumnDefinition>
                 <ColumnDefinition Width="25*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Content="BOŞ PALET" Grid.Column="0" Padding="5,0,5,0" FontWeight="Bold" >
-                <Button.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FFEAEEFF"/>
-                        <GradientStop Color="#FF2BEA0D" Offset="1"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-            </Button>
+            <Button Content="BOŞ PALET" Grid.Column="0" Padding="5,0,5,0" FontWeight="Bold" Background="#FF93C1F0" FontSize="16" />
             <Button Grid.Column="1" Padding="5,0,5,0" FontWeight="Normal" >
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Image Source="/UserControls/weighing.png" Height="48"></Image>
-                    <Label VerticalAlignment="Center" FontWeight="Bold">Tartım</Label>
+                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16">Tartım</Label>
                 </StackPanel>
             </Button>
             <Button Grid.Column="2" Padding="5,0,5,0" FontWeight="Normal">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Image Source="/UserControls/layout.png" Height="48"></Image>
-                    <Label VerticalAlignment="Center" FontWeight="Bold">Dizilim</Label>
+                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16">Dizilim</Label>
                 </StackPanel>
             </Button>
         </Grid>

@@ -139,7 +139,7 @@ namespace PickNPlace.Plc
                 S7.SetIntAt(data, 0, (short)val);
 
                 S7MultiVar Writer = new S7MultiVar(this._plc);
-                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 2, 2, ref data);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 2, 1, ref data);
 
                 int writeResult = Writer.Write();
                 result = writeResult == 0;
@@ -221,7 +221,7 @@ namespace PickNPlace.Plc
                 S7.SetIntAt(data, 0, (short)val);
 
                 S7MultiVar Writer = new S7MultiVar(this._plc);
-                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 8, 2, ref data);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 8, 1, ref data);
 
                 int writeResult = Writer.Write();
                 result = writeResult == 0;
@@ -243,7 +243,7 @@ namespace PickNPlace.Plc
                 S7.SetIntAt(data, 0, (short)val);
 
                 S7MultiVar Writer = new S7MultiVar(this._plc);
-                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 10, 2, ref data);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 10, 1, ref data);
 
                 int writeResult = Writer.Write();
                 result = writeResult == 0;
@@ -265,7 +265,201 @@ namespace PickNPlace.Plc
                 S7.SetIntAt(data, 0, (short)val);
 
                 S7MultiVar Writer = new S7MultiVar(this._plc);
-                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 12, 2, ref data);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 12, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotX(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 16, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotY(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 18, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotZ(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 20, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRX(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 22, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRY(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 24, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRZ(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 26, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_CaptureOk(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 28 * 8, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_PlaceCalculationOk(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 28 * 8 + 1, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_EmptyPalletNo(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 30, 1, ref data);
 
                 int writeResult = Writer.Write();
                 result = writeResult == 0;

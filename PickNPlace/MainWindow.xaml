@@ -9,14 +9,14 @@
         Title="Heka Pick N Place" Height="450" Width="800" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20*"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="75*"></RowDefinition>
             <RowDefinition Height="5*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
+
         <!-- ÜST KONTROL BUTON PANELİ -->
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <StackPanel.Background>
@@ -28,7 +28,7 @@
             </StackPanel.Background>
 
             <Image Source="/heka.jpg" Stretch="Uniform"></Image>
-            
+
             <Button Padding="20,0,20,0" FontWeight="Bold">
                 <Button.Background>
                     <RadialGradientBrush>
@@ -127,18 +127,24 @@
             Grid.Column="1" Grid.Row="2"/>
 
             <!-- ROBOT IMAGE -->
-            <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="/robot_int.png" Stretch="Uniform"></Image>
+            <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="/robot_int.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                        <SkewTransform AngleX="-10" AngleY="10"/>
+                        <RotateTransform/>
+                        <TranslateTransform X="150"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
 
-            <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50*"></RowDefinition>
-                    <RowDefinition Height="50*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <uc:MaterialPallet Grid.Row="0" PalletNo="2" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt2" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
-                <uc:MaterialPalletDown Grid.Row="1" PalletNo="1" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt1" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
-            </Grid>
+            <uc:MaterialPallet Grid.Row="0" Grid.Column="2" PalletNo="2" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt2" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
-            Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" />
+            Grid.Column="2" Grid.Row="0"/>
+            <uc:MaterialPalletDown Grid.Row="2" Grid.Column="2" PalletNo="1" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt1" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
+            <Border BorderThickness="2" BorderBrush="#FFFFFF" 
+            Grid.Column="2" Grid.Row="2"/>
+
         </Grid>
 
 
@@ -162,13 +168,13 @@
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">PLC</Label>
                 <Image Name="imgPlcOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
-            
+
             <!-- ROBOT OK STATUS -->
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">ROBOT</Label>
                 <Image Name="imgRobotOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
-            
+
         </Grid>
     </Grid>
 </Window>
