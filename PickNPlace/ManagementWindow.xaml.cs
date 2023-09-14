@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using PickNPlace.Business;
 
 namespace PickNPlace
 {
@@ -384,6 +385,40 @@ namespace PickNPlace
             {
                 _currentFloor = 1;
                 _currentItemNo = 0;
+            }
+        }
+
+
+        PlaceRequestDTO _placeReq = new PlaceRequestDTO
+        {
+            BatchCount = 10,
+            Items = new PlaceRequestItemDTO[]
+            {
+                new PlaceRequestItemDTO { ItemCode = "37623SB", PiecesPerBatch = 10 },
+                new PlaceRequestItemDTO { ItemCode = "00727SB", PiecesPerBatch = 8 },
+                new PlaceRequestItemDTO { ItemCode = "37326SB", PiecesPerBatch = 1 },
+                new PlaceRequestItemDTO { ItemCode = "00846SB", PiecesPerBatch = 6 },
+                new PlaceRequestItemDTO { ItemCode = "00599SB", PiecesPerBatch = 1 },
+                new PlaceRequestItemDTO { ItemCode = "37489SB", PiecesPerBatch = 6 },
+            },
+        };
+        private void btnAutoCalcTest_Click(object sender, RoutedEventArgs e)
+        {
+            HkAutoLogic logic = new HkAutoLogic();
+
+            // set order recipe for the pallet no. 3
+            logic.SetRequestForPallet(_placeReq, 3);
+
+            // try place an item from a raw pallet
+            int placeResult = logic.PlaceAnItem(3, "37623SB", 1);
+
+            if (placeResult == 0) // successfull
+            {
+
+            }
+            else // an error occured
+            {
+
             }
         }
     }
