@@ -450,6 +450,46 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_RobotPickingOk(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 32 * 8 + 0, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotPlacingOk(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 32 * 8 + 1, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public bool Set_EmptyPalletNo(int val)
         {
             bool result = false;
@@ -504,7 +544,7 @@ namespace PickNPlace.Plc
 
                         byte[] DB_HMI = new byte[1024];
 
-                        Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 0, 15, ref DB_HMI);
+                        Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLByte, DB_NUMBER, 0, 34, ref DB_HMI);
 
                         int Result = Reader.Read();
 
@@ -518,7 +558,9 @@ namespace PickNPlace.Plc
                         _db.Servo_JogMinus = S7.GetBitAt(DB_HMI, 4, 3);
                         _db.Servo_Speed = S7.GetIntAt(DB_HMI, 8);
                         _db.Servo_PosCam1 = S7.GetIntAt(DB_HMI, 10);
-                        _db.Servo_PosCam2 = S7.GetIntAt(DB_HMI, 12);                        
+                        _db.Servo_PosCam2 = S7.GetIntAt(DB_HMI, 12);
+                        _db.RobotPickingOk = S7.GetBitAt(DB_HMI, 32, 0);
+                        _db.RobotPlacingOk = S7.GetBitAt(DB_HMI, 32, 1);
 
                         //this._plc.Disconnect();
                     }

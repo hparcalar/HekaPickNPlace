@@ -24,7 +24,7 @@ namespace PickNPlace.Business
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
             if (plt == null)
             {
-                plt = new HkAutoPallet { PalletNo = palletNo, PalletWidth = 800, PalletHeight = 1200 };
+                plt = new HkAutoPallet { PalletNo = palletNo, PalletWidth = 1000 + 3, PalletHeight = 1200 + 3 };
                 _pallets.Add(plt);
             }
 
@@ -43,12 +43,12 @@ namespace PickNPlace.Business
         {
             switch (sackType)
             {
-                case 1:
-                    return new HkSackSize { Width = 37, Height = 56 };
-                case 2:
-                    return new HkSackSize { Width = 48, Height = 67 };
-                case 3:
-                    return new HkSackSize { Width = 53, Height = 90 };
+                case 1: // middle size
+                    return new HkSackSize { Width = 400, Height = 600 };
+                case 2: // small size
+                    return new HkSackSize { Width = 300, Height = 500 };
+                case 3: // large size
+                    return new HkSackSize { Width = 500, Height = 700 };
                 default:
                     break;
             }
@@ -56,18 +56,21 @@ namespace PickNPlace.Business
             return null;
         }
 
-        private bool CheckIsProperItem(int palletNo, string itemCode)
+        public bool CheckIsProperItem(int palletNo, string itemCode)
         {
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
-            if (plt != null && plt.Floors != null)
+            if (plt != null)
             {
                 if (_requestData.ContainsKey(palletNo))
                 {
                     int totalCount = 0;
-                    foreach (var floor in plt.Floors)
+                    if (plt.Floors != null)
                     {
-                        if (floor.Items != null)
-                            totalCount += floor.Items.Where(d => d.ItemCode == itemCode).Count();
+                        foreach (var floor in plt.Floors)
+                        {
+                            if (floor.Items != null)
+                                totalCount += floor.Items.Where(d => d.ItemCode == itemCode).Count();
+                        }
                     }
 
                     int requestCount = _requestData[palletNo].Items.Where(d => d.ItemCode == itemCode).Select(d => d.PiecesPerBatch).Sum();
@@ -79,7 +82,7 @@ namespace PickNPlace.Business
             return false;
         }
 
-        private int GetCurrentFloor(int palletNo)
+        public int GetCurrentFloor(int palletNo)
         {
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
             if (plt == null)
@@ -118,19 +121,21 @@ namespace PickNPlace.Business
             return false;
         }
 
-        private Rectangle SearchForArea(HkSackSize palletSize, HkAutoFloor floor, HkSackSize sackSize, bool isRotated)
+        private Rectangle SearchForArea(HkSackSize palletSize, HkAutoPallet pallet, HkAutoFloor floor, HkSackSize sackSize, out bool isRotated)
         {
+            isRotated = false;
+
             try
             {
                 var palletRect = new Rectangle(-3, -3, palletSize.Width, palletSize.Height);
 
                 var flyingItem = new Rectangle(0, 0, 
-                    !isRotated ? sackSize.Width : sackSize.Height, 
-                    !isRotated ? sackSize.Height : sackSize.Width);
+                    sackSize.Width, 
+                    sackSize.Height);
 
                 var existingItemRects = floor.Items.OrderBy(d => d.ItemOrder).Select(d => new Rectangle(
-                        d.PlacedX + (d.ItemWidth / 2),
-                        d.PlacedY + (d.ItemHeight / 2),
+                        (pallet.PalletWidth - 3) - (d.PlacedX + (d.ItemWidth / 2)),
+                        (pallet.PalletHeight - 3) - (d.PlacedY + (d.ItemHeight / 2)),
                         d.ItemWidth,
                         d.ItemHeight
                     )).ToArray();
@@ -145,14 +150,54 @@ namespace PickNPlace.Business
 
                 if (lastPlacedItem != null)
                 {
-                    var lastPlacedRect = new Rectangle(lastPlacedItem.PlacedX + (lastPlacedItem.ItemWidth / 2),
-                        lastPlacedItem.PlacedY + (lastPlacedItem.ItemHeight / 2), lastPlacedItem.ItemWidth, lastPlacedItem.ItemHeight);
+                    var lastPlacedRect = new Rectangle((pallet.PalletWidth - 3) - (lastPlacedItem.PlacedX + (lastPlacedItem.ItemWidth / 2)),
+                        (pallet.PalletHeight - 3) - (lastPlacedItem.PlacedY + (lastPlacedItem.ItemHeight / 2)), lastPlacedItem.ItemWidth, lastPlacedItem.ItemHeight);
 
                     // ------- 1. estimation ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
 
                     // first shift position to down at right
-                    estimatedRect.X = flyingItem.Width;
-                    estimatedRect.Y = lastPlacedRect.Y + lastPlacedRect.Height + flyingItem.Height;
+                    estimatedRect.X = pallet.PalletWidth - 3 - flyingItem.Width;
+                    estimatedRect.Y = lastPlacedRect.X > 0 ? lastPlacedRect.Y + lastPlacedRect.Height : 0;
+                    estimatedRect.Width = flyingItem.Width;
+                    estimatedRect.Height = flyingItem.Height;
+
+                    // check previous floor to rotate
+                    if (floor.FloorNo > 1)
+                    {
+                        var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
+                        if (prevFloor != null)
+                        {
+                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            {
+                                IsRotated = d.IsRotated,
+                                Rect = new Rectangle(
+                                   (pallet.PalletWidth - 3) - (d.PlacedX + (d.ItemWidth / 2)),
+                                   (pallet.PalletHeight - 3) - (d.PlacedY + (d.ItemHeight / 2)),
+                                   d.ItemWidth,
+                                   d.ItemHeight
+                                )
+                            }).ToArray();
+
+                            if (prevFloorItems.Any(d => d.Rect.X > 0 && d.Rect.IntersectsWith(estimatedRect)))
+                            {
+                                var intersectingItem = prevFloorItems.FirstOrDefault(d => d.Rect.X > 0 && d.Rect.IntersectsWith(estimatedRect));
+                                isRotated = !intersectingItem.IsRotated;
+                            }
+                        }
+                    }
+
+                    // check if it will be rotated
+                    if (isRotated)
+                    {
+                        estimatedRect.X = pallet.PalletWidth - 3 - flyingItem.Height;
+                        estimatedRect.Y = lastPlacedRect.X > 0 ? lastPlacedRect.Y + lastPlacedRect.Height : 0;
+                        estimatedRect.Width = flyingItem.Height;
+                        estimatedRect.Height = flyingItem.Width;
+                    }
 
                     bool isEstimationValid = false;
 
@@ -165,10 +210,55 @@ namespace PickNPlace.Business
                         return estimatedRect;
 
                     // ------- 2. estimation ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
+                    // -------  ------------ ------- //
+
+                    isRotated = true;
 
                     // second shift position to down at left
                     estimatedRect.X = 0;
-                    estimatedRect.Y = lastPlacedRect.Y + lastPlacedRect.Height + flyingItem.Height;
+                    estimatedRect.Y = lastPlacedRect.X == 0 ? lastPlacedRect.Y + lastPlacedRect.Height : 0;
+                    estimatedRect.Width = flyingItem.Height;
+                    estimatedRect.Height = flyingItem.Width;
+
+                    // check previous floor to rotate
+                    bool isPrevRotated = false;
+                    if (floor.FloorNo > 1)
+                    {
+                        var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
+                        if (prevFloor != null)
+                        {
+                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            {
+                                IsRotated = d.IsRotated,
+                                Rect = new Rectangle(
+                                   (pallet.PalletWidth - 3) - (d.PlacedX + (d.ItemWidth / 2)),
+                                   (pallet.PalletHeight - 3) - (d.PlacedY + (d.ItemHeight / 2)),
+                                   d.ItemWidth,
+                                   d.ItemHeight
+                                )
+                            }).ToArray();
+
+                            if (prevFloorItems.Any(d => d.Rect.X == 0 && d.Rect.IntersectsWith(estimatedRect)))
+                            {
+                                var intersectingItem = prevFloorItems.FirstOrDefault(d => d.Rect.X == 0 && d.Rect.IntersectsWith(estimatedRect));
+                                isPrevRotated = intersectingItem.IsRotated;
+                            }
+                        }
+                    }
+
+                    // check if it will be rotated
+                    if (isPrevRotated)
+                    {
+                        estimatedRect.X = 0;
+                        estimatedRect.Y = lastPlacedRect.X == 0 ? lastPlacedRect.Y + lastPlacedRect.Height : 0;
+                        estimatedRect.Width = flyingItem.Width;
+                        estimatedRect.Height = flyingItem.Height;
+
+                        isRotated = false;
+                    }
 
                     // validate 2. estimation
                     if (palletRect.Contains(estimatedRect) && !existingItemRects.Any(d => d.IntersectsWith(estimatedRect)))
@@ -181,8 +271,44 @@ namespace PickNPlace.Business
                 else
                 {
                     // if floor is empty place right up corner
-                    estimatedRect.X = flyingItem.Width;
-                    estimatedRect.Y = -0;
+                    estimatedRect.X = pallet.PalletWidth - 3 - flyingItem.Width;
+                    estimatedRect.Y = 0;
+                    estimatedRect.Width = flyingItem.Width;
+                    estimatedRect.Height = flyingItem.Height;
+
+                    // check previous floor to rotate
+                    if (floor.FloorNo > 1)
+                    {
+                        var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
+                        if (prevFloor != null)
+                        {
+                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            {
+                                IsRotated = d.IsRotated,
+                                Rect = new Rectangle(
+                                   (pallet.PalletWidth - 3) - (d.PlacedX + (d.ItemWidth / 2)),
+                                   (pallet.PalletHeight - 3) - (d.PlacedY + (d.ItemHeight / 2)),
+                                   d.ItemWidth,
+                                   d.ItemHeight
+                                )
+                            }).ToArray();
+
+                            if (prevFloorItems.Any(d => d.Rect.X > 0 && d.Rect.IntersectsWith(estimatedRect)))
+                            {
+                                var intersectingItem = prevFloorItems.FirstOrDefault(d => d.Rect.IntersectsWith(estimatedRect));
+                                isRotated = !intersectingItem.IsRotated;
+                            }
+                        }
+                    }
+
+                    // check if it will be rotated
+                    if (isRotated)
+                    {
+                        estimatedRect.X = pallet.PalletWidth - 3 - flyingItem.Height;
+                        estimatedRect.Y = 0;
+                        estimatedRect.Width = flyingItem.Height;
+                        estimatedRect.Height = flyingItem.Width;
+                    }
 
                     if (palletRect.Contains(estimatedRect))
                         return estimatedRect;
@@ -204,26 +330,19 @@ namespace PickNPlace.Business
                 var pltFloor = plt.Floors.FirstOrDefault(d => d.FloorNo == floor);
                 if (pltFloor != null)
                 {
+                    // search for a proper place by counter-clockwise from right-bottom (robot-frame origin)
                     bool makeRotate = false;
 
-                    // look at the previous floor to see if a flip is needed
-                    var prevFloor = floor > 1 ? plt.Floors.FirstOrDefault(d => d.FloorNo == (floor - 1)) : null;
-                    if (prevFloor != null)
-                    {
-                        var firstPrevItem = prevFloor.Items.OrderBy(d => d.ItemOrder).FirstOrDefault();
-                        if (firstPrevItem != null && !firstPrevItem.IsRotated)
-                            makeRotate = true;
-                    }
-
-                    // search for a proper place by counter-clockwise from right-bottom (robot-frame origin)
-                    var properArea = SearchForArea(new HkSackSize { Width = plt.PalletWidth, Height = plt.PalletHeight }, pltFloor, sackSize, makeRotate);
+                    var properArea = SearchForArea(new HkSackSize { Width = plt.PalletWidth, Height = plt.PalletHeight }, plt, pltFloor, sackSize, out makeRotate);
                     if (properArea != Rectangle.Empty)
                     {
                         return new HkPlacePoint
                         {
                             IsRotated = makeRotate,
-                            X = plt.PalletWidth - properArea.X - (properArea.Width / 2),
-                            Y = plt.PalletHeight - properArea.Y - (properArea.Height / 2),
+                            X = plt.PalletWidth - 3 - properArea.X - (properArea.Width / 2),
+                            Y = plt.PalletHeight - 3 - properArea.Y - (properArea.Height / 2),
+                            Width = properArea.Width,
+                            Height = properArea.Height,
                         };
                     }
                 }
@@ -232,9 +351,47 @@ namespace PickNPlace.Business
             return null;
         }
 
-        private bool AssignPlacedItem(int palletNo, string itemCode, HkSackSize size, HkPlacePoint placePoint)
+        private bool AssignItemAsNext(int palletNo, string itemCode, HkSackSize size, HkPlacePoint placePoint)
         {
+            int floorNo = GetCurrentFloor(palletNo);
+            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null && plt.Floors != null)
+            {
+                var currentFloor = plt.Floors.FirstOrDefault(d => d.FloorNo == floorNo);
+                if (currentFloor != null)
+                {
+                    var itemList = currentFloor.Items.ToList();
 
+                    // calculate next item order no
+                    int nextOrder = 1;
+                    if (itemList.Count() > 0)
+                    {
+                        nextOrder = itemList.Select(d => d.ItemOrder).OrderByDescending(d => d).First() + 1;
+                    }
+                    else if (plt.Floors.Length > 1)
+                    {
+                        var prevFloor = plt.Floors.FirstOrDefault(d => d.FloorNo == floorNo - 1);
+                        nextOrder = prevFloor.Items.Select(d => d.ItemOrder).OrderByDescending(d => d).First() + 1;
+                    }
+
+                    // add assigned item to current list
+                    itemList.Add(new HkAutoItem
+                    {
+                        IsPlaced = false,
+                        IsRotated = placePoint.IsRotated,
+                        ItemCode = itemCode,
+                        ItemHeight = placePoint.Height,
+                        ItemWidth = placePoint.Width,
+                        ItemOrder = nextOrder,
+                        PlacedX = placePoint.X,
+                        PlacedY = placePoint.Y,
+                    });
+
+                    currentFloor.Items = itemList.ToArray();
+
+                    return true;
+                }
+            }
 
             return false;
         }
@@ -267,7 +424,7 @@ namespace PickNPlace.Business
                         return 5; // estimation is not possible
                 }
 
-                var assignResult = AssignPlacedItem(palletNo, itemCode, sackSize, estimatedPlacePoint);
+                var assignResult = AssignItemAsNext(palletNo, itemCode, sackSize, estimatedPlacePoint);
                 if (!assignResult)
                     return 6; // assignment couldnt be successfull
 
@@ -277,6 +434,60 @@ namespace PickNPlace.Business
             {
                 return 1; // any not expected error
             }
+        }
+
+        public bool SignWaitingPlacementIsMade(int palletNo)
+        {
+            try
+            {
+                var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+                if (plt != null)
+                {
+                    var floor = plt.Floors.OrderByDescending(d => d.FloorNo).FirstOrDefault();
+                    if (floor != null)
+                    {
+                        var waitingItem = floor.Items.FirstOrDefault(d => d.IsPlaced == false);
+                        if (waitingItem != null)
+                        {
+                            waitingItem.IsPlaced = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return false;
+        }
+
+        public HkAutoItem GetWaitingItem(int palletNo)
+        {
+            try
+            {
+                var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+                if (plt != null)
+                {
+                    var floor = plt.Floors.OrderByDescending(d => d.FloorNo).FirstOrDefault();
+                    if (floor != null)
+                    {
+                        var waitingItem = floor.Items.FirstOrDefault(d => d.IsPlaced == false);
+                        return waitingItem;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return null;
+        }
+
+        public HkAutoPallet GetPalletData(int palletNo)
+        {
+            return _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
         }
     }
 
@@ -290,6 +501,8 @@ namespace PickNPlace.Business
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
         public bool IsRotated { get; set; }
     }
 }

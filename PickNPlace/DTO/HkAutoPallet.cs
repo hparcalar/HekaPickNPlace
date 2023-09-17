@@ -11,6 +11,28 @@ namespace PickNPlace.DTO
         public int PalletNo { get; set; }
         public int PalletWidth { get; set; }
         public int PalletHeight { get; set; }
+
+        private bool _IsRawMaterial;
+        public bool IsRawMaterial
+        {
+            get
+            {
+                return _IsRawMaterial;
+            }
+            set
+            {
+                var oldValue = _IsRawMaterial;
+                _IsRawMaterial = value;
+
+                if (value && !oldValue)
+                    CaptureErrorCount = 0;
+            }
+        }
+        public int CaptureErrorCount { get; set; }
+        public string RawMaterialCode { get; set; }
+        public string PlaceRecipeCode { get; set; }
+        public int SackType { get; set; }
+        public bool IsEnabled { get; set; }
         public HkAutoFloor[] Floors { get; set; }
     }
 

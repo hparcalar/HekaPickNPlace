@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PickNPlace.DataAccess;
+using PickNPlace.Business;
 
 namespace PickNPlace
 {
@@ -30,7 +31,9 @@ namespace PickNPlace
         private PlcDB _plcDB;
         private Task _flagListener;
         private bool _runFlagListener = false;
-        private PalletStateDTO[] _palletList;
+        private HkAutoPallet[] _palletList;
+        private HkLogicWorker _logicWorker;
+        private PlaceRequestDTO _activeRecipe = new PlaceRequestDTO();
 
         public MainWindow()
         {
@@ -46,6 +49,9 @@ namespace PickNPlace
 
             // prepare datablocks
             this._plcDB = PlcDB.Instance();
+
+            // init logic worker
+            _logicWorker = HkLogicWorker.GetInstance();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -84,38 +90,79 @@ namespace PickNPlace
         private void BindLivePalletStates()
         {
             // get instant pallet data from database
-            using (HekaDbContext db = SchemaFactory.CreateContext())
+            //using (HekaDbContext db = SchemaFactory.CreateContext())
+            //{
+            //    _palletList = db.PalletStateLive.Select(d => new PalletStateDTO
+            //    {
+            //        Id = d.Id,
+            //        CompletedBatchCount = d.CompletedBatchCount,
+            //        CurrentBatchIsCompleted = d.CurrentBatchIsCompleted,
+            //        CurrentBatchIsStarted = d.CurrentBatchIsStarted,
+            //        CurrentBatchNo = d.CurrentBatchNo,
+            //        CurrentItemIsCompleted = d.CurrentItemIsCompleted,
+            //        CurrentItemIsStarted = d.CurrentItemIsStarted,
+            //        CurrentItemNo = d.CurrentItemNo,
+            //        IsDropable = d.IsDropable,
+            //        IsPickable = d.IsPickable,
+            //        PalletNo = d.PalletNo,
+            //        PalletRecipeId = d.PalletRecipeId,
+            //        PlaceRequestId = d.PlaceRequestId,
+            //    }).ToArray();
+            //}
+
+            if (_palletList == null || _palletList.Length == 0)
             {
-                _palletList = db.PalletStateLive.Select(d => new PalletStateDTO
-                {
-                    Id = d.Id,
-                    CompletedBatchCount = d.CompletedBatchCount,
-                    CurrentBatchIsCompleted = d.CurrentBatchIsCompleted,
-                    CurrentBatchIsStarted = d.CurrentBatchIsStarted,
-                    CurrentBatchNo = d.CurrentBatchNo,
-                    CurrentItemIsCompleted = d.CurrentItemIsCompleted,
-                    CurrentItemIsStarted = d.CurrentItemIsStarted,
-                    CurrentItemNo = d.CurrentItemNo,
-                    IsDropable = d.IsDropable,
-                    IsPickable = d.IsPickable,
-                    PalletNo = d.PalletNo,
-                    PalletRecipeId = d.PalletRecipeId,
-                    PlaceRequestId = d.PlaceRequestId,
-                }).ToArray();
+                _logicWorker.SetPalletAttributes(1, true, false, "");
+                _logicWorker.SetPalletAttributes(2, true, false, "");
+                _logicWorker.SetPalletAttributes(3, false, false, "");
+                _logicWorker.SetPalletAttributes(4, false, false, "");
+                _logicWorker.SetPalletAttributes(5, false, false, "");
+                _logicWorker.SetPalletAttributes(6, false, false, "");
             }
+
+            _palletList = _logicWorker.GetPalletList().ToArray();
+
 
             // update pallet visuals
             foreach (var item in _palletList)
             {
                 if (item.PalletNo == 1)
                 {
-                    plt1.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
-                    plt1.PickingColor = item.IsPickable == true ? "#FFF2FBBB" : "#FF93C1F0";
+                    plt1.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
+                    plt1.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
+                    plt1.IsPalletEnabled = item.IsEnabled;
+                    plt1.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
+                    plt1.SackType = item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "";
+                    plt1.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 1;
                 }
                 else if (item.PalletNo == 2)
                 {
-                    plt2.PickingText = item.IsPickable == true ? "HAMMADDE" : "BOŞ PALET";
-                    plt2.PickingColor = item.IsPickable == true ? "#FFF2FBBB" : "#FF93C1F0";
+                    plt2.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
+                    plt2.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
+                    plt2.IsPalletEnabled = item.IsEnabled;
+                    plt2.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
+                    plt2.SackType = item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "";
+                    plt2.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 2;
+                }
+                else if (item.PalletNo == 3)
+                {
+                    plt3.IsPalletEnabled = item.IsEnabled;
+                    plt3.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 3;
+                }
+                else if (item.PalletNo == 4)
+                {
+                    plt4.IsPalletEnabled = item.IsEnabled;
+                    plt4.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 4;
+                }
+                else if (item.PalletNo == 5)
+                {
+                    plt5.IsPalletEnabled = item.IsEnabled;
+                    plt5.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 5;
+                }
+                else if (item.PalletNo == 6)
+                {
+                    plt6.IsPalletEnabled = item.IsEnabled;
+                    plt6.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 6;
                 }
             }
         }
@@ -125,29 +172,59 @@ namespace PickNPlace
             var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
             if (pallet != null)
             {
-                using (HekaDbContext db = SchemaFactory.CreateContext())
-                {
-                    var dbPallet = db.PalletStateLive.FirstOrDefault(d => d.Id == pallet.Id);
-                    if (dbPallet != null)
-                    {
-                        dbPallet.IsPickable = !(dbPallet.IsPickable ?? false);
-                        dbPallet.IsDropable = !dbPallet.IsPickable;
-
-                        // check at least 1 pallet exists for picking or cancel toggle process
-                        if (dbPallet.IsPickable == false)
-                        {
-                            if (!db.PalletStateLive.Any(d => d.Id != dbPallet.Id && d.IsPickable == true))
-                            {
-                                MessageBox.Show("En az 1 palet HAMMADDE olarak seçilmelidir.", "UYARI", MessageBoxButton.OK);
-                                return;
-                            }
-                        }
-
-                        db.SaveChanges();
-                    }
-                }
+                pallet.IsRawMaterial = !pallet.IsRawMaterial;
+                _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
                 this.BindLivePalletStates();
+            }
+        }
+
+        private void plt_OnPalletEnabledChanged(int palletNo, bool enabled)
+        {
+            var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (pallet != null)
+            {
+                pallet.IsEnabled = !pallet.IsEnabled;
+                _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
+
+                this.BindLivePalletStates();
+            }
+        }
+
+        private void plt_OnSelectRecipeSignal(int palletNo)
+        {
+            if (string.IsNullOrEmpty(_activeRecipe.RequestNo))
+            {
+                MessageBox.Show("Lütfen önce reçete barkodunu okutunuz.", "Uyarı", MessageBoxButton.OK);
+                return;
+            }
+
+            var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null)
+            {
+                if (plt.IsRawMaterial)
+                {
+                    MaterialList wnd = new MaterialList();
+                    wnd.ItemCode = plt.RawMaterialCode;
+                    wnd.SackType = plt.SackType;
+                    wnd.RequestNo = _activeRecipe.RequestNo;
+                    wnd.ShowDialog();
+
+                    if (!string.IsNullOrEmpty(wnd.ItemCode) && wnd.SackType > 0)
+                    {
+                        plt.SackType = wnd.SackType;
+                        plt.RawMaterialCode = wnd.ItemCode;
+
+                        _logicWorker.SetPalletAttributes(palletNo, true, true, plt.RawMaterialCode);
+                        _logicWorker.SetPalletSackType(palletNo, plt.SackType);
+
+                        this.BindLivePalletStates();
+                    }
+                }
+                else
+                {
+
+                }
             }
         }
 
@@ -169,6 +246,7 @@ namespace PickNPlace
         {
             _runFlagListener = false;
             this._plc.Stop();
+            this._logicWorker.Dispose();
 
             try
             {
@@ -263,6 +341,58 @@ namespace PickNPlace
         {
             PalletRecipeWindow wnd = new PalletRecipeWindow();
             wnd.ShowDialog();
+        }
+
+        private void txtRecipeBarocde_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (!string.IsNullOrEmpty(txtRecipeBarocde.Text))
+                {
+                    using (HekaDbContext db = SchemaFactory.CreateContext())
+                    {
+                        var dbRecipe = db.PlaceRequest.FirstOrDefault(d => d.RequestNo == txtRecipeBarocde.Text);
+                        if (dbRecipe != null)
+                        {
+                            foreach (var plt in _palletList)
+                            {
+                                if (!plt.IsRawMaterial)
+                                {
+                                    plt.PlaceRecipeCode = dbRecipe.RecipeCode;
+                                    _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
+                                }
+                            }
+
+                            _activeRecipe.RequestNo = txtRecipeBarocde.Text;
+                            _activeRecipe.RecipeName = dbRecipe.RecipeName;
+
+                            txtRecipeBarocde.Text = "";
+
+                            txtActiveRecipeCode.Content = _activeRecipe.RequestNo;
+                            txtActiveRecipeName.Content = _activeRecipe.RecipeName;
+                        }
+                        else
+                        {
+                            foreach (var plt in _palletList)
+                            {
+                                if (!plt.IsRawMaterial)
+                                {
+                                    plt.PlaceRecipeCode = "";
+                                    _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, "");
+                                }
+                            }
+
+                            MessageBox.Show("Okutulan barkod bilgisi ile eşleşen bir reçete bulunamadı.", "Uyarı", MessageBoxButton.OK);
+                            txtRecipeBarocde.Text = "";
+
+                            txtActiveRecipeCode.Content = "";
+                            txtActiveRecipeName.Content = "";
+                        }
+                    }
+
+                    this.BindLivePalletStates();
+                }
+            }
         }
     }
 }

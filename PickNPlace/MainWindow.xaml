@@ -6,7 +6,7 @@
         xmlns:uc="clr-namespace:PickNPlace.UserControls"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Heka Pick N Place" Height="450" Width="800" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Heka Pick N Place" Height="600" Width="1200" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -43,7 +43,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Padding="20,0,20,0" Margin="1,0,0,0" Name="btnShowPalletRecipes" Click="btnShowPalletRecipes_Click" FontWeight="Bold">
+            <!--<Button Padding="20,0,20,0" Margin="1,0,0,0" Name="btnShowPalletRecipes" Click="btnShowPalletRecipes_Click" FontWeight="Bold">
                 <Button.Background>
                     <RadialGradientBrush>
                         <GradientStop Color="#FFD4EDFB"/>
@@ -55,7 +55,19 @@
                     <Image Source="/palet_recete.png" Stretch="Uniform" Height="40"></Image>
                     <TextBlock>PALET DİZİLİMLERİ</TextBlock>
                 </StackPanel>
-            </Button>
+            </Button>-->
+
+            <StackPanel Orientation="Vertical">
+                <Label Margin="15,10,0,0" FontWeight="Bold">Reçete Barkodu</Label>
+                <TextBox Width="250" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" 
+                         VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" />
+            </StackPanel>
+
+            <!-- active recipe pre-information -->
+            <StackPanel Orientation="Vertical">
+                <Label Margin="5,10,0,0" FontWeight="Bold" Name="txtActiveRecipeCode"></Label>
+                <Label Margin="5,17,0,0" FontWeight="Bold" Name="txtActiveRecipeName"></Label>
+            </StackPanel>
 
         </StackPanel>
 
@@ -111,18 +123,18 @@
 
 
 
-            <uc:EmptyPallet Grid.Row="0" Grid.Column="0" PalletNo="6" x:Name="plt6" />
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="0" PalletNo="6" x:Name="plt6"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="0" Grid.Row="0"/>
-            <uc:EmptyPallet Grid.Row="0" Grid.Column="1" PalletNo="4" x:Name="plt4" />
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="1" PalletNo="4" x:Name="plt4"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="1" Grid.Row="0"/>
 
 
-            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="0" PalletNo="5" x:Name="plt5"  />
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="0" PalletNo="5" x:Name="plt5"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal"  />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="0" Grid.Row="2"/>
-            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="1" PalletNo="3" x:Name="plt3" />
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="1" PalletNo="3" x:Name="plt3"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="1" Grid.Row="2"/>
 
@@ -138,10 +150,12 @@
                 </Image.RenderTransform>
             </Image>
 
-            <uc:MaterialPallet Grid.Row="0" Grid.Column="2" PalletNo="2" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt2" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
+            <uc:MaterialPallet Grid.Row="0" Grid.Column="2" PalletNo="2" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt2" OnPickingStatusChanged="plt_OnPickingStatusChanged"
+                               OnSelectRecipeSignal="plt_OnSelectRecipeSignal" OnPalletEnabledChanged="plt_OnPalletEnabledChanged" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="2" Grid.Row="0"/>
-            <uc:MaterialPalletDown Grid.Row="2" Grid.Column="2" PalletNo="1" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt1" OnPickingStatusChanged="plt_OnPickingStatusChanged" />
+            <uc:MaterialPalletDown Grid.Row="2" Grid.Column="2" PalletNo="1" PickingText="HAMMADDE" PickingColor="#FFEAE00D" x:Name="plt1" OnPickingStatusChanged="plt_OnPickingStatusChanged"
+                                   OnSelectRecipeSignal="plt_OnSelectRecipeSignal" OnPalletEnabledChanged="plt_OnPalletEnabledChanged" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="2" Grid.Row="2"/>
 

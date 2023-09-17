@@ -12,7 +12,9 @@ namespace PickNPlace.DTO
         public int? PlaceRequestId { get; set; }
         public int? RawMaterialId { get; set; }
         public int PiecesPerBatch { get; set; }
+        public int? SackType { get; set; }
 
         public string ItemCode { get; set; }
+        public string ItemName { get; set; }
     }
 }

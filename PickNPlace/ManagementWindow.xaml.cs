@@ -394,31 +394,78 @@ namespace PickNPlace
             BatchCount = 10,
             Items = new PlaceRequestItemDTO[]
             {
-                new PlaceRequestItemDTO { ItemCode = "37623SB", PiecesPerBatch = 10 },
-                new PlaceRequestItemDTO { ItemCode = "00727SB", PiecesPerBatch = 8 },
-                new PlaceRequestItemDTO { ItemCode = "37326SB", PiecesPerBatch = 1 },
-                new PlaceRequestItemDTO { ItemCode = "00846SB", PiecesPerBatch = 6 },
-                new PlaceRequestItemDTO { ItemCode = "00599SB", PiecesPerBatch = 1 },
-                new PlaceRequestItemDTO { ItemCode = "37489SB", PiecesPerBatch = 6 },
+                new PlaceRequestItemDTO { ItemCode = "37623SB", PiecesPerBatch = 25, SackType = 1, },
+                new PlaceRequestItemDTO { ItemCode = "00727SB", PiecesPerBatch = 8, SackType = 2, },
+                new PlaceRequestItemDTO { ItemCode = "37326SB", PiecesPerBatch = 4, SackType = 3 },
             },
         };
+
+        HkAutoLogic logic = null;
+        int _pickingItemOrder = 1;
+        int _nextItemIndex = 0;
         private void btnAutoCalcTest_Click(object sender, RoutedEventArgs e)
         {
-            HkAutoLogic logic = new HkAutoLogic();
-
-            // set order recipe for the pallet no. 3
-            logic.SetRequestForPallet(_placeReq, 3);
-
-            // try place an item from a raw pallet
-            int placeResult = logic.PlaceAnItem(3, "37623SB", 1);
-
-            if (placeResult == 0) // successfull
+            // first recipe setup for logic test
+            if (logic == null)
             {
+                logic = new HkAutoLogic();
 
+                // set order recipe for the pallet no. 3
+                logic.SetRequestForPallet(_placeReq, 3);
             }
-            else // an error occured
-            {
 
+            PlaceRequestItemDTO nextItem = null;
+            foreach (var pack in _placeReq.Items)
+            {
+                if (pack.PiecesPerBatch > _pickingItemOrder)
+                {
+                    nextItem = pack;
+                    break;
+                }
+                else
+                {
+                    _nextItemIndex = 1;
+                }
+            }
+
+            nextItem = _placeReq.Items[_nextItemIndex];
+
+            if (nextItem != null)
+            {
+                // try place an item from a raw pallet
+                int placeResult = logic.PlaceAnItem(3, nextItem.ItemCode, nextItem.SackType ?? 0);
+
+                if (placeResult == 0) // successfull
+                {
+                    var posItem = logic.GetWaitingItem(3);
+                    var currentFloor = logic.GetCurrentFloor(3);
+
+                    this._plc.Set_RobotX(posItem.PlacedX);
+                    this._plc.Set_RobotY(posItem.PlacedY);
+                    this._plc.Set_RobotZ(currentFloor * 9 * 10 * -1);
+                    this._plc.Set_RobotRX(0);
+                    this._plc.Set_RobotRY(0);
+
+                    this._plc.Set_RobotRZ(posItem.IsRotated ? -179 : -89);
+
+                    this._plc.Set_EmptyPalletNo(3);
+                    this._plc.Set_PlaceCalculationOk(1);
+
+                    logic.SignWaitingPlacementIsMade(3);
+
+                    // move cursor to next item when event will be triggered again
+                    _pickingItemOrder++;
+                }
+                else // an error occured
+                {
+
+                }
+            }
+
+            var pltData = logic.GetPalletData(3);
+            if (pltData != null)
+            {
+                int xx = 5;
             }
         }
     }
