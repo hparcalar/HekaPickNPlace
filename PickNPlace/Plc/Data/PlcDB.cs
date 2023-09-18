@@ -61,8 +61,8 @@ namespace PickNPlace.Plc.Data
                 var oldValue = _RobotPickingOk;
                 _RobotPickingOk = value;
 
-                if (value && !oldValue)
-                    OnRobotPickedUp?.Invoke();
+                //if (value && !oldValue)
+                //    OnRobotPickedUp?.Invoke();
             }
         }
 
@@ -78,8 +78,8 @@ namespace PickNPlace.Plc.Data
                 var oldValue = _RobotPlacingOk;
                 _RobotPlacingOk = value;
 
-                if (value && !oldValue)
-                    OnRobotPlacedDown?.Invoke();
+                //if (value && !oldValue)
+                //    OnRobotPlacedDown?.Invoke();
             }
         }
 

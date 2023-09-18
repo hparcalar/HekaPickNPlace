@@ -310,9 +310,9 @@ namespace Sharp7
     class MsgSocket
     {
         private Socket TCPSocket;
-        private int _ReadTimeout = 2000;
-        private int _WriteTimeout = 2000;
-        private int _ConnectTimeout = 1000;
+        private int _ReadTimeout = 10000;
+        private int _WriteTimeout = 10000;
+        private int _ConnectTimeout = 10000;
         public int LastError = 0;
 
         public MsgSocket()
@@ -389,20 +389,27 @@ namespace Sharp7
             LastError = 0;
             try
             {
-                SizeAvail = TCPSocket.Available;
-                while ((SizeAvail < Size) && (!Expired))
+                if (TCPSocket == null)
                 {
-                    Thread.Sleep(2);
+                    LastError = S7Consts.errTCPDataReceive;
+                }
+                else
+                {
                     SizeAvail = TCPSocket.Available;
-                    Expired = Environment.TickCount - Elapsed > Timeout;
-                    // If timeout we clean the buffer
-                    if (Expired && (SizeAvail > 0))
-                        try
-                        {
-                            byte[] Flush = new byte[SizeAvail];
-                            TCPSocket.Receive(Flush, 0, SizeAvail, SocketFlags.None);
-                        }
-                        catch { }
+                    while ((SizeAvail < Size) && (!Expired))
+                    {
+                        Thread.Sleep(2);
+                        SizeAvail = TCPSocket.Available;
+                        Expired = Environment.TickCount - Elapsed > Timeout;
+                        // If timeout we clean the buffer
+                        if (Expired && (SizeAvail > 0))
+                            try
+                            {
+                                byte[] Flush = new byte[SizeAvail];
+                                TCPSocket.Receive(Flush, 0, SizeAvail, SocketFlags.None);
+                            }
+                            catch { }
+                    }
                 }
             }
             catch

@@ -490,6 +490,26 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_RobotNextTargetOk(byte val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 32 * 8 + 2, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public bool Set_EmptyPalletNo(int val)
         {
             bool result = false;
@@ -512,6 +532,20 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public void ReConnect()
+        {
+            try
+            {
+                _plc.Disconnect();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            this._plc.ConnectTo("192.168.0.3", 0, 1);
+        }
+
         #endregion
 
         private async Task _ListenLoop()
@@ -523,7 +557,7 @@ namespace PickNPlace.Plc
                     bool isConnected = this._plc.Connected;
                     if (!isConnected)
                     {
-                        int conResult = this._plc.ConnectTo("192.168.0.3", 0, 0);
+                        int conResult = this._plc.ConnectTo("192.168.0.3", 0, 1);
                         isConnected = conResult == 0;
 
                         if (isConnected && !_stateIsConnected)
@@ -571,7 +605,7 @@ namespace PickNPlace.Plc
                         this.OnPlcConnectionChanged?.Invoke(false);
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(75);
             }
         }
     }

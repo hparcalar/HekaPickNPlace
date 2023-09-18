@@ -262,9 +262,9 @@ namespace PickNPlace
         {
             this.BindDefaults();
 
-            _isStarted = !_isStarted;
+            var targetInfo = !_plcDB.System_Auto;
 
-            this._plc.Set_SystemAuto((byte)(_isStarted ? 1 : 0));
+            this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
 
             this.UpdateSystemStatus();
         }
@@ -318,9 +318,6 @@ namespace PickNPlace
             {
                 try
                 {
-                    PlcDB _plcDb = PlcDB.Instance();
-                    _isStarted = _plcDb.System_Auto;
-
                     await this.Dispatcher.BeginInvoke((Action)delegate
                     {
                         this.UpdateSystemStatus();
@@ -331,7 +328,7 @@ namespace PickNPlace
 
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(250);
             }
         }
 
@@ -393,6 +390,16 @@ namespace PickNPlace
                     this.BindLivePalletStates();
                 }
             }
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            _plc.Set_CaptureOk(0);
+            _plc.Set_PlaceCalculationOk(0);
+            _plc.Set_RobotNextTargetOk(0);
+            _plc.Set_RobotPickingOk(0);
+            _plc.Set_RobotPlacingOk(0);
+            _plc.Set_SystemAuto(0);
         }
     }
 }

@@ -66,7 +66,7 @@ namespace PickNPlace.UserControls
         }
         public static readonly DependencyProperty IsActivePalletProperty =
             DependencyProperty.Register("IsActivePallet", typeof(bool),
-            typeof(MaterialPallet), new PropertyMetadata(false)
+            typeof(EmptyPallet), new PropertyMetadata(false)
         );
 
         public string EnabledColor

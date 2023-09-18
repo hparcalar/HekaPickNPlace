@@ -91,6 +91,18 @@
                         <TextBlock Name="txtStart">SİSTEMİ BAŞLAT</TextBlock>
                     </StackPanel>
                 </Button>
+                <Button Name="btnReset" Click="btnReset_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock>RESET</TextBlock>
+                    </StackPanel>
+                </Button>
                 <Button Name="btnManagement" Click="btnManagement_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
                     <Button.Background>
                         <RadialGradientBrush>
