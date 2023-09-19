@@ -35,6 +35,9 @@ namespace PickNPlace.Plc
         private bool _stateIsConnected = false;
         private const int DB_NUMBER = 2;
 
+        bool _isSetRunning = false;
+        bool _isReading = false;
+
         public void Start()
         {
             if (!_runListener)
@@ -72,6 +75,12 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoHome(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -86,12 +95,18 @@ namespace PickNPlace.Plc
             {
                 result = false;
             }
-
+            _isSetRunning = false;
             return result;
         }
 
         public bool Set_SystemAuto(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -107,11 +122,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_ServoReset(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -127,11 +150,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_ServoTargetPos(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -149,11 +180,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_ServoStart(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -168,6 +207,8 @@ namespace PickNPlace.Plc
             {
                 result = false;
             }
+
+            _isSetRunning = false;
 
             return result;
         }
@@ -214,6 +255,12 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoSpeed(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -230,12 +277,18 @@ namespace PickNPlace.Plc
             {
                 result = false;
             }
-
+            _isSetRunning = false;
             return result;
         }
 
         public bool Set_ServoPosCam1(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -253,11 +306,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_ServoPosCam2(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -275,11 +336,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_RobotX(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -297,11 +366,14 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            
+
             return result;
         }
 
         public bool Set_RobotY(int val)
         {
+           
             bool result = false;
             try
             {
@@ -319,11 +391,13 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+
             return result;
         }
 
         public bool Set_RobotZ(int val)
         {
+           
             bool result = false;
             try
             {
@@ -341,11 +415,14 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+
             return result;
         }
 
         public bool Set_RobotRX(int val)
         {
+          
+
             bool result = false;
             try
             {
@@ -368,6 +445,8 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotRY(int val)
         {
+           
+
             bool result = false;
             try
             {
@@ -385,11 +464,15 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            
+
             return result;
         }
 
         public bool Set_RobotRZ(int val)
         {
+           
+
             bool result = false;
             try
             {
@@ -407,11 +490,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_CaptureOk(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -427,11 +518,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_PlaceCalculationOk(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -447,11 +546,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_RobotPickingOk(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -467,11 +574,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_RobotPlacingOk(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -487,11 +602,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_RobotNextTargetOk(byte val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -507,11 +630,19 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
 
         public bool Set_EmptyPalletNo(int val)
         {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
             bool result = false;
             try
             {
@@ -529,8 +660,152 @@ namespace PickNPlace.Plc
                 result = false;
             }
 
+            _isSetRunning = false;
+
             return result;
         }
+
+        #region SETTING TARGET PALLET COORDS TO ROBOT VIA PLC
+        public bool Set_RobotX_ForTarget(int val)
+        {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 36, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotY_ForTarget(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 38, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotZ_ForTarget(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 40, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRX_ForTarget(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 42, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRY_ForTarget(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 44, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool Set_RobotRZ_ForTarget(int val)
+        {
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 46, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+        #endregion
 
         public void ReConnect()
         {
@@ -554,23 +829,29 @@ namespace PickNPlace.Plc
             {
                 try
                 {
-                    bool isConnected = this._plc.Connected;
-                    if (!isConnected)
-                    {
-                        int conResult = this._plc.ConnectTo("192.168.0.3", 0, 1);
-                        isConnected = conResult == 0;
+                    if (_isSetRunning)
+                        continue;
 
-                        if (isConnected && !_stateIsConnected)
-                        {
-                            _stateIsConnected = true;
-                            this.OnPlcConnectionChanged?.Invoke(true);
-                        }
-                        else if (!isConnected && _stateIsConnected)
-                        {
-                            _stateIsConnected = false;
-                            this.OnPlcConnectionChanged?.Invoke(false);
-                        }
-                    }
+                    _isReading = true;
+                    //bool isConnected = this._plc.Connected;
+                    //if (!isConnected)
+                    //{
+                    //    int conResult = this._plc.ConnectTo("192.168.0.3", 0, 1);
+                    //    isConnected = conResult == 0;
+
+                    //    if (isConnected && !_stateIsConnected)
+                    //    {
+                    //        _stateIsConnected = true;
+                    //        this.OnPlcConnectionChanged?.Invoke(true);
+                    //    }
+                    //    else if (!isConnected && _stateIsConnected)
+                    //    {
+                    //        _stateIsConnected = false;
+                    //        this.OnPlcConnectionChanged?.Invoke(false);
+                    //    }
+                    //}
+
+                    bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
                     if (isConnected)
                     {
@@ -583,6 +864,10 @@ namespace PickNPlace.Plc
                         int Result = Reader.Read();
 
                         _db.System_Auto = S7.GetBitAt(DB_HMI, 14, 0);
+
+                        byte[] test = new byte[8];
+                        int rRes = _plc.ReadArea(S7Consts.S7AreaDB, DB_NUMBER, 14 * 8, 1, 1, test);
+
                         _db.Servo_CurrentPos = S7.GetIntAt(DB_HMI, 6);
                         _db.Servo_Home = S7.GetBitAt(DB_HMI, 0, 0);
                         _db.Servo_Reset = S7.GetBitAt(DB_HMI, 4, 1);
@@ -605,7 +890,9 @@ namespace PickNPlace.Plc
                         this.OnPlcConnectionChanged?.Invoke(false);
                 }
 
-                await Task.Delay(75);
+                _isReading = false;
+
+                await Task.Delay(200);
             }
         }
     }

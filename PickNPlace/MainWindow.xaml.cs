@@ -17,6 +17,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PickNPlace.DataAccess;
 using PickNPlace.Business;
+using System.Timers;
+
 
 namespace PickNPlace
 {
@@ -34,6 +36,7 @@ namespace PickNPlace
         private HkAutoPallet[] _palletList;
         private HkLogicWorker _logicWorker;
         private PlaceRequestDTO _activeRecipe = new PlaceRequestDTO();
+        private Timer _tmrError = new Timer(10000);
 
         public MainWindow()
         {
@@ -52,6 +55,37 @@ namespace PickNPlace
 
             // init logic worker
             _logicWorker = HkLogicWorker.GetInstance();
+            _logicWorker.OnActivePalletChanged += _logicWorker_OnActivePalletChanged;
+            _logicWorker.OnError += _logicWorker_OnError;
+
+            _tmrError.AutoReset = false;
+            _tmrError.Elapsed += _tmrError_Elapsed;
+        }
+
+        private void _tmrError_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            lblError.Content = "";   
+        }
+
+        private void _logicWorker_OnError(string message)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = message;
+
+                _tmrError.Stop();
+
+                _tmrError.Enabled = true;
+                _tmrError.Start();
+            });
+        }
+
+        private void _logicWorker_OnActivePalletChanged()
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                this.BindLivePalletStates();
+            });
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -185,6 +219,17 @@ namespace PickNPlace
             if (pallet != null)
             {
                 pallet.IsEnabled = !pallet.IsEnabled;
+
+                // auto assign active recipe to lately enabled pallet
+                if (_activeRecipe != null && !pallet.IsRawMaterial && pallet.IsEnabled)
+                {
+                    pallet.PlaceRecipeCode = _activeRecipe.RequestNo;
+                }
+                else if (!pallet.IsEnabled && !pallet.IsRawMaterial)
+                {
+                    pallet.PlaceRecipeCode = string.Empty;
+                }
+
                 _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
                 this.BindLivePalletStates();
@@ -400,6 +445,9 @@ namespace PickNPlace
             _plc.Set_RobotPickingOk(0);
             _plc.Set_RobotPlacingOk(0);
             _plc.Set_SystemAuto(0);
+
+            _logicWorker.ClearPallets();
+            this.BindLivePalletStates();
         }
     }
 }

@@ -39,7 +39,11 @@ namespace PickNPlace.Business
         #endregion
 
         #region EVENTS & DELEGATES
-        
+        public delegate void ActivePalletChanged();
+        public event ActivePalletChanged OnActivePalletChanged;
+
+        public delegate void AnErrorOccured(string message);
+        public event AnErrorOccured OnError;
         #endregion
 
         // environmental variables
@@ -57,6 +61,7 @@ namespace PickNPlace.Business
         bool _targetSelectionPalletOk = false;
         bool _robotSentToPlaceDown = false;
         bool _robotPlacedDown = false;
+        bool _robotTargetCoordsReady = false;
         bool _robotPickedUp = false;
         bool _captureOk = false;
 
@@ -76,6 +81,18 @@ namespace PickNPlace.Business
         public void ClearPallets()
         {
             _palletList.Clear();
+            _autoLogic.ClearPallets();
+
+            _rawMaterialSelectionPalletOk = false;
+            _targetSelectionPalletOk = false;
+            _robotSentToPlaceDown = false;
+            _robotPlacedDown = false;
+            _robotTargetCoordsReady = false;
+            _robotPickedUp = false;
+            _captureOk = false;
+
+            _currentRawPalletNo = 1;
+            _currentTargetPalletNo = 0;
         }
         public void SetPalletAttributes(int palletNo, bool isRawMaterial, bool isEnabled, string placeRequestOrRawCode)
         {
@@ -224,66 +241,55 @@ namespace PickNPlace.Business
             {
                 if (_plcDb.System_Auto)
                 {
-                    // select proper raw material pallet
-                    if (!_rawMaterialSelectionPalletOk)
-                        await CheckRawPallets();
-
-                    // trigger camera and pick up
-                    if (_rawMaterialSelectionPalletOk && !_captureOk)
-                    {
-                        var trgOk = TriggerCamera(_currentRawPalletNo.ToString());
-                        if (trgOk)
-                        {
-                            wrResult = this._plcWorker.Set_CaptureOk(1);
-                            if (!wrResult)
-                                _plcWorker.ReConnect();
-                            else
-                                _captureOk = true;
-                        }
-                    }
+                    await PrepareRawMaterial();
 
                     // select next pallet to place
-                    if (_captureOk && _plcDb.RobotPickingOk)
-                    {
-                        if (!_targetSelectionPalletOk)
-                            CheckNextTargetPallet();
+                    
+                    if (!_targetSelectionPalletOk)
+                        CheckNextTargetPallet();
 
-                        if (_targetSelectionPalletOk)
+                    if (_targetSelectionPalletOk)
+                    {
+                        if (!_robotTargetCoordsReady)
+                        {
+                            var sendResult = SendRobotToPlaceDown();
+                            if (sendResult)
+                                _robotTargetCoordsReady = true;
+                            else
+                                _plcWorker.ReConnect();
+                        }
+
+                        if (_plcDb.RobotPickingOk && _robotTargetCoordsReady && _captureOk)
                         {
                             wrResult = _plcWorker.Set_RobotNextTargetOk(1);
-                            if (!wrResult)
-                                _plcWorker.ReConnect();
-                            else
+                            if (wrResult)
                             {
-                                if (!_robotSentToPlaceDown)
+                                var zeroResult = _plcWorker.Set_CaptureOk(0);
+                                if (zeroResult)
                                 {
-                                    _robotPlacedDown = false;
-                                    var sendResult = SendRobotToPlaceDown();
-                                    if (sendResult)
+                                    zeroResult = _plcWorker.Set_RobotPickingOk(0);
+                                    if (zeroResult)
                                     {
-                                        wrResult = _plcWorker.Set_CaptureOk(0);
-                                        if (!wrResult)
-                                            _plcWorker.ReConnect();
-                                        else
+                                        wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
+                                        if (wrResult)
                                         {
-                                            wrResult = _plcWorker.Set_RobotPickingOk(0);
-                                            if (!wrResult)
-                                                _plcWorker.ReConnect();
-                                            else
-                                            {
-                                                _plcDb.RobotPickingOk = false;
-                                                _robotSentToPlaceDown = true;
-                                                wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
-                                                if (!wrResult)
-                                                    _plcWorker.ReConnect();
-                                            }
-                                           
+                                            _plcDb.RobotPickingOk = false;
+                                            _robotSentToPlaceDown = true;
                                         }
+                                        else
+                                            _plcWorker.ReConnect();
                                     }
+                                    else
+                                        _plcWorker.ReConnect();
                                 }
+                                else
+                                    _plcWorker.ReConnect();
                             }
+                            else
+                                _plcWorker.ReConnect();
                         }
                     }
+                    
 
                     // wait for placed down signal from robot and then reset all flags to // pick & place // again
                     if (_robotSentToPlaceDown && _plcDb.RobotPlacingOk)
@@ -297,12 +303,14 @@ namespace PickNPlace.Business
                             _plcWorker.Set_CaptureOk(0);
                             _plcWorker.Set_RobotNextTargetOk(0);
 
-
+                            _robotTargetCoordsReady = false;
                             _captureOk = false;
                             _robotPickedUp = false;
                             _targetSelectionPalletOk = false;
                             _robotSentToPlaceDown = false;
                             _rawMaterialSelectionPalletOk = false;
+
+                            await PrepareRawMaterial();
                         }
                         else
                             _plcWorker.ReConnect();
@@ -310,6 +318,29 @@ namespace PickNPlace.Business
                 }
 
                 await Task.Delay(100);
+            }
+        }
+
+        private async Task PrepareRawMaterial()
+        {
+            bool wrResult = false;
+
+            // select proper raw material pallet
+            if (!_rawMaterialSelectionPalletOk)
+                await CheckRawPallets();
+
+            // trigger camera and pick up
+            if (_rawMaterialSelectionPalletOk && !_captureOk)
+            {
+                var trgOk = TriggerCamera(_currentRawPalletNo.ToString());
+                if (trgOk)
+                {
+                    wrResult = this._plcWorker.Set_CaptureOk(1);
+                    if (!wrResult)
+                        _plcWorker.ReConnect();
+                    else
+                        _captureOk = true;
+                }
             }
         }
 
@@ -325,7 +356,7 @@ namespace PickNPlace.Business
 
                 if (_palletList.Any(d => d.PalletNo == 1 && d.IsEnabled && d.IsRawMaterial && !string.IsNullOrEmpty(d.RawMaterialCode))
                     && (
-                        _palletList.Any(d => d.PalletNo == 2 && (d.IsEnabled == false || d.IsRawMaterial == false)) || 
+                        _palletList.Any(d => d.PalletNo == 2 && (d.IsEnabled == false || d.IsRawMaterial == false)) ||
                         _palletList.Any(d => d.PalletNo == 2 && d.IsEnabled && d.IsRawMaterial && !string.IsNullOrEmpty(d.RawMaterialCode))
                        )
                  )
@@ -336,11 +367,14 @@ namespace PickNPlace.Business
                     {
                         foreach (var pallet in _palletList)
                         {
-                            var isProperItem = _autoLogic.CheckIsProperItem(pallet.PalletNo, plt.RawMaterialCode);
-                            if (isProperItem)
+                            if (pallet.IsEnabled && !pallet.IsRawMaterial)
                             {
-                                tmpOk = true;
-                                break;
+                                var isProperItem = _autoLogic.CheckIsProperItem(pallet.PalletNo, plt.RawMaterialCode);
+                                if (isProperItem)
+                                {
+                                    tmpOk = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -354,12 +388,15 @@ namespace PickNPlace.Business
                         {
                             foreach (var pallet in _palletList)
                             {
-                                var isProperItem = _autoLogic.CheckIsProperItem(pallet.PalletNo, plt.RawMaterialCode);
-                                if (isProperItem)
+                                if (pallet.IsEnabled && !pallet.IsRawMaterial)
                                 {
-                                    tmpOk = true;
-                                    _currentRawPalletNo = nextRawPalletNo;
-                                    break;
+                                    var isProperItem = _autoLogic.CheckIsProperItem(pallet.PalletNo, plt.RawMaterialCode);
+                                    if (isProperItem)
+                                    {
+                                        tmpOk = true;
+                                        _currentRawPalletNo = nextRawPalletNo;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -371,7 +408,10 @@ namespace PickNPlace.Business
                         this.SwitchCamera(_currentRawPalletNo);
 
                         if (_currentRawPalletNo != oldRawPalletNo)
+                        {
                             await Task.Delay(10000);
+                            OnActivePalletChanged?.Invoke();
+                        }
 
                         _rawMaterialSelectionPalletOk = true;
                     }
@@ -380,6 +420,8 @@ namespace PickNPlace.Business
                         // light up red buzzer
                     }
                 }
+                else
+                    OnError?.Invoke("LÜTFEN HAMMADDE PALETİ VE ÜRÜNÜNÜ SEÇİNİZ.");
             }
             catch (Exception)
             {
@@ -390,6 +432,8 @@ namespace PickNPlace.Business
         private void CheckNextTargetPallet()
         {
             _targetSelectionPalletOk = false;
+
+            var _oldTargetPallet = _currentTargetPalletNo;
 
             if (_currentTargetPalletNo == 0)
                 _currentTargetPalletNo = 6;
@@ -430,8 +474,12 @@ namespace PickNPlace.Business
                 else
                 {
                     // light up red buzzer
+                    OnError?.Invoke("SIRADAKİ YERLEŞTİRİLECEK PALET İÇİN UYGUN BİR HEDEF BULUNAMADI.");
                 }
             }
+
+            if (_oldTargetPallet != _currentTargetPalletNo)
+                OnActivePalletChanged?.Invoke();
         }
 
         private bool SendRobotToPlaceDown()
@@ -450,19 +498,19 @@ namespace PickNPlace.Business
 
                     this._plcWorker.Set_EmptyPalletNo(_currentTargetPalletNo);
 
-                    this._plcWorker.Set_RobotX(posItem.PlacedX - 50);
-                    this._plcWorker.Set_RobotY(posItem.PlacedY - 50);
-                    this._plcWorker.Set_RobotZ((currentFloor * 9 * 10 * -1) + 80);
-                    this._plcWorker.Set_RobotRX(0);
-                    this._plcWorker.Set_RobotRY(0);
+                    this._plcWorker.Set_RobotX_ForTarget(posItem.PlacedX - 50);
+                    this._plcWorker.Set_RobotY_ForTarget(posItem.PlacedY - 50);
+                    this._plcWorker.Set_RobotZ_ForTarget((currentFloor * 9 * 10 * -1) + 80);
+                    this._plcWorker.Set_RobotRX_ForTarget(0);
+                    this._plcWorker.Set_RobotRY_ForTarget(0);
 
-                    this._plcWorker.Set_RobotRZ(posItem.IsRotated ? -179 : -89);
+                    this._plcWorker.Set_RobotRZ_ForTarget(posItem.IsRotated ? -179 : -89);
 
                     return true;
                 }
                 else // an error occured
                 {
-
+                    OnError?.Invoke("SIRADAKİ YERLEŞTİRME POZİSYONU HESAPLANAMADI. LÜTFEN YENİDEN REÇETE SEÇİNİZ.");
                 }
             }
             catch (Exception)
@@ -543,8 +591,14 @@ namespace PickNPlace.Business
                         else
                             result = true;
                     }
+                    else
+                    {
+                        OnError?.Invoke("KAMERA ÇUVAL TESPİT EDEMEDİ.");
+                    }
                 }
             }
+            else
+                OnError?.Invoke("KAMERAYA TETİK VERİLEMEDİ. HABERLEŞME BAĞLANTISINI KONTROL EDİNİZ.");
 
             return result;
         }

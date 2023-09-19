@@ -20,6 +20,12 @@ namespace PickNPlace.Business
         private IList<HkAutoPallet> _pallets;
         private IDictionary<int, PlaceRequestDTO> _requestData;
 
+        public void ClearPallets()
+        {
+            _pallets.Clear();
+            _requestData.Clear();
+        }
+
         public void SetRequestForPallet(PlaceRequestDTO request, int palletNo)
         {
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
@@ -49,7 +55,7 @@ namespace PickNPlace.Business
                 case 2: // small size
                     return new HkSackSize { Width = 300, Height = 500 };
                 case 3: // large size
-                    return new HkSackSize { Width = 410, Height = 650 };
+                    return new HkSackSize { Width = 415, Height = 650 };
                 default:
                     break;
             }
