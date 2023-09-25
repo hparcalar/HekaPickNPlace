@@ -1,12 +1,11 @@
-﻿<Window x:Class="PickNPlace.PalletRecipeWindow"
+﻿<Window x:Class="PickNPlace.ProductRecipeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:uc="clr-namespace:PickNPlace.UserControls"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Dizilim Reçetesi" Height="450" Width="1000" Icon="Images/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="ProductRecipeWindow" Height="450" Width="1000" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -25,7 +24,7 @@
 
             <Image Source="Images/heka.jpg" Stretch="Uniform"></Image>
 
-            <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="22" FontStyle="Italic" Foreground="#FF07377C">DİZİLİM REÇETELERİ</TextBlock>
+            <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="22" FontStyle="Normal" Foreground="#FF07377C" FontFamily="Calibri">ÜRÜN REÇETELERİ</TextBlock>
 
         </StackPanel>
 
@@ -47,7 +46,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image  Source="Images/back.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock HorizontalAlignment="Center">GERİ DÖN</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Calibri">GERİ DÖN</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -61,7 +60,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Name="imgStart" Source="Images/select.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock Name="txtStart" HorizontalAlignment="Center">REÇETE SEÇ</TextBlock>
+                        <TextBlock Name="txtStart" HorizontalAlignment="Center" FontFamily="Calibri">REÇETE SEÇ</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -75,7 +74,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="Images/new.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock HorizontalAlignment="Center">YENİ REÇETE</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Calibri">YENİ REÇETE</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -89,7 +88,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="Images/save.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock HorizontalAlignment="Center">KAYDET</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Calibri">KAYDET</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -103,7 +102,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="Images/delete.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock HorizontalAlignment="Center">SİL</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Calibri">SİL</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -113,10 +112,10 @@
 
         <!-- RECIPE HEADER FORM -->
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="5">
-            <Label VerticalAlignment="Center" Padding="20,0,0,0" FontWeight="Bold">Reçete Kodu:</Label>
+            <Label VerticalAlignment="Center" Padding="20,0,0,0" FontWeight="Bold" FontFamily="Calibri">Reçete Kodu:</Label>
             <TextBox Name="txtRecipeCode"  Style="{StaticResource hkTextBox}" IsReadOnly="True" Margin="10,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="150"></TextBox>
 
-            <Label VerticalAlignment="Center" Padding="40,0,0,0" FontWeight="Bold">Açıklama:</Label>
+            <Label VerticalAlignment="Center" Padding="40,0,0,0" FontWeight="Bold" FontFamily="Calibri">Açıklama:</Label>
             <TextBox Name="txtExplanation"  Style="{StaticResource hkTextBox}" Margin="10,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="300"></TextBox>
         </StackPanel>
 
@@ -128,37 +127,20 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="16" FontStyle="Italic" HorizontalAlignment="Left" Foreground="#FF07377C">KAT YERLEŞİMLERİ</TextBlock>
-                <Button Name="btnNewFloor" Click="btnNewFloor_Click" Margin="2" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
-                    <Button.Background>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#FFD4EDFB"/>
-                            <GradientStop Color="White" Offset="1"/>
-                        </RadialGradientBrush>
-                    </Button.Background>
-
-                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Image  Source="/new.png" Stretch="Uniform" Height="20"></Image>
-                        <TextBlock VerticalAlignment="Center">YENİ KAT</TextBlock>
-                    </StackPanel>
-                </Button>
+                <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalAlignment="Left" Foreground="#FF07377C" FontFamily="Calibri">ÜRÜNLER</TextBlock>
             </StackPanel>
 
             <!-- FLOORS LIST -->
             <Grid Name="floorsWrapper" Grid.Row="1" Background="White">
-                <ItemsControl Name="containerFloors">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <uc:PalletRecipeItemControl Floor="{Binding {}}" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Width="500" Height="250"></uc:PalletRecipeItemControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <DataGrid Grid.Row="1" Grid.Column="0" Name="dgDetails" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="35*" Header="Ürün Kodu" Binding="{Binding ItemCode}"></DataGridTextColumn>
+                        <DataGridTextColumn Width="50*" Header="Ürün Adı" Binding="{Binding ItemName}"></DataGridTextColumn>
+                        <DataGridTextColumn Width="15*" Header="Palet İçi Adet" Binding="{Binding PiecesPerBatch}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
         </Grid>
+
     </Grid>
 </Window>

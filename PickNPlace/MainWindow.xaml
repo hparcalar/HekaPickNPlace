@@ -6,7 +6,7 @@
         xmlns:uc="clr-namespace:PickNPlace.UserControls"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Heka Pick N Place" Height="600" Width="1200" Icon="/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Heka Pick N Place" Height="600" Width="1200" Icon="Images/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -27,7 +27,7 @@
                 </LinearGradientBrush>
             </StackPanel.Background>
 
-            <Image Source="/heka.jpg" Stretch="Uniform"></Image>
+            <Image Source="Images/heka.jpg" Stretch="Uniform"></Image>
 
             <Button Padding="20,0,20,0" FontWeight="Bold">
                 <Button.Background>
@@ -38,8 +38,8 @@
                 </Button.Background>
 
                 <StackPanel VerticalAlignment="Center">
-                    <Image Source="/urun_recetesi.png" Stretch="Uniform" Height="40"></Image>
-                    <TextBlock>ÜRÜN REÇETELERİ</TextBlock>
+                    <Image Source="Images/urun_recetesi.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock FontFamily="Calibri">ÜRÜN REÇETELERİ</TextBlock>
                 </StackPanel>
             </Button>
 
@@ -58,9 +58,9 @@
             </Button>-->
 
             <StackPanel Orientation="Vertical">
-                <Label Margin="15,10,0,0" FontWeight="Bold">Reçete Barkodu</Label>
+                <Label Margin="15,10,0,0" FontWeight="Bold" TextBlock.FontFamily="Calibri">Reçete Barkodu</Label>
                 <TextBox Width="250" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" 
-                         VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" />
+                         VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" FontFamily="Calibri" />
             </StackPanel>
 
             <!-- active recipe pre-information -->
@@ -87,8 +87,8 @@
                     </Button.Background>
 
                     <StackPanel VerticalAlignment="Center">
-                        <Image Name="imgStart" Source="/start.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock Name="txtStart">SİSTEMİ BAŞLAT</TextBlock>
+                        <Image Name="imgStart" Source="Images/start.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock Name="txtStart" FontFamily="Calibri">SİSTEMİ BAŞLAT</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Name="btnReset" Click="btnReset_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
@@ -100,7 +100,7 @@
                     </Button.Background>
 
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock>RESET</TextBlock>
+                        <TextBlock FontFamily="Calibri">RESET</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Name="btnManagement" Click="btnManagement_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
@@ -112,8 +112,8 @@
                     </Button.Background>
 
                     <StackPanel VerticalAlignment="Center">
-                        <Image Source="/settings.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock>AYARLAR</TextBlock>
+                        <Image Source="Images/settings.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock FontFamily="Calibri">AYARLAR</TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -133,8 +133,6 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-
-
             <uc:EmptyPallet Grid.Row="0" Grid.Column="0" PalletNo="6" x:Name="plt6"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="0" Grid.Row="0"/>
@@ -151,7 +149,7 @@
             Grid.Column="1" Grid.Row="2"/>
 
             <!-- ROBOT IMAGE -->
-            <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="/robot_int.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+            <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="Images/robot_int.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
@@ -192,13 +190,13 @@
             <!-- PLC OK STATUS -->
             <StackPanel Grid.Column="0" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">PLC</Label>
-                <Image Name="imgPlcOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
+                <Image Name="imgPlcOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
             <!-- ROBOT OK STATUS -->
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">ROBOT</Label>
-                <Image Name="imgRobotOk" Source="/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
+                <Image Name="imgRobotOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
             <Label Grid.Column="2" HorizontalContentAlignment="Right" HorizontalAlignment="Right" 

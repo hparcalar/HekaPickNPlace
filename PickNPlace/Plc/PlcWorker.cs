@@ -807,6 +807,62 @@ namespace PickNPlace.Plc
         }
         #endregion
 
+        public bool Set_Reset_Plc_Variables(byte val)
+        {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 2, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
+        public bool Set_Robot_Start(byte val)
+        {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         public void ReConnect()
         {
             try

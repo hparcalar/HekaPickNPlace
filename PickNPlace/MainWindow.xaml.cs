@@ -69,15 +69,15 @@ namespace PickNPlace
 
         private void _logicWorker_OnError(string message)
         {
-            this.Dispatcher.Invoke((Action)delegate
-            {
-                lblError.Content = message;
+            //this.Dispatcher.Invoke((Action)delegate
+            //{
+            //    lblError.Content = message;
 
-                _tmrError.Stop();
+            //    _tmrError.Stop();
 
-                _tmrError.Enabled = true;
-                _tmrError.Start();
-            });
+            //    _tmrError.Enabled = true;
+            //    _tmrError.Start();
+            //});
         }
 
         private void _logicWorker_OnActivePalletChanged()
@@ -277,7 +277,7 @@ namespace PickNPlace
         {
             this.Dispatcher.BeginInvoke((Action)delegate
             {
-                imgPlcOk.Source = new BitmapImage(new Uri(connected ? "/green_circle.png" : "/red_circle.png", UriKind.Relative));
+                imgPlcOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
             });
         }
 
@@ -310,6 +310,10 @@ namespace PickNPlace
             var targetInfo = !_plcDB.System_Auto;
 
             this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
+            if (targetInfo)
+            {
+                this._plc.Set_Robot_Start(1);
+            }
 
             this.UpdateSystemStatus();
         }
@@ -347,12 +351,12 @@ namespace PickNPlace
             if (_plcDB.System_Auto)
             {
                 txtStart.Text = "SİSTEMİ DURDUR";
-                imgStart.Source = new BitmapImage(new Uri("/stop.png", UriKind.Relative));
+                imgStart.Source = new BitmapImage(new Uri("Images/stop.png", UriKind.Relative));
             }
             else
             {
                 txtStart.Text = "SİSTEMİ BAŞLAT";
-                imgStart.Source = new BitmapImage(new Uri("/start.png", UriKind.Relative));
+                imgStart.Source = new BitmapImage(new Uri("Images/start.png", UriKind.Relative));
             }
         }
 
@@ -439,12 +443,14 @@ namespace PickNPlace
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            _plc.Set_CaptureOk(0);
-            _plc.Set_PlaceCalculationOk(0);
-            _plc.Set_RobotNextTargetOk(0);
-            _plc.Set_RobotPickingOk(0);
-            _plc.Set_RobotPlacingOk(0);
-            _plc.Set_SystemAuto(0);
+            _plc.Set_Reset_Plc_Variables(1);
+
+            //_plc.Set_CaptureOk(0);
+            //_plc.Set_PlaceCalculationOk(0);
+            //_plc.Set_RobotNextTargetOk(0);
+            //_plc.Set_RobotPickingOk(0);
+            //_plc.Set_RobotPlacingOk(0);
+            //_plc.Set_SystemAuto(0);
 
             _logicWorker.ClearPallets();
             this.BindLivePalletStates();
