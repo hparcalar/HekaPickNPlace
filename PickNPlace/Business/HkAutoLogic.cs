@@ -358,7 +358,7 @@ namespace PickNPlace.Business
             return null;
         }
 
-        private bool AssignItemAsNext(int palletNo, string itemCode, HkSackSize size, HkPlacePoint placePoint)
+        private bool AssignItemAsNext(int palletNo, string itemCode, int sackType, HkSackSize size, HkPlacePoint placePoint)
         {
             int floorNo = GetCurrentFloor(palletNo);
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
@@ -392,6 +392,7 @@ namespace PickNPlace.Business
                         ItemOrder = nextOrder,
                         PlacedX = placePoint.X,
                         PlacedY = placePoint.Y,
+                        SackType = sackType,
                     });
 
                     currentFloor.Items = itemList.ToArray();
@@ -431,7 +432,7 @@ namespace PickNPlace.Business
                         return 5; // estimation is not possible
                 }
 
-                var assignResult = AssignItemAsNext(palletNo, itemCode, sackSize, estimatedPlacePoint);
+                var assignResult = AssignItemAsNext(palletNo, itemCode, sackType, sackSize, estimatedPlacePoint);
                 if (!assignResult)
                     return 6; // assignment couldnt be successfull
 
@@ -499,21 +500,28 @@ namespace PickNPlace.Business
 
         public bool RemoveLastPlacedItem(int palletNo)
         {
-            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
-            if (plt == null)
-                return false;
+            try
+            {
+                var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+                if (plt == null)
+                    return false;
 
-            if (plt.Floors == null)
-                return false;
+                if (plt.Floors == null)
+                    return false;
 
-            var currentFloor = plt.Floors.OrderByDescending(d => d.FloorNo).FirstOrDefault();
-            var lastItem = currentFloor.Items.OrderByDescending(d => d.ItemOrder).FirstOrDefault();
-            if (lastItem == null)
-                return false;
+                var currentFloor = plt.Floors.OrderByDescending(d => d.FloorNo).FirstOrDefault();
+                var lastItem = currentFloor.Items.OrderByDescending(d => d.ItemOrder).FirstOrDefault();
+                if (lastItem == null)
+                    return false;
 
-            currentFloor.Items = currentFloor.Items.Where(d => d.ItemOrder != lastItem.ItemOrder).ToArray();
-            if (currentFloor.Items.Length == 0)
-                plt.Floors = plt.Floors.Where(d => d.FloorNo != currentFloor.FloorNo).ToArray();
+                currentFloor.Items = currentFloor.Items.Where(d => d.ItemOrder != lastItem.ItemOrder).ToArray();
+                if (currentFloor.Items.Length == 0)
+                    plt.Floors = plt.Floors.Where(d => d.FloorNo != currentFloor.FloorNo).ToArray();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             return true;
         }

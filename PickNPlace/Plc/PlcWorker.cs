@@ -953,7 +953,7 @@ namespace PickNPlace.Plc
 
                 tryCount++;
 
-                if (tryCount > 5)
+                if (tryCount > 3)
                     break;
             }
 

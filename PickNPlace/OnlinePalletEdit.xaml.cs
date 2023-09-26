@@ -41,6 +41,17 @@ namespace PickNPlace
 
             containerFloors.ItemsSource = null;
             containerFloors.ItemsSource = Pallet != null ? Pallet.Floors : null;
+
+            int currentSackIndex = dgSackType.SelectedIndex;
+            dgSackType.ItemsSource = new SackTypeDTO[]
+            {
+                new SackTypeDTO{ SackType = 1, Explanation="40x60" },
+                new SackTypeDTO{ SackType = 2, Explanation="30x50" },
+                new SackTypeDTO{ SackType = 3, Explanation="50x70" },
+            };
+            dgSackType.SelectedIndex = currentSackIndex;
+
+            this.Title = (Pallet != null ? Pallet.PalletNo.ToString() : "") + ". PALET - Dizilim Düzenleme";
         }
 
         private void btnBackward_Click(object sender, RoutedEventArgs e)
@@ -67,8 +78,15 @@ namespace PickNPlace
             }
             else
             {
+                var sltSack = dgSackType.SelectedItem as SackTypeDTO;
+                if (sltSack == null)
+                {
+                    MessageBox.Show("Lütfen yerleşimi yapılacak olan çuval ebatlarını seçiniz.", "Uyarı", MessageBoxButton.OK);
+                    return;
+                }
+
                 var _logic = HkLogicWorker.GetInstance();
-                if (_logic.Sim_PlaceItem(Pallet.PalletNo, sltItem.ItemCode))
+                if (_logic.Sim_PlaceItem(Pallet.PalletNo, sltItem.ItemCode, sltSack.SackType))
                 {
                     this.Pallet = _logic.GetPalletData(Pallet.PalletNo);
                     this.BindModel();

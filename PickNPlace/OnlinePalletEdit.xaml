@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Dizilim Düzenleme" Height="600" Width="1000" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" FontFamily="Calibri" Icon="/Images/heka.jpg">
+        Title="Dizilim Düzenleme" Height="750" Width="1200" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" FontFamily="Calibri" Icon="/Images/heka.jpg">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"></RowDefinition>
@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Padding="20,0,20,0" FontWeight="Bold" Name="btnBackward" Click="btnBackward_Click" HorizontalAlignment="Right">
+            <Button Padding="20,0,20,0" FontWeight="Bold" Width="150" Name="btnBackward" Click="btnBackward_Click" HorizontalAlignment="Right">
                 <Button.Background>
                     <RadialGradientBrush>
                         <GradientStop Color="#FFD4EDFB"/>
@@ -27,7 +27,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Padding="20,0,20,0" FontWeight="Bold" Name="btnForward" Click="btnForward_Click" HorizontalAlignment="Right">
+            <Button Padding="20,0,20,0" FontWeight="Bold" Width="150" Name="btnForward" Click="btnForward_Click" HorizontalAlignment="Right">
                 <Button.Background>
                     <RadialGradientBrush>
                         <GradientStop Color="#FFD4EDFB"/>
@@ -47,9 +47,13 @@
                 <ColumnDefinition Width="25*"></ColumnDefinition>
                 <ColumnDefinition Width="75*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75*"></RowDefinition>
+                <RowDefinition Height="25*"></RowDefinition>
+            </Grid.RowDefinitions>
 
             <!-- recipe items (details) -->
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" RowHeight="30" IsReadOnly="True" Name="dgItems">
+            <DataGrid Grid.Column="0" Grid.Row="0" AutoGenerateColumns="False" RowHeight="30" IsReadOnly="True" Name="dgItems">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="35*" Header="Ürün Kodu" Binding="{Binding ItemCode}"></DataGridTextColumn>
                     <DataGridTextColumn Width="35*" Header="Ürün Adı" Binding="{Binding ItemName}"></DataGridTextColumn>
@@ -57,8 +61,18 @@
                 </DataGrid.Columns>
             </DataGrid>
 
+            <DataGrid Grid.Row="1" Grid.Column="0" Name="dgSackType" AutoGenerateColumns="False" RowHeight="30" VerticalContentAlignment="Center">
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DodgerBlue"/>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="35*" Header="Çuval Tipi" Binding="{Binding SackType}"></DataGridTextColumn>
+                    <DataGridTextColumn Width="50*" Header="Açıklama" Binding="{Binding Explanation}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
             <!-- dynamic floors view -->
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                 <ItemsControl Name="containerFloors">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -79,10 +93,11 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Button Width="100" Height="50">
-                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                                    <Label Content="{Binding ItemOrder}" HorizontalAlignment="Center"></Label>
-                                                    <Label Content="{Binding ItemCode}" HorizontalAlignment="Center"></Label>
+                                            <Button Width="100" Height="100">
+                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Label Content="{Binding ItemOrder}" HorizontalAlignment="Center" FontFamily="Calibri" Foreground="#FF3232C3" FontWeight="Bold" FontSize="14"></Label>
+                                                    <Label Content="{Binding ItemCode}" HorizontalAlignment="Center" FontFamily="Calibri"></Label>
+                                                    <Label Content="{Binding SackTypeText}" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Calibri"></Label>
                                                 </StackPanel>
                                             </Button>
                                         </DataTemplate>

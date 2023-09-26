@@ -16,5 +16,14 @@ namespace PickNPlace.DTO
 
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
+        public string SackTypeText
+        {
+            get
+            {
+                return SackType == 1 ? "40x60" :
+                    SackType == 2 ? "30x50" :
+                    SackType == 3 ? "50x70" : "";
+            }
+        }
     }
 }

@@ -312,7 +312,7 @@ namespace Sharp7
         private Socket TCPSocket;
         private int _ReadTimeout = 5000;
         private int _WriteTimeout = 5000;
-        private int _ConnectTimeout = 5000;
+        private int _ConnectTimeout = 2000;
         public int LastError = 0;
 
         public MsgSocket()

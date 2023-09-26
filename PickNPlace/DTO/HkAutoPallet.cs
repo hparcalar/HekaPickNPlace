@@ -52,5 +52,15 @@ namespace PickNPlace.DTO
         public bool IsPlaced { get; set; }
         public bool IsRotated { get; set; }
         public int ItemOrder { get; set; }
+        public int SackType { get; set; }
+        public string SackTypeText
+        {
+            get
+            {
+                return SackType == 1 ? "40x60" :
+                    SackType == 2 ? "30x50" :
+                    SackType == 3 ? "50x70" : "";
+            }
+        }
     }
 }
