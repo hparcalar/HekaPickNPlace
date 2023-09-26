@@ -64,7 +64,10 @@ namespace PickNPlace
 
         private void _tmrError_Elapsed(object sender, ElapsedEventArgs e)
         {
-            lblError.Content = "";   
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = "";
+            });
         }
 
         private void _logicWorker_OnError(string message)
