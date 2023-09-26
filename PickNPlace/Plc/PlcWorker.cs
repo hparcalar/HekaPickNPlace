@@ -75,11 +75,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoHome(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -101,11 +100,10 @@ namespace PickNPlace.Plc
 
         public bool Set_SystemAuto(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -129,11 +127,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoReset(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -157,11 +154,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoTargetPos(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -187,11 +183,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoStart(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -255,11 +250,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoSpeed(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -283,11 +277,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoPosCam1(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -313,11 +306,10 @@ namespace PickNPlace.Plc
 
         public bool Set_ServoPosCam2(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -343,11 +335,10 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotX(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -497,11 +488,10 @@ namespace PickNPlace.Plc
 
         public bool Set_CaptureOk(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -525,11 +515,10 @@ namespace PickNPlace.Plc
 
         public bool Set_PlaceCalculationOk(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -553,11 +542,10 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotPickingOk(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -581,11 +569,10 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotPlacingOk(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -609,11 +596,10 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotNextTargetOk(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -637,11 +623,10 @@ namespace PickNPlace.Plc
 
         public bool Set_EmptyPalletNo(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -668,11 +653,10 @@ namespace PickNPlace.Plc
         #region SETTING TARGET PALLET COORDS TO ROBOT VIA PLC
         public bool Set_RobotX_ForTarget(int val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -784,6 +768,11 @@ namespace PickNPlace.Plc
 
         public bool Set_RobotRZ_ForTarget(int val)
         {
+            ValidateConnection();
+            while (_isReading)
+                ;
+            _isSetRunning = true;
+
             bool result = false;
             try
             {
@@ -809,11 +798,10 @@ namespace PickNPlace.Plc
 
         public bool Set_Reset_Plc_Variables(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -837,11 +825,10 @@ namespace PickNPlace.Plc
 
         public bool Set_Robot_Start(byte val)
         {
+            ValidateConnection();
             while (_isReading)
                 ;
-
             _isSetRunning = true;
-            bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
 
             bool result = false;
             try
@@ -863,18 +850,66 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        private void ValidateConnection()
+        {
+            while (_isReading)
+                ;
+
+            _isSetRunning = true;
+
+            bool plcAlive = false;
+            int tryCount = 0;
+
+            while (!plcAlive && _runListener)
+            {
+                try
+                {
+                    byte[] data = new byte[1] { 0 };
+                    S7MultiVar Reader = new S7MultiVar(this._plc);
+                    Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 3, 1, ref data);
+                    Reader.Read();
+
+                    if (data[0] == 1)
+                        plcAlive = true;
+                }
+                catch (Exception)
+                {
+
+                }
+
+                if (!plcAlive)
+                {
+                    try
+                    {
+                        _plc.Disconnect();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                    try
+                    {
+                        this._plc.ConnectTo("192.168.0.3", 0, 1);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+                tryCount++;
+
+                if (tryCount > 5)
+                    break;
+            }
+
+            _isSetRunning = false;
+        }
+
         public void ReConnect()
         {
-            try
-            {
-                _plc.Disconnect();
-            }
-            catch (Exception)
-            {
-
-            }
-
-            this._plc.ConnectTo("192.168.0.3", 0, 1);
+            ValidateConnection();
         }
 
         #endregion
@@ -888,26 +923,26 @@ namespace PickNPlace.Plc
                     if (_isSetRunning)
                         continue;
 
+                    ValidateConnection();
+
                     _isReading = true;
-                    //bool isConnected = this._plc.Connected;
-                    //if (!isConnected)
-                    //{
-                    //    int conResult = this._plc.ConnectTo("192.168.0.3", 0, 1);
-                    //    isConnected = conResult == 0;
+                    bool isConnected = this._plc.Connected;
+                    if (!isConnected)
+                    {
+                        int conResult = this._plc.ConnectTo("192.168.0.3", 0, 1);
+                        isConnected = conResult == 0;
 
-                    //    if (isConnected && !_stateIsConnected)
-                    //    {
-                    //        _stateIsConnected = true;
-                    //        this.OnPlcConnectionChanged?.Invoke(true);
-                    //    }
-                    //    else if (!isConnected && _stateIsConnected)
-                    //    {
-                    //        _stateIsConnected = false;
-                    //        this.OnPlcConnectionChanged?.Invoke(false);
-                    //    }
-                    //}
-
-                    bool isConnected = this._plc.ConnectTo("192.168.0.3", 0, 1) == 0;
+                        if (isConnected && !_stateIsConnected)
+                        {
+                            _stateIsConnected = true;
+                            this.OnPlcConnectionChanged?.Invoke(true);
+                        }
+                        else if (!isConnected && _stateIsConnected)
+                        {
+                            _stateIsConnected = false;
+                            this.OnPlcConnectionChanged?.Invoke(false);
+                        }
+                    }
 
                     if (isConnected)
                     {

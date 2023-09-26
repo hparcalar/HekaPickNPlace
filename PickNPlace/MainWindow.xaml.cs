@@ -209,7 +209,10 @@ namespace PickNPlace
                 pallet.IsRawMaterial = !pallet.IsRawMaterial;
                 _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
-                this.BindLivePalletStates();
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    this.BindLivePalletStates();
+                });
             }
         }
 
@@ -232,7 +235,10 @@ namespace PickNPlace
 
                 _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
-                this.BindLivePalletStates();
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    this.BindLivePalletStates();
+                });
             }
         }
 
@@ -263,7 +269,10 @@ namespace PickNPlace
                         _logicWorker.SetPalletAttributes(palletNo, true, true, plt.RawMaterialCode);
                         _logicWorker.SetPalletSackType(palletNo, plt.SackType);
 
-                        this.BindLivePalletStates();
+                        this.Dispatcher.Invoke((Action)delegate
+                        {
+                            this.BindLivePalletStates();
+                        });
                     }
                 }
                 else
@@ -315,35 +324,38 @@ namespace PickNPlace
                 this._plc.Set_Robot_Start(1);
             }
 
-            this.UpdateSystemStatus();
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                this.UpdateSystemStatus();
+            });
         }
 
         private void BindDefaults()
         {
-            using (HekaDbContext db = SchemaFactory.CreateContext())
-            {
-                int tryValue = 0;
+            //using (HekaDbContext db = SchemaFactory.CreateContext())
+            //{
+            //    int tryValue = 0;
 
-                var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-                {
-                    this._plc.Set_ServoSpeed(Convert.ToInt32(prmData.ParamValue));
-                }
+            //    var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
+            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+            //    {
+            //        this._plc.Set_ServoSpeed(Convert.ToInt32(prmData.ParamValue));
+            //    }
 
-                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-                {
-                    this._plc.Set_ServoPosCam1(Convert.ToInt32(prmData.ParamValue));
-                }
+            //    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
+            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+            //    {
+            //        this._plc.Set_ServoPosCam1(Convert.ToInt32(prmData.ParamValue));
+            //    }
 
-                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-                {
-                    this._plc.Set_ServoPosCam2(Convert.ToInt32(prmData.ParamValue));
-                }
+            //    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
+            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+            //    {
+            //        this._plc.Set_ServoPosCam2(Convert.ToInt32(prmData.ParamValue));
+            //    }
 
-                this._plc.Set_ServoStart(1);
-            }
+            //    this._plc.Set_ServoStart(1);
+            //}
         }
 
         private void UpdateSystemStatus()
@@ -436,7 +448,10 @@ namespace PickNPlace
                         }
                     }
 
-                    this.BindLivePalletStates();
+                    this.Dispatcher.Invoke((Action)delegate
+                    {
+                        this.BindLivePalletStates();
+                    });
                 }
             }
         }
@@ -453,7 +468,11 @@ namespace PickNPlace
             //_plc.Set_SystemAuto(0);
 
             _logicWorker.ClearPallets();
-            this.BindLivePalletStates();
+
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                this.BindLivePalletStates();
+            });
         }
     }
 }

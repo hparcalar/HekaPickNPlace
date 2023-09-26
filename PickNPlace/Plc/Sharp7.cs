@@ -310,9 +310,9 @@ namespace Sharp7
     class MsgSocket
     {
         private Socket TCPSocket;
-        private int _ReadTimeout = 10000;
-        private int _WriteTimeout = 10000;
-        private int _ConnectTimeout = 10000;
+        private int _ReadTimeout = 2000;
+        private int _WriteTimeout = 2000;
+        private int _ConnectTimeout = 1000;
         public int LastError = 0;
 
         public MsgSocket()
@@ -389,33 +389,20 @@ namespace Sharp7
             LastError = 0;
             try
             {
-                if (TCPSocket == null)
+                SizeAvail = TCPSocket.Available;
+                while ((SizeAvail < Size) && (!Expired))
                 {
-                    LastError = S7Consts.errTCPDataReceive;
-                }
-                else
-                {
+                    Thread.Sleep(2);
                     SizeAvail = TCPSocket.Available;
-                    while ((SizeAvail < Size) && (!Expired))
-                    {
-                        Thread.Sleep(2);
-                        if (TCPSocket == null)
+                    Expired = Environment.TickCount - Elapsed > Timeout;
+                    // If timeout we clean the buffer
+                    if (Expired && (SizeAvail > 0))
+                        try
                         {
-                            return 1;
+                            byte[] Flush = new byte[SizeAvail];
+                            TCPSocket.Receive(Flush, 0, SizeAvail, SocketFlags.None);
                         }
-                        SizeAvail = TCPSocket.Available;
-                        Expired = Environment.TickCount - Elapsed > Timeout;
-                        // If timeout we clean the buffer
-                        if (Expired && (SizeAvail > 0))
-                            try
-                            {
-                                byte[] Flush = new byte[SizeAvail];
-                                if (TCPSocket == null)
-                                    return 1;
-                                TCPSocket.Receive(Flush, 0, SizeAvail, SocketFlags.None);
-                            }
-                            catch { }
-                    }
+                        catch { }
                 }
             }
             catch
@@ -460,11 +447,6 @@ namespace Sharp7
             {
                 if (TCPSocket != null)
                     TCPSocket.Send(Buffer, Size, SocketFlags.None);
-                else
-                {
-                    LastError = 1;
-                    Close();
-                }
             }
             catch
             {
@@ -1784,7 +1766,7 @@ namespace Sharp7
         private static int MinPduSize = 16;
         private static int MinPduSizeToRequest = 240;
         private static int MaxPduSizeToRequest = 960;
-        private static int DefaultTimeout = 6000;
+        private static int DefaultTimeout = 2000;
         private static int IsoHSize = 7; // TPKT+COTP Header Size
 
         // Properties
@@ -1988,17 +1970,8 @@ namespace Sharp7
             _LastError = 0;
             Time_ms = 0;
             int Elapsed = Environment.TickCount;
-            if (!Connected || Connected)
+            if (!Connected)
             {
-                try
-                {
-                    Disconnect();
-                }
-                catch (Exception)
-                {
-
-                }
-
                 TCPConnect(); // First stage : TCP Connection
                 if (_LastError == 0)
                 {
