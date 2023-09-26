@@ -1,0 +1,99 @@
+﻿<Window x:Class="PickNPlace.OnlinePalletEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PickNPlace"
+        mc:Ignorable="d"
+        Title="Dizilim Düzenleme" Height="600" Width="1000" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" FontFamily="Calibri" Icon="/Images/heka.jpg">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"></RowDefinition>
+            <RowDefinition Height="80*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Padding="20,0,20,0" FontWeight="Bold" Name="btnBackward" Click="btnBackward_Click" HorizontalAlignment="Right">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="Images/backward.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock FontFamily="Calibri">GERİ AL</TextBlock>
+                </StackPanel>
+            </Button>
+
+            <Button Padding="20,0,20,0" FontWeight="Bold" Name="btnForward" Click="btnForward_Click" HorizontalAlignment="Right">
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#FFD4EDFB"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="Images/forward.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock FontFamily="Calibri">İLERİ AL</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"></ColumnDefinition>
+                <ColumnDefinition Width="75*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!-- recipe items (details) -->
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" RowHeight="30" IsReadOnly="True" Name="dgItems">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="35*" Header="Ürün Kodu" Binding="{Binding ItemCode}"></DataGridTextColumn>
+                    <DataGridTextColumn Width="35*" Header="Ürün Adı" Binding="{Binding ItemName}"></DataGridTextColumn>
+                    <DataGridTextColumn Width="30*" Header="Palet İçi Adet" Binding="{Binding PiecesPerBatch}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- dynamic floors view -->
+            <Grid Grid.Column="1">
+                <ItemsControl Name="containerFloors">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Label Content="{Binding FloorNo}" FontFamily="Calibri" FontWeight="Bold" FontSize="18" VerticalAlignment="Center"></Label>
+                                <Label Content=". KAT" FontFamily="Calibri" FontWeight="Bold" FontSize="18" VerticalAlignment="Center"></Label>
+
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"></StackPanel>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Width="100" Height="50">
+                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                                    <Label Content="{Binding ItemOrder}" HorizontalAlignment="Center"></Label>
+                                                    <Label Content="{Binding ItemCode}" HorizontalAlignment="Center"></Label>
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>

@@ -29,7 +29,7 @@
 
             <Image Source="Images/heka.jpg" Stretch="Uniform"></Image>
 
-            <Button Padding="20,0,20,0" FontWeight="Bold">
+            <Button Padding="20,0,20,0" FontWeight="Bold" Name="btnPlaceRequests" Click="btnPlaceRequests_Click">
                 <Button.Background>
                     <RadialGradientBrush>
                         <GradientStop Color="#FFD4EDFB"/>
@@ -133,18 +133,18 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <uc:EmptyPallet Grid.Row="0" Grid.Column="0" PalletNo="6" x:Name="plt6"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="0" PalletNo="6" x:Name="plt6"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnlineEditRequested="plt_OnlineEditRequested" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="0" Grid.Row="0"/>
-            <uc:EmptyPallet Grid.Row="0" Grid.Column="1" PalletNo="4" x:Name="plt4"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
+            <uc:EmptyPallet Grid.Row="0" Grid.Column="1" PalletNo="4" x:Name="plt4"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnlineEditRequested="plt_OnlineEditRequested" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="1" Grid.Row="0"/>
 
 
-            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="0" PalletNo="5" x:Name="plt5"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal"  />
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="0" PalletNo="5" x:Name="plt5"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnlineEditRequested="plt_OnlineEditRequested" OnSelectRecipeSignal="plt_OnSelectRecipeSignal"  />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="0" Grid.Row="2"/>
-            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="1" PalletNo="3" x:Name="plt3"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
+            <uc:EmptyPalletDown Grid.Row="2" Grid.Column="1" PalletNo="3" x:Name="plt3"  OnPalletEnabledChanged="plt_OnPalletEnabledChanged" OnlineEditRequested="plt_OnlineEditRequested" OnSelectRecipeSignal="plt_OnSelectRecipeSignal" />
             <Border BorderThickness="2" BorderBrush="#FFFFFF" 
             Grid.Column="1" Grid.Row="2"/>
 

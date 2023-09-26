@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="ProductRecipeWindow" Height="450" Width="1000" Loaded="Window_Loaded">
+        Title="ProductRecipeWindow" Height="450" Width="1000" Loaded="Window_Loaded" WindowState="Maximized" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -128,11 +128,25 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <TextBlock VerticalAlignment="Center" Padding="20" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalAlignment="Left" Foreground="#FF07377C" FontFamily="Calibri">ÜRÜNLER</TextBlock>
+
+                <Button x:Name="btnNewProduct" Click="btnNewProduct_Click" Padding="20,0,20,0" FontWeight="Bold" Margin="10,2,713,2">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image  Source="Images/new.png" Stretch="Uniform" Height="20"/>
+                        <TextBlock VerticalAlignment="Center"><Run Text=""/></TextBlock>
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
             <!-- FLOORS LIST -->
             <Grid Name="floorsWrapper" Grid.Row="1" Background="White">
-                <DataGrid Grid.Row="1" Grid.Column="0" Name="dgDetails" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" Grid.Column="0" Name="dgDetails" RowHeight="30" AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="35*" Header="Ürün Kodu" Binding="{Binding ItemCode}"></DataGridTextColumn>
                         <DataGridTextColumn Width="50*" Header="Ürün Adı" Binding="{Binding ItemName}"></DataGridTextColumn>
@@ -140,6 +154,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
+            
         </Grid>
 
     </Grid>

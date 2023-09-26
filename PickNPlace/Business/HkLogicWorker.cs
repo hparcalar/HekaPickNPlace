@@ -22,9 +22,9 @@ namespace PickNPlace.Business
             _palletList = new List<HkAutoPallet>();
 
             _plcDb = PlcDB.Instance();
-            _plcDb.OnRobotPickedUp += _plcDb_OnRobotPickedUp;
-            _plcDb.OnRobotPlacedDown += _plcDb_OnRobotPlacedDown;
-            _plcDb.OnSystemAutoChanged += _plcDb_OnSystemAutoChanged;
+            //_plcDb.OnRobotPickedUp += _plcDb_OnRobotPickedUp;
+            //_plcDb.OnRobotPlacedDown += _plcDb_OnRobotPlacedDown;
+            //_plcDb.OnSystemAutoChanged += _plcDb_OnSystemAutoChanged;
 
             this.Start();
         }
@@ -44,6 +44,9 @@ namespace PickNPlace.Business
 
         public delegate void AnErrorOccured(string message);
         public event AnErrorOccured OnError;
+
+        public delegate void SystemModeChanged(bool mode);
+        public event SystemModeChanged OnSystemModeChanged;
         #endregion
 
         // environmental variables
@@ -52,6 +55,7 @@ namespace PickNPlace.Business
         private PlcWorker _plcWorker;
         private IList<HkAutoPallet> _palletList;
         private Task _taskLoop;
+        private bool _oldSystemMode = false;
         private bool _runLoop;
 
         // flag variables
@@ -65,6 +69,30 @@ namespace PickNPlace.Business
         bool _robotPickedUp = false;
         bool _makeSwitchCamera = false;
         bool _captureOk = false;
+
+        public HkAutoPallet GetPalletData(int palletNo)
+        {
+            return _autoLogic.GetPalletData(palletNo);
+        }
+
+        public PlaceRequestDTO GetPalletRequest(int palletNo)
+        {
+            return _autoLogic.GetRequestForPallet(palletNo);
+        }
+
+        public bool Sim_PlaceItem(int palletNo, string itemCode, int sackType = 3)
+        {
+            var placingResult = _autoLogic.PlaceAnItem(palletNo, itemCode, sackType);
+            if (placingResult == 0)
+                _autoLogic.SignWaitingPlacementIsMade(palletNo);
+
+            return placingResult == 0;
+        }
+
+        public bool Sim_RemoveLastItem(int palletNo)
+        {
+            return _autoLogic.RemoveLastPlacedItem(palletNo);
+        }
 
         public int CurrentRawPalletNo
         {
@@ -201,12 +229,14 @@ namespace PickNPlace.Business
                 if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
                 {
                     this._plcWorker.Set_ServoPosCam1(Convert.ToInt32(prmData.ParamValue));
+                    this._plcDb.Servo_PosCam1 = Convert.ToInt32(prmData.ParamValue);
                 }
 
                 prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
                 if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
                 {
                     this._plcWorker.Set_ServoPosCam2(Convert.ToInt32(prmData.ParamValue));
+                    this._plcDb.Servo_PosCam2 = Convert.ToInt32(prmData.ParamValue);
                 }
 
                 this._plcWorker.Set_ServoStart(1);
@@ -241,7 +271,13 @@ namespace PickNPlace.Business
 
             while (_runLoop)
             {
-                if (_plcDb.System_Auto)
+                var systemAuto = _plcWorker.Get_SystemAuto();
+                _plcDb.System_Auto = systemAuto;
+                if (_oldSystemMode != systemAuto)
+                    OnSystemModeChanged?.Invoke(systemAuto);
+                _oldSystemMode = systemAuto;
+
+                if (systemAuto)
                 {
                     await PrepareRawMaterial();
 
@@ -257,11 +293,12 @@ namespace PickNPlace.Business
                             var sendResult = SendRobotToPlaceDown();
                             if (sendResult)
                                 _robotTargetCoordsReady = true;
-                            else
-                                _plcWorker.ReConnect();
+                            //else
+                            //    _plcWorker.ReConnect();
                         }
 
-                        if (_plcDb.RobotPickingOk && _robotTargetCoordsReady && _captureOk)
+                        var robotPickingOk = _plcWorker.Get_RobotPickingOk();
+                        if (robotPickingOk && _robotTargetCoordsReady && _captureOk)
                         {
                             wrResult = _plcWorker.Set_RobotNextTargetOk(1);
                             if (wrResult)
@@ -275,31 +312,30 @@ namespace PickNPlace.Business
                                         wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
                                         if (wrResult)
                                         {
-                                            _plcDb.RobotPickingOk = false;
                                             _robotSentToPlaceDown = true;
                                         }
-                                        else
-                                            _plcWorker.ReConnect();
+                                        //else
+                                        //    _plcWorker.ReConnect();
                                     }
-                                    else
-                                        _plcWorker.ReConnect();
+                                    //else
+                                    //    _plcWorker.ReConnect();
                                 }
-                                else
-                                    _plcWorker.ReConnect();
+                                //else
+                                //    _plcWorker.ReConnect();
                             }
-                            else
-                                _plcWorker.ReConnect();
+                            //else
+                            //    _plcWorker.ReConnect();
                         }
                     }
-                    
+
 
                     // wait for placed down signal from robot and then reset all flags to // pick & place // again
-                    if (_robotSentToPlaceDown && _plcDb.RobotPlacingOk)
+                    var robotPlacingOk = _plcWorker.Get_RobotPlacingOk();
+                    if (_robotSentToPlaceDown && robotPlacingOk)
                     {
                         wrResult = _plcWorker.Set_RobotPlacingOk(0);
                         if (wrResult)
                         {
-                            _plcDb.RobotPlacingOk = false;
                             _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
                             _plcWorker.Set_PlaceCalculationOk(0);
                             _plcWorker.Set_CaptureOk(0);
@@ -314,12 +350,12 @@ namespace PickNPlace.Business
 
                             await PrepareRawMaterial();
                         }
-                        else
-                            _plcWorker.ReConnect();
+                        //else
+                        //    _plcWorker.ReConnect();
                     }
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(200);
             }
         }
 
@@ -338,9 +374,7 @@ namespace PickNPlace.Business
                 if (trgOk)
                 {
                     wrResult = this._plcWorker.Set_CaptureOk(1);
-                    if (!wrResult)
-                        _plcWorker.ReConnect();
-                    else
+                    if (wrResult)
                         _captureOk = true;
                 }
             }
@@ -357,10 +391,10 @@ namespace PickNPlace.Business
                 var oldRawPalletNo = _currentRawPalletNo;
 
                 if (_palletList.Any(d => (d.PalletNo == 1 || d.PalletNo == 2) && d.IsEnabled && d.IsRawMaterial && !string.IsNullOrEmpty(d.RawMaterialCode))
-                    && (
-                        _palletList.Any(d => d.PalletNo == 2 && (d.IsEnabled == false || d.IsRawMaterial == false)) ||
-                        _palletList.Any(d => d.PalletNo == 2 && d.IsEnabled && d.IsRawMaterial && !string.IsNullOrEmpty(d.RawMaterialCode))
-                       )
+                    //&& (
+                    //    _palletList.Any(d => d.PalletNo == 2 && (d.IsEnabled == false || d.IsRawMaterial == false)) ||
+                    //    _palletList.Any(d => d.PalletNo == 2 && d.IsEnabled && d.IsRawMaterial && !string.IsNullOrEmpty(d.RawMaterialCode))
+                    //   )
                  )
                 {
                     if (_makeSwitchCamera)
@@ -418,11 +452,10 @@ namespace PickNPlace.Business
                     // drive the servo to proper camera
                     if (tmpOk)
                     {
-                        this.SwitchCamera(_currentRawPalletNo);
+                        await this.SwitchCamera(_currentRawPalletNo);
 
                         if (_currentRawPalletNo != oldRawPalletNo)
                         {
-                            await Task.Delay(10000);
                             OnActivePalletChanged?.Invoke();
                         }
 
@@ -549,24 +582,7 @@ namespace PickNPlace.Business
             return false;
         }
 
-        private void _plcDb_OnRobotPlacedDown()
-        {
-            //_robotPlacedDown = true;
-            //_plcWorker.Set_RobotPlacingOk(0);
-        }
-
-        private void _plcDb_OnRobotPickedUp()
-        {
-            //_robotPickedUp = true;
-            //_plcWorker.Set_RobotPickingOk(0);
-        }
-
-        private void _plcDb_OnSystemAutoChanged(bool auto)
-        {
-            
-        }
-
-        private void SwitchCamera(int rawPalletNo)
+        private async Task SwitchCamera(int rawPalletNo)
         {
             if (rawPalletNo == 1)
             {
@@ -576,6 +592,9 @@ namespace PickNPlace.Business
             {
                 this._plcWorker.Set_ServoTargetPos(_plcDb.Servo_PosCam2);
             }
+
+            while (!_plcWorker.Get_ServoIsArrived())
+                await Task.Delay(500);
         }
 
         private bool TriggerCamera(string programId)
@@ -588,9 +607,7 @@ namespace PickNPlace.Business
             if (camera.TriggerCamera(programId))
             {
                 wrResult = this._plcWorker.Set_PlaceCalculationOk(0);
-                if (!wrResult)
-                    _plcWorker.ReConnect();
-                else
+                if (wrResult)
                 {
                     string posRaw = camera.GetVisionTargets(programId);
 
@@ -614,9 +631,7 @@ namespace PickNPlace.Business
                         this._plcWorker.Set_RobotRY(posData[4]);
                         wrResult = this._plcWorker.Set_RobotRZ(posData[5]);
 
-                        if (!wrResult)
-                            _plcWorker.ReConnect();
-                        else
+                        if (wrResult)
                             result = true;
                     }
                     else

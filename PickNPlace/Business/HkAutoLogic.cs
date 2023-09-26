@@ -496,6 +496,27 @@ namespace PickNPlace.Business
         {
             return _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
         }
+
+        public bool RemoveLastPlacedItem(int palletNo)
+        {
+            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt == null)
+                return false;
+
+            if (plt.Floors == null)
+                return false;
+
+            var currentFloor = plt.Floors.OrderByDescending(d => d.FloorNo).FirstOrDefault();
+            var lastItem = currentFloor.Items.OrderByDescending(d => d.ItemOrder).FirstOrDefault();
+            if (lastItem == null)
+                return false;
+
+            currentFloor.Items = currentFloor.Items.Where(d => d.ItemOrder != lastItem.ItemOrder).ToArray();
+            if (currentFloor.Items.Length == 0)
+                plt.Floors = plt.Floors.Where(d => d.FloorNo != currentFloor.FloorNo).ToArray();
+
+            return true;
+        }
     }
 
     class HkSackSize

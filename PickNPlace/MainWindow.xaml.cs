@@ -57,27 +57,40 @@ namespace PickNPlace
             _logicWorker = HkLogicWorker.GetInstance();
             _logicWorker.OnActivePalletChanged += _logicWorker_OnActivePalletChanged;
             _logicWorker.OnError += _logicWorker_OnError;
+            _logicWorker.OnSystemModeChanged += _logicWorker_OnSystemModeChanged;
 
             _tmrError.AutoReset = false;
             _tmrError.Elapsed += _tmrError_Elapsed;
         }
 
+        private void _logicWorker_OnSystemModeChanged(bool mode)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                _plcDB.System_Auto = mode;
+                this.UpdateSystemStatus();
+            });
+        }
+
         private void _tmrError_Elapsed(object sender, ElapsedEventArgs e)
         {
-            lblError.Content = "";   
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = "";
+            });
         }
 
         private void _logicWorker_OnError(string message)
         {
-            //this.Dispatcher.Invoke((Action)delegate
-            //{
-            //    lblError.Content = message;
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = message;
 
-            //    _tmrError.Stop();
+                _tmrError.Stop();
 
-            //    _tmrError.Enabled = true;
-            //    _tmrError.Start();
-            //});
+                _tmrError.Enabled = true;
+                _tmrError.Start();
+            });
         }
 
         private void _logicWorker_OnActivePalletChanged()
@@ -93,8 +106,8 @@ namespace PickNPlace
             this.CreateInitialData();
             this.BindLivePalletStates();
 
-            _runFlagListener = true;
-            _flagListener = Task.Run(this.LoopFlagListen);
+            //_runFlagListener = true;
+            //_flagListener = Task.Run(this.LoopFlagListen);
         }
 
         private void CreateInitialData()
@@ -304,7 +317,8 @@ namespace PickNPlace
 
             try
             {
-                this._flagListener.Dispose();
+                if (_flagListener != null)
+                    this._flagListener.Dispose();
             }
             catch (Exception)
             {
@@ -314,7 +328,7 @@ namespace PickNPlace
 
         private void btnStartToggle_Click(object sender, RoutedEventArgs e)
         {
-            this.BindDefaults();
+            //this.BindDefaults();
 
             var targetInfo = !_plcDB.System_Auto;
 
@@ -324,10 +338,10 @@ namespace PickNPlace
                 this._plc.Set_Robot_Start(1);
             }
 
-            this.Dispatcher.Invoke((Action)delegate
-            {
-                this.UpdateSystemStatus();
-            });
+            //this.Dispatcher.Invoke((Action)delegate
+            //{
+            //    this.UpdateSystemStatus();
+            //});
         }
 
         private void BindDefaults()
@@ -473,6 +487,23 @@ namespace PickNPlace
             {
                 this.BindLivePalletStates();
             });
+        }
+
+        private void btnPlaceRequests_Click(object sender, RoutedEventArgs e)
+        {
+            ProductRecipeWindow wnd = new ProductRecipeWindow();
+            wnd.ShowDialog();
+        }
+
+        private void plt_OnlineEditRequested(int palletNo)
+        {
+            var palletData = _logicWorker.GetPalletData(palletNo);
+            var reqData = _logicWorker.GetPalletRequest(palletNo);
+
+            OnlinePalletEdit wnd = new OnlinePalletEdit();
+            wnd.Pallet = palletData;
+            wnd.PlaceRequest = reqData;
+            wnd.ShowDialog();
         }
     }
 }

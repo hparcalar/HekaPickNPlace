@@ -9,14 +9,17 @@
 
   <ItemGroup>
     <None Remove="back.png" />
+    <None Remove="backward.png" />
     <None Remove="back_jotun.png" />
     <None Remove="check_box.png" />
     <None Remove="come.png" />
     <None Remove="delete.png" />
+    <None Remove="forward.png" />
     <None Remove="green_circle.png" />
     <None Remove="heka-small.jpg" />
     <None Remove="heka.bmp" />
     <None Remove="heka.jpg" />
+    <None Remove="Images\forward.png" />
     <None Remove="new.png" />
     <None Remove="palet_recete.png" />
     <None Remove="pallet_horz.png" />
@@ -49,11 +52,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\backward.png" />
     <Resource Include="Images\back.png" />
     <Resource Include="Images\back_jotun.png" />
     <Resource Include="Images\check_box.png" />
     <Resource Include="Images\come.png" />
     <Resource Include="Images\delete.png" />
+    <Resource Include="Images\forward.png" />
     <Resource Include="Images\green_circle.png" />
     <Resource Include="Images\heka-small.jpg" />
     <Resource Include="Images\heka.bmp" />

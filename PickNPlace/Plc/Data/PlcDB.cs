@@ -31,6 +31,7 @@ namespace PickNPlace.Plc.Data
         public int Servo_Speed { get; set; }
         public int Servo_PosCam1 { get; set; }
         public int Servo_PosCam2 { get; set; }
+        public bool Servo_IsArrived { get; set; }
 
         private bool _SystemAuto;
         public bool System_Auto

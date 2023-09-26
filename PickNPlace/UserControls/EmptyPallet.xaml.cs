@@ -31,6 +31,9 @@ namespace PickNPlace.UserControls
         public delegate void SelectRecipeSignal(int palletNo);
         public event SelectRecipeSignal OnSelectRecipeSignal;
 
+        public delegate void OnlineEditSignal(int palletNo);
+        public event OnlineEditSignal OnlineEditRequested;
+
         public int PalletNo
         {
             get { return (int)GetValue(PalletNoProperty); }
@@ -94,6 +97,11 @@ namespace PickNPlace.UserControls
         private void btnSelectRecipe_Click(object sender, RoutedEventArgs e)
         {
             OnSelectRecipeSignal?.Invoke(PalletNo);
+        }
+
+        private void btnOnlineEdit_Click(object sender, RoutedEventArgs e)
+        {
+            OnlineEditRequested?.Invoke(PalletNo);
         }
     }
 }
