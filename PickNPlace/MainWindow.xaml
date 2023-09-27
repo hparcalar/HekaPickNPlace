@@ -58,7 +58,21 @@
             </Button>-->
 
             <StackPanel Orientation="Vertical">
-                <Label Margin="15,10,0,0" FontWeight="Bold" TextBlock.FontFamily="Calibri">Reçete Barkodu</Label>
+                <StackPanel Orientation="Horizontal">
+                    <Label Margin="15,10,0,0" FontWeight="Bold" TextBlock.FontFamily="Calibri">Reçete Barkodu</Label>
+                    <Button Padding="20,0,20,0" FontWeight="Bold" Margin="5,10,0,0" Name="btnSelectRecipe" Click="btnSelectRecipe_Click">
+                        <Button.Background>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FFD4EDFB"/>
+                                <GradientStop Color="White" Offset="1"/>
+                            </RadialGradientBrush>
+                        </Button.Background>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock FontFamily="Calibri">SEÇ</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
                 <TextBox Width="250" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" 
                          VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" FontFamily="Calibri" />
             </StackPanel>

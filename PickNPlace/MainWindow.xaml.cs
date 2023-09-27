@@ -486,6 +486,7 @@ namespace PickNPlace
             this.Dispatcher.Invoke((Action)delegate
             {
                 this.BindLivePalletStates();
+                this.BindLivePalletStates();
             });
         }
 
@@ -504,6 +505,62 @@ namespace PickNPlace
             wnd.Pallet = palletData;
             wnd.PlaceRequest = reqData;
             wnd.ShowDialog();
+        }
+
+        private void btnSelectRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            ProductRecipeListWindow wnd = new ProductRecipeListWindow();
+            wnd.ShowDialog();
+
+            if (wnd.RecipeId > 0)
+            {
+                using (HekaDbContext db = SchemaFactory.CreateContext())
+                {
+                    var dbRecipe = db.PlaceRequest.FirstOrDefault(d => d.Id == wnd.RecipeId);
+                    if (dbRecipe != null)
+                    {
+                        foreach (var plt in _palletList)
+                        {
+                            if (!plt.IsRawMaterial)
+                            {
+                                plt.PlaceRecipeCode = dbRecipe.RecipeCode;
+                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
+                            }
+                        }
+
+                        _activeRecipe.RequestNo = dbRecipe.RequestNo;
+                        _activeRecipe.RecipeName = dbRecipe.RecipeName;
+
+                        txtRecipeBarocde.Text = "";
+
+                        txtActiveRecipeCode.Content = _activeRecipe.RequestNo;
+                        txtActiveRecipeName.Content = _activeRecipe.RecipeName;
+                    }
+                    else
+                    {
+                        foreach (var plt in _palletList)
+                        {
+                            if (!plt.IsRawMaterial)
+                            {
+                                plt.PlaceRecipeCode = "";
+                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, "");
+                            }
+                        }
+
+                        MessageBox.Show("Okutulan barkod bilgisi ile eşleşen bir reçete bulunamadı.", "Uyarı", MessageBoxButton.OK);
+                        txtRecipeBarocde.Text = "";
+
+                        txtActiveRecipeCode.Content = "";
+                        txtActiveRecipeName.Content = "";
+                    }
+                }
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    this.BindLivePalletStates();
+                    this.BindLivePalletStates();
+                });
+            }
         }
     }
 }
