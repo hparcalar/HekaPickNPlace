@@ -10,6 +10,9 @@ namespace PickNPlace.Business
 {
     public class HkAutoLogic
     {
+        public delegate void EmptyPalletIsFull(int palletNo);
+        public event EmptyPalletIsFull OnEmptyPalletIsFull;
+
         public HkAutoLogic()
         {
             this._pallets = new List<HkAutoPallet>();
@@ -24,6 +27,18 @@ namespace PickNPlace.Business
         {
             _pallets.Clear();
             _requestData.Clear();
+        }
+
+        public void ClearPallet(int palletNo)
+        {
+            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null)
+            {
+                _pallets.Remove(plt);
+
+                if (_requestData.ContainsKey(palletNo))
+                    _requestData.Remove(palletNo);
+            }
         }
 
         public void SetRequestForPallet(PlaceRequestDTO request, int palletNo)
@@ -53,7 +68,7 @@ namespace PickNPlace.Business
                 case 1: // middle size
                     return new HkSackSize { Width = 400, Height = 600 };
                 case 2: // small size
-                    return new HkSackSize { Width = 300, Height = 500 };
+                    return new HkSackSize { Width = 325, Height = 550 };
                 case 3: // large size
                     return new HkSackSize { Width = 415, Height = 650 };
                 default:
@@ -63,8 +78,44 @@ namespace PickNPlace.Business
             return null;
         }
 
+        private bool IsPalletFull(int palletNo)
+        {
+            try
+            {
+                var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+                if (plt != null)
+                {
+                    var rcp = GetRequestForPallet(palletNo);
+                    if (rcp != null)
+                    {
+                        bool anyProperItem = false;
+                        foreach (var item in rcp.Items)
+                        {
+                            var isProper = CheckIsProperItem(palletNo, item.ItemCode);
+                            if (isProper)
+                            {
+                                anyProperItem = true;
+                                break;
+                            }    
+                        }
+
+                        if (!anyProperItem)
+                            return true;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+            return false;
+        }
+
         public bool CheckIsProperItem(int palletNo, string itemCode)
         {
+            bool isProper = false;
+
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
             if (plt != null)
             {
@@ -82,11 +133,19 @@ namespace PickNPlace.Business
 
                     int requestCount = _requestData[palletNo].Items.Where(d => d.ItemCode == itemCode).Select(d => d.PiecesPerBatch).Sum();
 
-                    return requestCount > totalCount;
+                    isProper = requestCount > totalCount;
                 }
             }
 
-            return false;
+            if (!isProper)
+            {
+                //if (IsPalletFull(palletNo))
+                //    OnEmptyPalletIsFull?.Invoke(palletNo);
+
+                return false;
+            }
+            else
+                return true;
         }
 
         public int GetCurrentFloor(int palletNo)
@@ -460,6 +519,9 @@ namespace PickNPlace.Business
                             break;
                         }
                     }
+
+                    if (IsPalletFull(palletNo))
+                        OnEmptyPalletIsFull?.Invoke(palletNo);
                 }
             }
             catch (Exception)

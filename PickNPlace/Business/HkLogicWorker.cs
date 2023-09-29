@@ -18,6 +18,8 @@ namespace PickNPlace.Business
 
         private HkLogicWorker() {
             _autoLogic = new HkAutoLogic();
+            _autoLogic.OnEmptyPalletIsFull += _autoLogic_OnEmptyPalletIsFull;
+
             _plcWorker = PlcWorker.Instance();
             _palletList = new List<HkAutoPallet>();
 
@@ -27,6 +29,22 @@ namespace PickNPlace.Business
             //_plcDb.OnSystemAutoChanged += _plcDb_OnSystemAutoChanged;
 
             this.Start();
+        }
+
+        private void _autoLogic_OnEmptyPalletIsFull(int palletNo)
+        {
+            SetPalletDisabled(palletNo);
+            OnPalletIsFull?.Invoke(palletNo);
+        }
+
+        public void SetPalletDisabled(int palletNo)
+        {
+            var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null)
+            {
+                plt.IsEnabled = false;
+                _autoLogic.ClearPallet(palletNo);
+            }
         }
 
         public static HkLogicWorker GetInstance()
@@ -47,6 +65,9 @@ namespace PickNPlace.Business
 
         public delegate void SystemModeChanged(bool mode);
         public event SystemModeChanged OnSystemModeChanged;
+
+        public delegate void PalletIsFull(int palletNo);
+        public event PalletIsFull OnPalletIsFull;
         #endregion
 
         // environmental variables

@@ -58,9 +58,19 @@ namespace PickNPlace
             _logicWorker.OnActivePalletChanged += _logicWorker_OnActivePalletChanged;
             _logicWorker.OnError += _logicWorker_OnError;
             _logicWorker.OnSystemModeChanged += _logicWorker_OnSystemModeChanged;
+            _logicWorker.OnPalletIsFull += _logicWorker_OnPalletIsFull;
 
             _tmrError.AutoReset = false;
             _tmrError.Elapsed += _tmrError_Elapsed;
+        }
+
+        private void _logicWorker_OnPalletIsFull(int palletNo)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                this.BindLivePalletStates();
+                this.BindLivePalletStates();
+            });
         }
 
         private void _logicWorker_OnSystemModeChanged(bool mode)
@@ -300,6 +310,7 @@ namespace PickNPlace
             this.Dispatcher.BeginInvoke((Action)delegate
             {
                 imgPlcOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
+                imgRobotOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
             });
         }
 
