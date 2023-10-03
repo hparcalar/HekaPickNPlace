@@ -6,7 +6,7 @@
         xmlns:uc="clr-namespace:PickNPlace.UserControls"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Heka Pick N Place" Height="600" Width="1200" Icon="Images/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Heka Pick N Place" Height="600" Width="1200" Icon="Images/heka-small.jpg" WindowState="Maximized" WindowStartupLocation="CenterScreen" Closing="Window_Closing" Loaded="Window_Loaded" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -72,6 +72,19 @@
                             <TextBlock FontFamily="Calibri">SEÇ</TextBlock>
                         </StackPanel>
                     </Button>
+
+                    <Button Padding="20,0,20,0" FontWeight="Bold" Margin="5,10,0,0" Name="btnClearRecipe" Click="btnClearRecipe_Click">
+                        <Button.Background>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FFD4EDFB"/>
+                                <GradientStop Color="White" Offset="1"/>
+                            </RadialGradientBrush>
+                        </Button.Background>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock FontFamily="Calibri">TEMİZLE</TextBlock>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
                 <TextBox Width="250" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" 
                          VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" FontFamily="Calibri" />
@@ -114,7 +127,21 @@
                     </Button.Background>
 
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontFamily="Calibri">RESET</TextBlock>
+                        <Image Source="Images/reset.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">RESET</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Name="btnPalletReset" Click="btnPalletReset_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="Images/back_jotun.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">PALETLERİ SIFIRLA</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Name="btnManagement" Click="btnManagement_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
@@ -166,7 +193,7 @@
             <Image  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Source="Images/robot_int.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
-                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                        <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
                         <SkewTransform AngleX="-10" AngleY="10"/>
                         <RotateTransform/>
                         <TranslateTransform X="150"/>

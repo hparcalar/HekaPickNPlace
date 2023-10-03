@@ -310,8 +310,8 @@ namespace Sharp7
     class MsgSocket
     {
         private Socket TCPSocket;
-        private int _ReadTimeout = 5000;
-        private int _WriteTimeout = 5000;
+        private int _ReadTimeout = 2000;
+        private int _WriteTimeout = 2000;
         private int _ConnectTimeout = 2000;
         public int LastError = 0;
 

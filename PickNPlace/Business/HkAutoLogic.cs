@@ -520,8 +520,8 @@ namespace PickNPlace.Business
                         }
                     }
 
-                    if (IsPalletFull(palletNo))
-                        OnEmptyPalletIsFull?.Invoke(palletNo);
+                    //if (IsPalletFull(palletNo))
+                    //    OnEmptyPalletIsFull?.Invoke(palletNo);
                 }
             }
             catch (Exception)

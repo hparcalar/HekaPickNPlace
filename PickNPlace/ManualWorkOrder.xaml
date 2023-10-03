@@ -1,0 +1,116 @@
+﻿<Window x:Class="PickNPlace.ManualWorkOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PickNPlace"
+        mc:Ignorable="d"
+        Title="Hammadde Talimatları" Height="450" Width="900" FontFamily="Calibri" Icon="/Images/heka.jpg" Loaded="Window_Loaded" WindowState="Normal" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#FFF3F3F3">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="175"></RowDefinition>
+            <RowDefinition Height="175"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!-- TOP PANEL ACTION BUTTONS -->
+        <Border Grid.Row="0" BorderThickness="1" BorderBrush="#FF807C7C" Background="#FFE3E3E3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <!-- CANCEL/CLOSE BUTTON -->
+                <Button Name="btnCancel" Click="btnCancel_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="Images/exit.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock FontFamily="Calibri" Margin="0,10,0,0" HorizontalAlignment="Center">KAPAT</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <!-- APPROVE BUTTON -->
+                <Button Name="btnApprove" Click="btnApprove_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
+                    <Button.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#FFD4EDFB"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Button.Background>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="Images/check_ok.png" Stretch="Uniform" Height="40"></Image>
+                        <TextBlock FontFamily="Calibri" Margin="0,10,0,0">ONAYLA</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+        </Border>
+        
+        <!-- CAMERA PALLET VIEW -->
+        <StackPanel Grid.Row="1">
+            <Image HorizontalAlignment="Center" Height="164" Margin="0,10,0,0"
+            VerticalAlignment="Top" Width="452" Source="/Images/servo_double.png"/>
+        </StackPanel>
+
+        <!-- DATA INPUTS CONTAINER -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!-- PALLET NUMBER LABELS -->
+            <Border 
+                Grid.Column="0"
+                Margin="20,20,0,0" Grid.Row="1" 
+                VerticalAlignment="Top" Height="114" Width="110"
+                Background="#333333"
+                BorderBrush="#333333"
+                CornerRadius="60"
+                HorizontalAlignment="Left">
+                <Label Content="1" HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Width="110"
+                   Height="110"
+                   Foreground="#efefef"
+                   VerticalContentAlignment="Center" 
+                   HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="72" FontFamily="Calibri"/>
+            </Border>
+
+            <Border 
+                Grid.Column="1"
+                Margin="0,20,20,0" Grid.Row="1" 
+                VerticalAlignment="Top" Height="114" Width="110"
+                Background="#333333"
+                BorderBrush="#333333"
+                CornerRadius="60"
+                HorizontalAlignment="Right">
+                <Label Content="2" HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Width="110"
+                   Height="110"
+                   Foreground="#efefef"
+                   VerticalContentAlignment="Center" 
+                   HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="72" FontFamily="Calibri"/>
+            </Border>
+
+            <!-- ACTION INFO LABELS -->
+            <Label Grid.Column="0" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="150,20,0,105" FontWeight="Bold" FontSize="20"></Label>
+            <Label Grid.Column="1" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="0,20,150,105" FontWeight="Bold" FontSize="20"></Label>
+
+            <!-- INPUTS FOR THE PALLETS -->
+            <TextBox Grid.Column="0" Name="txtPallet1Count" IsReadOnly="True" Margin="193,60,182,50" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
+            <Button Grid.Column="0" Name="btnPallet1Minus" Click="btnPallet1Minus_Click" Margin="268,60,112,50" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
+            <Button Grid.Column="0" Name="btnPallet1Plus" Click="btnPallet1Plus_Click" Margin="338,60,42,50" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
+
+            <TextBox Grid.Column="1" Name="txtPallet2Count" IsReadOnly="True" Margin="40,60,335,50" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
+            <Button Grid.Column="1" Name="btnPallet2Minus" Click="btnPallet2Minus_Click" Margin="115,60,265,50" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
+            <Button Grid.Column="1" Name="btnPallet2Plus" Click="btnPallet2Plus_Click" Margin="185,60,195,50" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
+        </Grid>
+
+    </Grid>
+</Window>

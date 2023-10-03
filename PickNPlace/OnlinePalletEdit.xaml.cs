@@ -40,7 +40,7 @@ namespace PickNPlace
                 dgItems.ItemsSource = PlaceRequest.Items;
 
             containerFloors.ItemsSource = null;
-            containerFloors.ItemsSource = Pallet != null ? Pallet.Floors : null;
+            containerFloors.ItemsSource = Pallet != null && Pallet.Floors != null ? Pallet.Floors.OrderByDescending(d => d.FloorNo).ToArray() : null;
 
             int currentSackIndex = dgSackType.SelectedIndex;
             dgSackType.ItemsSource = new SackTypeDTO[]

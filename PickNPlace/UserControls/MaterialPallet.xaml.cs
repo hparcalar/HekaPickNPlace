@@ -53,7 +53,7 @@ namespace PickNPlace.UserControls
                 if (value == "HAMMADDE")
                     lblRecipeTitle.Content = "Stok";
                 else
-                    lblRecipeTitle.Content = "Reçete";
+                    lblRecipeTitle.Content = "Stok";
             }
         }
         public static readonly DependencyProperty PickingTextProperty =
@@ -162,7 +162,7 @@ namespace PickNPlace.UserControls
         {
             get
             {
-                return IsRawMaterial ? "Stok" : "Reçete";
+                return IsRawMaterial ? "Stok" : "Stok";
             }
         }
 

@@ -39,7 +39,7 @@
             <Button Content="{Binding ElementName=MaterialPalletWnd, Path=PickingText}" Grid.Column="0" Padding="5,0,5,0" FontWeight="Bold" Name="btnPickingStatus" Click="btnPickingStatus_Click" Background="{Binding ElementName=MaterialPalletWnd, Path=PickingColor}" FontSize="16" FontFamily="Calibri" />
             <Button Grid.Column="1" Padding="5,0,5,0" FontWeight="Normal" Name="btnSelectRecipe" Click="btnSelectRecipe_Click">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="/UserControls/weighing.png" Height="48"></Image>
+                    <Image Source="/UserControls/generic_sack.png" Height="48"></Image>
                     <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Name="lblRecipeTitle" Content="{Binding ElementName=MaterialPalletWnd, Path=RecipeText}" FontFamily="Calibri"></Label>
                 </StackPanel>
             </Button>
@@ -59,7 +59,7 @@
             <Label Content="{Binding ElementName=MaterialPalletWnd, Path=PalletNo}" HorizontalAlignment="Left"
                VerticalAlignment="Top"
                Width="110"
-               Height="100"
+               Height="110"
                Foreground="#efefef"
                VerticalContentAlignment="Center" 
                HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="72" FontFamily="Calibri"/>

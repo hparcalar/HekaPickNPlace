@@ -12,19 +12,23 @@
     <None Remove="backward.png" />
     <None Remove="back_jotun.png" />
     <None Remove="check_box.png" />
+    <None Remove="check_ok.png" />
     <None Remove="come.png" />
     <None Remove="delete.png" />
+    <None Remove="exit.png" />
     <None Remove="forward.png" />
     <None Remove="green_circle.png" />
     <None Remove="heka-small.jpg" />
     <None Remove="heka.bmp" />
     <None Remove="heka.jpg" />
     <None Remove="Images\forward.png" />
+    <None Remove="Images\reset.png" />
     <None Remove="new.png" />
     <None Remove="palet_recete.png" />
     <None Remove="pallet_horz.png" />
     <None Remove="pallet_vert.png" />
     <None Remove="red_circle.png" />
+    <None Remove="reset.png" />
     <None Remove="robot.png" />
     <None Remove="robot_int.png" />
     <None Remove="save.png" />
@@ -35,6 +39,7 @@
     <None Remove="stop.png" />
     <None Remove="urun_recetesi.png" />
     <None Remove="UserControls\euro_pallet.png" />
+    <None Remove="UserControls\generic_sack.png" />
     <None Remove="UserControls\layout.png" />
     <None Remove="UserControls\pallet-new-horz.png" />
     <None Remove="UserControls\sack-jotun-horz.png" />
@@ -52,6 +57,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\exit.png" />
+    <Resource Include="Images\check_ok.png" />
     <Resource Include="Images\backward.png" />
     <Resource Include="Images\back.png" />
     <Resource Include="Images\back_jotun.png" />
@@ -68,6 +75,7 @@
     <Resource Include="Images\pallet_horz.png" />
     <Resource Include="Images\pallet_vert.png" />
     <Resource Include="Images\red_circle.png" />
+    <Resource Include="Images\reset.png" />
     <Resource Include="Images\robot.png" />
     <Resource Include="Images\robot_int.png" />
     <Resource Include="Images\save.png" />
@@ -78,6 +86,7 @@
     <Resource Include="Images\stop.png" />
     <Resource Include="Images\urun_recetesi.png" />
     <Resource Include="UserControls\euro_pallet.png" />
+    <Resource Include="UserControls\generic_sack.png" />
     <Resource Include="UserControls\layout.png" />
     <Resource Include="UserControls\pallet-new-horz.png" />
     <Resource Include="UserControls\sack-jotun-horz.png" />

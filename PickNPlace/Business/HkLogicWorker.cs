@@ -68,6 +68,9 @@ namespace PickNPlace.Business
 
         public delegate void PalletIsFull(int palletNo);
         public event PalletIsFull OnPalletIsFull;
+
+        public delegate void PalletIsPlaced(int palletNo);
+        public event PalletIsPlaced OnPalletIsPlaced;
         #endregion
 
         // environmental variables
@@ -208,6 +211,60 @@ namespace PickNPlace.Business
             if (!requestFound)
             {
                 plt.IsEnabled = false;
+            }
+
+            if (!plt.IsEnabled)
+            {
+                plt.Floors = null;
+                plt.RawMaterialCode = string.Empty;
+                plt.PlaceRecipeCode = string.Empty;
+                _autoLogic.ClearPallet(palletNo);
+            }
+        }
+
+        public void SetPalletAttributes(int palletNo, bool isRawMaterial, bool isEnabled, PlaceRequestDTO pRequest, string rawMaterialCode)
+        {
+            var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt == null)
+            {
+                plt = new HkAutoPallet { PalletNo = palletNo, PalletWidth = 1000, PalletHeight = 1200 };
+                _palletList.Add(plt);
+            }
+
+            plt.IsRawMaterial = isRawMaterial;
+            plt.IsEnabled = isEnabled;
+
+            // search for the place order request
+            bool requestFound = false;
+            if (!isRawMaterial)
+            {
+                plt.RawMaterialCode = "";
+
+                if (pRequest != null)
+                {
+                    _autoLogic.SetRequestForPallet(pRequest, palletNo);
+                    requestFound = true;
+                }
+            }
+            else
+            {
+                plt.PlaceRecipeCode = "";
+                plt.RawMaterialCode = rawMaterialCode;
+
+                requestFound = true;
+            }
+
+            if (!requestFound)
+            {
+                plt.IsEnabled = false;
+            }
+
+            if (!plt.IsEnabled)
+            {
+                plt.Floors = null;
+                plt.RawMaterialCode = string.Empty;
+                plt.PlaceRecipeCode = string.Empty;
+                _autoLogic.ClearPallet(palletNo);
             }
         }
 
@@ -357,7 +414,12 @@ namespace PickNPlace.Business
                         wrResult = _plcWorker.Set_RobotPlacingOk(0);
                         if (wrResult)
                         {
-                            _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
+                            var placingLogicOk = _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
+                            if (placingLogicOk)
+                            {
+                                OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                            }
+
                             _plcWorker.Set_PlaceCalculationOk(0);
                             _plcWorker.Set_CaptureOk(0);
                             _plcWorker.Set_RobotNextTargetOk(0);

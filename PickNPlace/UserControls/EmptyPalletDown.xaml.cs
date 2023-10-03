@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PickNPlace.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -101,6 +102,14 @@ namespace PickNPlace.UserControls
         private void btnOnlineEdit_Click(object sender, RoutedEventArgs e)
         {
             OnlineEditRequested?.Invoke(PalletNo);
+        }
+
+        public HkAutoPallet Pallet { get; set; }
+
+        public void BindState()
+        {
+            containerFloors.ItemsSource = null;
+            containerFloors.ItemsSource = Pallet != null && Pallet.Floors != null ? Pallet.Floors.OrderByDescending(d => d.FloorNo).ToArray() : null;
         }
     }
 }
