@@ -138,6 +138,7 @@ namespace PickNPlace
             this.Dispatcher.Invoke((Action)delegate
             {
                 this.BindLivePalletStates();
+                this.BindLivePalletStates();
             });
         }
 
@@ -214,7 +215,7 @@ namespace PickNPlace
                         plt1.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
                         plt1.IsPalletEnabled = item.IsEnabled;
                         plt1.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
-                        plt1.SackType = item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "";
+                        plt1.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
                         plt1.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 1;
                     }
                     else if (item.PalletNo == 2)
@@ -223,7 +224,7 @@ namespace PickNPlace
                         plt2.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
                         plt2.IsPalletEnabled = item.IsEnabled;
                         plt2.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
-                        plt2.SackType = item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "";
+                        plt2.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
                         plt2.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 2;
                     }
                     else if (item.PalletNo == 3)
@@ -260,17 +261,20 @@ namespace PickNPlace
 
         private void plt_OnPickingStatusChanged(int palletNo)
         {
-            var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
-            if (pallet != null)
+            if (_palletList != null)
             {
-                pallet.IsRawMaterial = !pallet.IsRawMaterial;
-                _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
-
-                this.Dispatcher.Invoke((Action)delegate
+                var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+                if (pallet != null)
                 {
-                    this.BindLivePalletStates();
-                });
-            }
+                    pallet.IsRawMaterial = !pallet.IsRawMaterial;
+                    _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
+
+                    this.Dispatcher.Invoke((Action)delegate
+                    {
+                        this.BindLivePalletStates();
+                    });
+                }
+            }   
         }
 
         private void plt_OnPalletEnabledChanged(int palletNo, bool enabled)
@@ -382,13 +386,14 @@ namespace PickNPlace
                             foreach (var rplt in wnd.RawPallets)
                             {
                                 _logicWorker.SetPalletAttributes(rplt.PalletNo, true, true, wnd.WorkOrder, rplt.RawMaterialCode);
+                                _logicWorker.SetPalletSackType(rplt.PalletNo, rplt.SackType);
                             }
 
                             // set manual recipe of active pallets
                             var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
                             foreach (var plt in activePallets)
                             {
-                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, wnd.WorkOrder, plt.RawMaterialCode);
+                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, wnd.WorkOrder, plt.RawMaterialCode);                                
                             }
 
                             this.BindLivePalletStates();
@@ -699,6 +704,7 @@ namespace PickNPlace
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
+                    this.BindLivePalletStates();
                     this.BindLivePalletStates();
                 });
             }

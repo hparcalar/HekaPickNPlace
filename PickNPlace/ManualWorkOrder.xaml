@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
-        Title="Hammadde Talimatları" Height="450" Width="900" FontFamily="Calibri" Icon="/Images/heka.jpg" Loaded="Window_Loaded" WindowState="Normal" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#FFF3F3F3">
+        Title="Hammadde Talimatları" Height="500" Width="900" FontFamily="Calibri" Icon="/Images/heka.jpg" Loaded="Window_Loaded" WindowState="Normal" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#FFF3F3F3">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
@@ -49,7 +49,7 @@
             </StackPanel>
 
         </Border>
-        
+
         <!-- CAMERA PALLET VIEW -->
         <StackPanel Grid.Row="1">
             <Image HorizontalAlignment="Center" Height="164" Margin="0,10,0,0"
@@ -110,6 +110,7 @@
             <TextBox Grid.Column="1" Name="txtPallet2Count" IsReadOnly="True" Margin="40,60,335,50" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
             <Button Grid.Column="1" Name="btnPallet2Minus" Click="btnPallet2Minus_Click" Margin="115,60,265,50" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
             <Button Grid.Column="1" Name="btnPallet2Plus" Click="btnPallet2Plus_Click" Margin="185,60,195,50" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
+            <CheckBox Grid.Column="1" Content="Aynı Hammadde" Name="chkSameMaterial" FontSize="13" FontWeight="Bold" Margin="40,139,289,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250"></CheckBox>
         </Grid>
 
     </Grid>

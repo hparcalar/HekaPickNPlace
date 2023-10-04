@@ -34,10 +34,20 @@ namespace PickNPlace.Business
             var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
             if (plt != null)
             {
-                _pallets.Remove(plt);
+                if (plt.IsRawMaterial)
+                {
+                    plt.RawMaterialCode = "";
+                    plt.PlaceRecipeCode = "";
+                    plt.IsEnabled = false;
+                    plt.SackType = 0;
+                }
+                else
+                {
+                    _pallets.Remove(plt);
 
-                if (_requestData.ContainsKey(palletNo))
-                    _requestData.Remove(palletNo);
+                    if (_requestData.ContainsKey(palletNo))
+                        _requestData.Remove(palletNo);
+                }
             }
         }
 

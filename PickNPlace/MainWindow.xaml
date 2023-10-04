@@ -59,8 +59,8 @@
 
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Margin="15,10,0,0" FontWeight="Bold" TextBlock.FontFamily="Calibri">Reçete Barkodu</Label>
-                    <Button Padding="20,0,20,0" FontWeight="Bold" Margin="5,10,0,0" Name="btnSelectRecipe" Click="btnSelectRecipe_Click">
+                    <Label Margin="15,10,0,0" FontWeight="Bold" VerticalAlignment="Center" TextBlock.FontFamily="Calibri">Reçete Barkodu</Label>
+                    <Button Padding="20,15,20,15" FontWeight="Bold" Margin="5,10,0,0" Name="btnSelectRecipe" Click="btnSelectRecipe_Click">
                         <Button.Background>
                             <RadialGradientBrush>
                                 <GradientStop Color="#FFD4EDFB"/>
@@ -73,7 +73,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Padding="20,0,20,0" FontWeight="Bold" Margin="5,10,0,0" Name="btnClearRecipe" Click="btnClearRecipe_Click">
+                    <Button Padding="20,15,20,15" FontWeight="Bold" Margin="5,10,0,0" Name="btnClearRecipe" Click="btnClearRecipe_Click">
                         <Button.Background>
                             <RadialGradientBrush>
                                 <GradientStop Color="#FFD4EDFB"/>
@@ -86,8 +86,7 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-                <TextBox Width="250" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" 
-                         VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="5" Margin="15" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" FontFamily="Calibri" />
+                <TextBox Width="252" Name="txtRecipeBarocde" KeyUp="txtRecipeBarocde_KeyUp" Background="White" VerticalContentAlignment="Center" Padding="5" Margin="5" HorizontalContentAlignment="Left" FontWeight="Bold" FontSize="16" FontFamily="Calibri" />
             </StackPanel>
 
             <!-- active recipe pre-information -->

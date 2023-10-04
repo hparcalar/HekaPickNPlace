@@ -77,7 +77,7 @@
             <Button Grid.Column="1" Padding="5,0,5,0" FontWeight="Normal" Name="btnOnlineEdit" Click="btnOnlineEdit_Click">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Image Source="/UserControls/layout.png" Height="48"></Image>
-                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16">Dizilim</Label>
+                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="14">Durum</Label>
                 </StackPanel>
             </Button>
 

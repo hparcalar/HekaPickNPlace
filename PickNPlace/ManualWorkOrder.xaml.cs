@@ -37,6 +37,8 @@ namespace PickNPlace
 
         private void BindModel()
         {
+            chkSameMaterial.IsChecked = false;
+
             if (RawPallets != null && RawPallets.Length > 0 
                 && WorkOrder != null && WorkOrder.Items != null && WorkOrder.Items.Length > 0)
             {
@@ -48,7 +50,12 @@ namespace PickNPlace
                         if (pallet.PalletNo == 1)
                             txtPallet1Count.Text = relatedOrder.PiecesPerBatch.ToString();
                         else if (pallet.PalletNo == 2)
+                        {
                             txtPallet2Count.Text = relatedOrder.PiecesPerBatch.ToString();
+
+                            if (RawPallets.Length > 1 && RawPallets[0].RawMaterialCode == pallet.RawMaterialCode)
+                                chkSameMaterial.IsChecked = true;
+                        }
                     }
                 }
             }
@@ -158,7 +165,7 @@ namespace PickNPlace
             }
 
             // set 2nd pallet
-            if (Convert.ToInt32(txtPallet2Count.Text) > 0)
+            if (Convert.ToInt32(txtPallet2Count.Text) > 0 || (chkSameMaterial.IsChecked == true && Convert.ToInt32(txtPallet1Count.Text) > 0))
             {
                 rawList.Add(new HkAutoPallet
                 {
@@ -168,23 +175,30 @@ namespace PickNPlace
                     IsRawMaterial = true,
                 });
 
-                string rawCode = GenerateRawMatCode();
-                if (!string.IsNullOrEmpty(rawCode))
+                if (chkSameMaterial.IsChecked == true && rawList.Count > 1)
                 {
-                    int maxTryCount = 0;
-                    while (rawCode == firstGenCode)
+                    rawList[rawList.Count - 1].RawMaterialCode = rawList[0].RawMaterialCode;
+                }
+                else
+                {
+                    string rawCode = GenerateRawMatCode();
+                    if (!string.IsNullOrEmpty(rawCode))
                     {
-                        if (maxTryCount > 10)
-                            break;
+                        int maxTryCount = 0;
+                        while (rawCode == firstGenCode)
+                        {
+                            if (maxTryCount > 10)
+                                break;
 
-                        rawCode = GenerateRawMatCode();
-                        maxTryCount++;
+                            rawCode = GenerateRawMatCode();
+                            maxTryCount++;
+                        }
+
+                        if (rawCode != firstGenCode)
+                            rawList[rawList.Count - 1].RawMaterialCode = "2_" + rawCode;
+                        else
+                            rawList.RemoveAt(rawList.Count - 1);
                     }
-
-                    if (rawCode != firstGenCode)
-                        rawList[rawList.Count - 1].RawMaterialCode = "2_" + rawCode;
-                    else
-                        rawList.RemoveAt(rawList.Count - 1);
                 }
             }
 
@@ -201,13 +215,16 @@ namespace PickNPlace
             List<PlaceRequestItemDTO> pReqItems = new List<PlaceRequestItemDTO>();
             foreach (var pallet in rawList)
             {
-                pReqItems.Add(new PlaceRequestItemDTO
+                if (!pReqItems.Any(d => d.ItemCode == pallet.RawMaterialCode))
                 {
-                    ItemCode = pallet.RawMaterialCode,
-                    PiecesPerBatch = pallet.PalletNo == 1 ? Convert.ToInt32(txtPallet1Count.Text) : pallet.PalletNo == 2 ? Convert.ToInt32(txtPallet2Count.Text) : 0,
-                    ItemName = pallet.RawMaterialCode,
-                    SackType = 3,
-                });
+                    pReqItems.Add(new PlaceRequestItemDTO
+                    {
+                        ItemCode = pallet.RawMaterialCode,
+                        PiecesPerBatch = pallet.PalletNo == 1 ? Convert.ToInt32(txtPallet1Count.Text) : pallet.PalletNo == 2 ? Convert.ToInt32(txtPallet2Count.Text) : 0,
+                        ItemName = pallet.RawMaterialCode,
+                        SackType = 3,
+                    });
+                }
             }
 
             pReq.Items = pReqItems.ToArray();

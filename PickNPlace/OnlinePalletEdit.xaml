@@ -13,6 +13,20 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Padding="20,0,20,0" FontWeight="Bold" Width="150" Name="btnBack" Click="btnBack_Click" HorizontalAlignment="Right">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF679CB9"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="Images/back_jotun.png" Stretch="Uniform" Height="40"></Image>
+                    <TextBlock FontFamily="Calibri">ANA EKRAN</TextBlock>
+                </StackPanel>
+            </Button>
+
             <Button Padding="20,0,20,0" FontWeight="Bold" Width="150" Name="btnBackward" Click="btnBackward_Click" HorizontalAlignment="Right">
                 <Button.Background>
                     <RadialGradientBrush>

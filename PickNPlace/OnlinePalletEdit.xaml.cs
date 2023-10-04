@@ -97,5 +97,10 @@ namespace PickNPlace
                 }
             }
         }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
