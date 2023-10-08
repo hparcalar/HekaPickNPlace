@@ -140,6 +140,8 @@ namespace PickNPlace
             this.Dispatcher.Invoke((Action)delegate
             {
                 _plc.Set_SystemAuto(0);
+                _plc.Set_Reset_Plc_Variables(1);
+                _logicWorker.ResetFlags();
             });
         }
 

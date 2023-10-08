@@ -1154,6 +1154,30 @@ namespace PickNPlace.Plc
             return data[0] == 1;
         }
 
+        public bool Get_RobotRemoteMode()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 7, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
         public bool Get_SystemAuto()
         {
             while (_isSetRunning)

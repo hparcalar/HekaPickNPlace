@@ -312,7 +312,7 @@ namespace PickNPlace
                 else
                 {
                     var cItem = pReqItems.FirstOrDefault(d => d.ItemCode == pallet.RawMaterialCode);
-                    if (cItem != null)
+                    if (cItem != null && !(pallet.PalletNo == 2 && chkSameMaterial.IsChecked == true))
                     {
                         cItem.PiecesPerBatch = pallet.PalletNo == 1 ? Convert.ToInt32(txtPallet1Count.Text) : pallet.PalletNo == 2 ? Convert.ToInt32(txtPallet2Count.Text) : 0;
                     }

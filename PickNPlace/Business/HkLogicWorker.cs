@@ -86,6 +86,7 @@ namespace PickNPlace.Business
         private IList<HkAutoPallet> _palletList;
         private Task _taskLoop;
         private bool _oldSystemMode = false;
+        private bool _oldPendantMode = true;
         private bool _runLoop;
 
         // flag variables
@@ -367,11 +368,20 @@ namespace PickNPlace.Business
 
             while (_runLoop)
             {
+                // handle system working mode
                 var systemAuto = _plcWorker.Get_SystemAuto();
                 _plcDb.System_Auto = systemAuto;
                 if (_oldSystemMode != systemAuto)
                     OnSystemModeChanged?.Invoke(systemAuto);
                 _oldSystemMode = systemAuto;
+
+                // handle robot pendant mode
+                var pendantRemoteMode = _plcWorker.Get_RobotRemoteMode();
+                if (pendantRemoteMode != _oldPendantMode && pendantRemoteMode)
+                    OnPalletIsPlaced?.Invoke(1);
+                else if (pendantRemoteMode != _oldPendantMode && !pendantRemoteMode)
+                    OnError.Invoke("ROBOT KUMANDASINI REMOTE ÇALIŞMA MODUNA ALINIZ.");
+                _oldPendantMode = pendantRemoteMode;
 
                 if (systemAuto)
                 {

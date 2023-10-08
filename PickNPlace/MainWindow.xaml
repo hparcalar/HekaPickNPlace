@@ -239,7 +239,7 @@
                 <Image Name="imgRobotOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
-            <Label Grid.Column="2" HorizontalContentAlignment="Right" HorizontalAlignment="Right" 
+            <Label Grid.Column="2" HorizontalContentAlignment="Right" HorizontalAlignment="Right" VerticalContentAlignment="Center"
                    Name="lblError"
                    FontWeight="Bold" FontSize="16" Foreground="#FFE40F0F" Background="#FFF7F2F2"></Label>
 
