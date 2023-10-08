@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- ÜST KONTROL BUTON PANELİ -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
+        <StackPanel Margin="20,0,0,0" Grid.Row="0" Orientation="Horizontal">
             <StackPanel.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFADD5F7" Offset="0.007"/>
@@ -127,7 +127,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="Images/reset.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">RESET</TextBlock>
+                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">HATA RESET</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Name="btnPalletReset" Click="btnPalletReset_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
@@ -228,13 +228,13 @@
             </Grid.ColumnDefinitions>
 
             <!-- PLC OK STATUS -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
+            <StackPanel Margin="20,0,0,0" Grid.Column="0" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">PLC</Label>
                 <Image Name="imgPlcOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
             <!-- ROBOT OK STATUS -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <StackPanel Margin="20,0,0,0" Grid.Column="1" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">ROBOT</Label>
                 <Image Name="imgRobotOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>

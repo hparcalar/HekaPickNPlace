@@ -39,6 +39,7 @@ namespace PickNPlace
         private PlaceRequestDTO _activeRecipe = new PlaceRequestDTO();
         private PlaceRequestDTO _manualRecipe = new PlaceRequestDTO();
         private Timer _tmrError = new Timer(10000);
+        private Timer _tmrResetInvoker = new Timer(750);
 
         public MainWindow()
         {
@@ -47,7 +48,8 @@ namespace PickNPlace
             // make db migrations
             SchemaFactory.ApplyMigrations();
 
-           
+            _tmrResetInvoker.AutoReset = false;
+            _tmrResetInvoker.Elapsed += _tmrResetInvoker_Elapsed;
 
             _tmrError.AutoReset = false;
             _tmrError.Elapsed += _tmrError_Elapsed;
@@ -73,10 +75,7 @@ namespace PickNPlace
 
         private void _tmrError_Elapsed(object sender, ElapsedEventArgs e)
         {
-            this.Dispatcher.Invoke((Action)delegate
-            {
-                lblError.Content = "";
-            });
+           
         }
 
         private void _logicWorker_OnError(string message)
@@ -85,10 +84,10 @@ namespace PickNPlace
             {
                 lblError.Content = message;
 
-                _tmrError.Stop();
+                //_tmrError.Stop();
 
-                _tmrError.Enabled = true;
-                _tmrError.Start();
+                //_tmrError.Enabled = true;
+                //_tmrError.Start();
             });
         }
 
@@ -96,6 +95,7 @@ namespace PickNPlace
         {
             this.Dispatcher.Invoke((Action)delegate
             {
+                this.BindLivePalletStates();
                 this.BindLivePalletStates();
             });
         }
@@ -125,6 +125,8 @@ namespace PickNPlace
             _logicWorker.OnSystemModeChanged += _logicWorker_OnSystemModeChanged;
             _logicWorker.OnPalletIsFull += _logicWorker_OnPalletIsFull;
             _logicWorker.OnPalletIsPlaced += _logicWorker_OnPalletIsPlaced;
+            _logicWorker.OnRawPalletsAreFinished += _logicWorker_OnRawPalletsAreFinished;
+            _logicWorker.OnCamSentRiskyPos += _logicWorker_OnCamSentRiskyPos;
 
             this.Dispatcher.Invoke((Action)delegate
             {
@@ -133,8 +135,31 @@ namespace PickNPlace
             });
         }
 
+        private void _logicWorker_OnCamSentRiskyPos()
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                _plc.Set_SystemAuto(0);
+            });
+        }
+
+        private void _logicWorker_OnRawPalletsAreFinished()
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                this._plc.Set_SystemAuto(0);
+                this.BindLivePalletStates();
+                this.BindLivePalletStates();
+            });
+        }
+
         private void _logicWorker_OnPalletIsPlaced(int palletNo)
         {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = "";
+            });
+
             this.Dispatcher.Invoke((Action)delegate
             {
                 this.BindLivePalletStates();
@@ -266,6 +291,12 @@ namespace PickNPlace
                 var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
                 if (pallet != null)
                 {
+                    if (pallet.PalletNo == 1 && pallet.IsRawMaterial)
+                    {
+                        MessageBox.Show("1. Palet hammadde olmak zorundadır.", "Uyarı", MessageBoxButton.OK);
+                        return;
+                    }
+
                     pallet.IsRawMaterial = !pallet.IsRawMaterial;
                     _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
@@ -310,14 +341,15 @@ namespace PickNPlace
                         {
                             _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
                         }
-                        else if (!pallet.IsEnabled && pallet.IsRawMaterial)
-                        {
-                            _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
-                        }
+                        //else if (!pallet.IsEnabled && pallet.IsRawMaterial)
+                        //{
+                        //    _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
+                        //}
                     }
 
                     this.Dispatcher.Invoke((Action)delegate
                     {
+                        this.BindLivePalletStates();
                         this.BindLivePalletStates();
                     });
                 }
@@ -393,7 +425,7 @@ namespace PickNPlace
                             var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
                             foreach (var plt in activePallets)
                             {
-                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, wnd.WorkOrder, plt.RawMaterialCode);                                
+                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, _manualRecipe, plt.RawMaterialCode);                                
                             }
 
                             this.BindLivePalletStates();
@@ -446,9 +478,25 @@ namespace PickNPlace
 
             var targetInfo = !_plcDB.System_Auto;
 
+            if (targetInfo)
+            {
+                var rawPallets = _palletList.Any(d => d.IsRawMaterial && d.IsEnabled);
+                if (!rawPallets)
+                {
+                    MessageBox.Show("Sistemi başlatabilmek için en az 1 hammadde paleti seçmelisiniz.", "Uyarı", MessageBoxButton.OK);
+                    return;
+                }
+            }
+            else
+            {
+                this._plc.Set_RobotHold(1);
+            }
+
             this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
             if (targetInfo)
             {
+                this._plc.Set_RobotHold(0);
+                this._plc.Set_Robot_Start(0);
                 this._plc.Set_Robot_Start(1);
             }
 
@@ -490,7 +538,7 @@ namespace PickNPlace
         {
             if (_plcDB.System_Auto)
             {
-                txtStart.Text = "SİSTEMİ DURDUR";
+                txtStart.Text = "SİSTEMİ DURAKLAT";
                 imgStart.Source = new BitmapImage(new Uri("Images/stop.png", UriKind.Relative));
             }
             else
@@ -586,14 +634,38 @@ namespace PickNPlace
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                lblError.Content = "";
+            });
+
             _plc.Set_Reset_Plc_Variables(1);
 
-            //_plc.Set_CaptureOk(0);
-            //_plc.Set_PlaceCalculationOk(0);
-            //_plc.Set_RobotNextTargetOk(0);
-            //_plc.Set_RobotPickingOk(0);
-            //_plc.Set_RobotPlacingOk(0);
-            //_plc.Set_SystemAuto(0);
+            _logicWorker.ResetFlags();
+            this._plc.Set_Robot_Start(0);
+            this._plc.Set_Robot_Start(1);
+            _plc.Set_RobotHold(0);
+            this._plc.Set_Robot_Start(0);
+            this._plc.Set_Robot_Start(1);
+
+            _tmrResetInvoker.Stop();
+            _tmrResetInvoker.Enabled = true;
+            _tmrResetInvoker.Start();
+        }
+
+        private void _tmrResetInvoker_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                _plc.Set_Reset_Plc_Variables(1);
+
+                _logicWorker.ResetFlags();
+                this._plc.Set_Robot_Start(0);
+                this._plc.Set_Robot_Start(1);
+                _plc.Set_RobotHold(0);
+                this._plc.Set_Robot_Start(0);
+                this._plc.Set_Robot_Start(1);
+            });
         }
 
         private void btnPlaceRequests_Click(object sender, RoutedEventArgs e)
@@ -700,6 +772,11 @@ namespace PickNPlace
         {
             if (MessageBox.Show("Tüm palet durumlarını sıfırlamak istediğinizden emin misiniz?", "Uyarı", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+                _manualRecipe = null;
+                _activeRecipe = null;
+                txtActiveRecipeCode.Content = "";
+                txtActiveRecipeName.Content = "";
+
                 _logicWorker.ClearPallets();
 
                 this.Dispatcher.Invoke((Action)delegate

@@ -50,7 +50,8 @@ namespace PickNPlace.UserControls
             get { return (bool)GetValue(IsPalletEnabledProperty); }
             set { SetValue(IsPalletEnabledProperty, value);
                 btnPalletEnable.Content = value ? "AKTİF" : "PASİF";
-                btnPalletEnable.Background = value ? Brushes.LimeGreen : Brushes.Red;
+                btnPalletEnable.Background = value ? new SolidColorBrush(Color.FromRgb(44, 240, 5)) : new SolidColorBrush(Color.FromRgb(176, 17, 5));
+                btnPalletEnable.Foreground = new SolidColorBrush(IsPalletEnabled ? Color.FromRgb(0, 0, 0) : Color.FromRgb(255, 255, 255));
             }
         }
         public static readonly DependencyProperty IsPalletEnabledProperty =
@@ -76,7 +77,7 @@ namespace PickNPlace.UserControls
         {
             get
             {
-                return IsPalletEnabled ? "LimeGreen" : "Red";
+                return IsPalletEnabled ? "#2cf005" : "#b01105";
             }
         }
 
@@ -108,6 +109,15 @@ namespace PickNPlace.UserControls
 
         public void BindState()
         {
+            if (Pallet != null && Pallet.Floors != null)
+            {
+                foreach (var flr in Pallet.Floors)
+                {
+                    if (flr.Items != null)
+                        flr.Items = flr.Items.Where(d => d.IsPlaced == true).ToArray();
+                }
+            }
+
             containerFloors.ItemsSource = null;
             containerFloors.ItemsSource = Pallet != null && Pallet.Floors != null ? Pallet.Floors.OrderByDescending(d => d.FloorNo).ToArray() : null;
         }

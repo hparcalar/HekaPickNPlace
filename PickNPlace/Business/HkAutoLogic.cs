@@ -137,7 +137,7 @@ namespace PickNPlace.Business
                         foreach (var floor in plt.Floors)
                         {
                             if (floor.Items != null)
-                                totalCount += floor.Items.Where(d => d.ItemCode == itemCode).Count();
+                                totalCount += floor.Items.Where(d => d.ItemCode == itemCode && d.IsPlaced == true).Count();
                         }
                     }
 
@@ -209,7 +209,7 @@ namespace PickNPlace.Business
                     sackSize.Width, 
                     sackSize.Height);
 
-                var existingItemRects = floor.Items.OrderBy(d => d.ItemOrder).Select(d => new Rectangle(
+                var existingItemRects = floor.Items.Where(d => d.IsPlaced == true).OrderBy(d => d.ItemOrder).Select(d => new Rectangle(
                         (pallet.PalletWidth - PalletPadding) - (d.PlacedX + (d.ItemWidth / 2)),
                         (pallet.PalletHeight - PalletPadding) - (d.PlacedY + (d.ItemHeight / 2)),
                         d.ItemWidth,
@@ -217,8 +217,8 @@ namespace PickNPlace.Business
                     )).ToArray();
 
                 HkAutoItem lastPlacedItem = null;
-                if (floor.Items != null && floor.Items.Length > 0)
-                    lastPlacedItem = floor.Items.OrderByDescending(d => d.ItemOrder).FirstOrDefault();
+                if (floor.Items != null && floor.Items.Where(d => d.IsPlaced == true).Count() > 0)
+                    lastPlacedItem = floor.Items.Where(d => d.IsPlaced == true).OrderByDescending(d => d.ItemOrder).FirstOrDefault();
 
                 Rectangle estimatedRect = Rectangle.Empty;
                 estimatedRect.Width = flyingItem.Width;
@@ -247,7 +247,7 @@ namespace PickNPlace.Business
                         var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
                         if (prevFloor != null)
                         {
-                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            var prevFloorItems = prevFloor.Items.Where(d => d.IsPlaced == true).OrderBy(d => d.ItemOrder).Select(d => new
                             {
                                 IsRotated = d.IsRotated,
                                 Rect = new Rectangle(
@@ -290,7 +290,6 @@ namespace PickNPlace.Business
                     // -------  ------------ ------- //
                     // -------  ------------ ------- //
                     // -------  ------------ ------- //
-
                     isRotated = true;
 
                     // second shift position to down at left
@@ -306,7 +305,7 @@ namespace PickNPlace.Business
                         var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
                         if (prevFloor != null)
                         {
-                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            var prevFloorItems = prevFloor.Items.Where(d => d.IsPlaced == true).OrderBy(d => d.ItemOrder).Select(d => new
                             {
                                 IsRotated = d.IsRotated,
                                 Rect = new Rectangle(
@@ -358,7 +357,7 @@ namespace PickNPlace.Business
                         var prevFloor = pallet.Floors.FirstOrDefault(d => d.FloorNo == floor.FloorNo - 1);
                         if (prevFloor != null)
                         {
-                            var prevFloorItems = prevFloor.Items.OrderBy(d => d.ItemOrder).Select(d => new
+                            var prevFloorItems = prevFloor.Items.Where(d => d.IsPlaced == true).OrderBy(d => d.ItemOrder).Select(d => new
                             {
                                 IsRotated = d.IsRotated,
                                 Rect = new Rectangle(
@@ -477,6 +476,12 @@ namespace PickNPlace.Business
         {
             try
             {
+                var waitingItem = GetWaitingItem(palletNo);
+                if (waitingItem != null)
+                {
+                    RemoveLastPlacedItem(palletNo);
+                }
+
                 var sackSize = GetSackSize(sackType);
 
                 if (sackSize == null)

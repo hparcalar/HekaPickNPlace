@@ -39,6 +39,14 @@ namespace PickNPlace
             if (PlaceRequest != null && PlaceRequest.Items != null)
                 dgItems.ItemsSource = PlaceRequest.Items;
 
+            if (Pallet != null && Pallet.Floors != null) {
+                foreach (var flr in Pallet.Floors)
+                {
+                    if (flr.Items != null)
+                        flr.Items = flr.Items.Where(d => d.IsPlaced == true).ToArray();
+                }
+            }
+
             containerFloors.ItemsSource = null;
             containerFloors.ItemsSource = Pallet != null && Pallet.Floors != null ? Pallet.Floors.OrderByDescending(d => d.FloorNo).ToArray() : null;
 

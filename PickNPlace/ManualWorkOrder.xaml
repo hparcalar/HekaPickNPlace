@@ -9,8 +9,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition Height="175"></RowDefinition>
-            <RowDefinition Height="175"></RowDefinition>
+            <RowDefinition Height="150"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -52,7 +52,7 @@
 
         <!-- CAMERA PALLET VIEW -->
         <StackPanel Grid.Row="1">
-            <Image HorizontalAlignment="Center" Height="164" Margin="0,10,0,0"
+            <Image HorizontalAlignment="Center" Height="120" Margin="0,10,0,0"
             VerticalAlignment="Top" Width="452" Source="/Images/servo_double.png"/>
         </StackPanel>
 
@@ -99,18 +99,26 @@
             </Border>
 
             <!-- ACTION INFO LABELS -->
-            <Label Grid.Column="0" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="150,20,0,105" FontWeight="Bold" FontSize="20"></Label>
-            <Label Grid.Column="1" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="0,20,150,105" FontWeight="Bold" FontSize="20"></Label>
+            <Label Grid.Column="0" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="150,94,0,69" FontWeight="Bold" FontSize="20"></Label>
+            <Label Grid.Column="1" HorizontalContentAlignment="Center" Content="PALET İÇİ ADET" Margin="0,94,150,69" FontWeight="Bold" FontSize="20"></Label>
+            <Label Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="HAMMADDE :" Width="107" Margin="193,0,0,0" FontWeight="Bold" FontSize="16"></Label>
+            <Label Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Content="HAMMADDE :" Width="110" FontWeight="Bold" FontSize="16" Margin="40,0,0,0"/>
+            <Button Grid.Column="0" Name="btnSelectMat1" Click="btnSelectMat1_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Content="HAMMADDE TÜRÜNÜ DEĞİŞTİR" Margin="193,35,0,0" Width="215" Height="42" FontWeight="Bold"></Button>
+            <Button Grid.Column="1" Name="btnSelectMat2" Click="btnSelectMat2_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Content="HAMMADDE TÜRÜNÜ DEĞİŞTİR" Margin="40,35,0,0" Width="215" Height="42" FontWeight="Bold"></Button>
+
+            <!-- CURRENT RAW MATERIAL CODES -->
+            <Label Grid.Column="0" Name="txtRawMat1" HorizontalAlignment="Left" VerticalAlignment="Top" Content="YOK" Width="108" Margin="300,0,0,0" FontWeight="Bold" FontSize="16" Background="#FF0976C1" Foreground="White"></Label>
+            <Label Grid.Column="1" Name="txtRawMat2" HorizontalAlignment="Left" VerticalAlignment="Top" Content="YOK" Width="105" Margin="150,0,0,0" FontWeight="Bold" FontSize="16" Background="#FF0976C1" Foreground="White"></Label>
 
             <!-- INPUTS FOR THE PALLETS -->
-            <TextBox Grid.Column="0" Name="txtPallet1Count" IsReadOnly="True" Margin="193,60,182,50" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
-            <Button Grid.Column="0" Name="btnPallet1Minus" Click="btnPallet1Minus_Click" Margin="268,60,112,50" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
-            <Button Grid.Column="0" Name="btnPallet1Plus" Click="btnPallet1Plus_Click" Margin="338,60,42,50" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
+            <TextBox Grid.Column="0" Name="txtPallet1Count" IsReadOnly="True" Margin="193,131,182,14" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
+            <Button Grid.Column="0" Name="btnPallet1Minus" Click="btnPallet1Minus_Click" Margin="268,131,112,14" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
+            <Button Grid.Column="0" Name="btnPallet1Plus" Click="btnPallet1Plus_Click" Margin="338,131,42,14" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
 
-            <TextBox Grid.Column="1" Name="txtPallet2Count" IsReadOnly="True" Margin="40,60,335,50" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
-            <Button Grid.Column="1" Name="btnPallet2Minus" Click="btnPallet2Minus_Click" Margin="115,60,265,50" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
-            <Button Grid.Column="1" Name="btnPallet2Plus" Click="btnPallet2Plus_Click" Margin="185,60,195,50" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
-            <CheckBox Grid.Column="1" Content="Aynı Hammadde" Name="chkSameMaterial" FontSize="13" FontWeight="Bold" Margin="40,139,289,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250"></CheckBox>
+            <TextBox Grid.Column="1" Name="txtPallet2Count" IsReadOnly="True" Margin="40,131,335,14" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
+            <Button Grid.Column="1" Name="btnPallet2Minus" Click="btnPallet2Minus_Click" Margin="115,131,265,14" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
+            <Button Grid.Column="1" Name="btnPallet2Plus" Click="btnPallet2Plus_Click" Margin="185,131,195,14" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
+            <CheckBox Grid.Column="1" Content="Aynı Hammadde" Name="chkSameMaterial" FontSize="13" FontWeight="Bold" Margin="322,152,0,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"></CheckBox>
         </Grid>
 
     </Grid>

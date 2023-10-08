@@ -81,24 +81,25 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="2" Padding="5,0,5,0" FontWeight="Bold" Name="btnPalletEnable" Click="btnPalletEnable_Click" 
+            <Button Grid.Column="2" Padding="5,0,5,0" FontWeight="Bold" Name="btnPalletEnable" Click="btnPalletEnable_Click" Foreground="#FFFFFF"
                     Content="{Binding ElementName=EmptyPalletWnd, Path=EnabledText}" Background="{Binding ElementName=EmptyPalletWnd, Path=EnabledColor}" FontSize="16" FontFamily="Calibri">
             </Button>
         </Grid>
 
         <!-- PALLET NUMBER LABEL -->
         <Border 
-            Margin="33,43,0,0" Grid.Row="1" 
-            VerticalAlignment="Top" Height="114" Width="110"
+            Margin="33,15,0,0" Grid.Row="1" 
+            VerticalAlignment="Top" Height="94" Width="90"
             Background="#333333"
             BorderBrush="#333333"
             CornerRadius="60"
             HorizontalAlignment="Left">
             <Label Content="{Binding ElementName=EmptyPalletWnd, Path=PalletNo}" HorizontalAlignment="Left"
                VerticalAlignment="Top"
-               Width="110"
-               Height="110"
+               Width="90"
+               Height="94"
                Foreground="#efefef"
+               Padding="0"
                VerticalContentAlignment="Center" 
                HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="72" FontFamily="Calibri"/>
         </Border>

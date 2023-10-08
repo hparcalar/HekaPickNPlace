@@ -71,6 +71,12 @@ namespace PickNPlace.Business
 
         public delegate void PalletIsPlaced(int palletNo);
         public event PalletIsPlaced OnPalletIsPlaced;
+
+        public delegate void RawPalletsAreFinished();
+        public event RawPalletsAreFinished OnRawPalletsAreFinished;
+
+        public delegate void CamSentRiskyPos();
+        public event CamSentRiskyPos OnCamSentRiskyPos;
         #endregion
 
         // environmental variables
@@ -343,6 +349,18 @@ namespace PickNPlace.Business
             this.Stop();
         }
 
+        public void ResetFlags()
+        {
+            _currentRawPalletNo = 1;
+            _currentTargetPalletNo = 6;
+            _rawMaterialSelectionPalletOk = false;
+            _targetSelectionPalletOk = false;
+            _captureOk = false;
+            _robotTargetCoordsReady = false;
+            _robotSentToPlaceDown = false;
+            _robotPickedUp = false;
+        }
+
         private async Task LoopFunc()
         {
             bool wrResult = false;
@@ -360,7 +378,12 @@ namespace PickNPlace.Business
                     await PrepareRawMaterial();
 
                     // select next pallet to place
-                    
+                    if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 6)
+                    {
+                        _currentTargetPalletNo = 6;
+                        _targetSelectionPalletOk = false;
+                    }
+
                     if (!_targetSelectionPalletOk)
                         CheckNextTargetPallet();
 
@@ -373,6 +396,15 @@ namespace PickNPlace.Business
                                 _robotTargetCoordsReady = true;
                             //else
                             //    _plcWorker.ReConnect();
+                        }
+
+                        var isRiskyPos = _plcWorker.Get_RobotRiskyPos();
+                        if (isRiskyPos)
+                        {
+                            _plcWorker.Set_RobotHold(1);
+                            _plcWorker.Set_RobotRiskyPos(0);
+                            OnCamSentRiskyPos?.Invoke();
+                            OnError?.Invoke("KAMERA RİSKLİ BİR POZİSYON GÖNDERDİ.");
                         }
 
                         var robotPickingOk = _plcWorker.Get_RobotPickingOk();
@@ -445,6 +477,13 @@ namespace PickNPlace.Business
         private async Task PrepareRawMaterial()
         {
             bool wrResult = false;
+
+            if (!_palletList.Any(d => d.IsRawMaterial && d.IsEnabled))
+            {
+                _currentRawPalletNo = 1;
+                _rawMaterialSelectionPalletOk = false;
+                _captureOk = false;
+            }
 
             // select proper raw material pallet
             if (!_rawMaterialSelectionPalletOk)
@@ -550,7 +589,10 @@ namespace PickNPlace.Business
                     }
                 }
                 else
-                    OnError?.Invoke("LÜTFEN HAMMADDE PALETİ VE ÜRÜNÜNÜ SEÇİNİZ.");
+                {
+                    OnRawPalletsAreFinished?.Invoke();
+                    OnError?.Invoke("KAMERA ÇUVAL TESPİT EDEMEDİ.");
+                }
             }
             catch (Exception)
             {
