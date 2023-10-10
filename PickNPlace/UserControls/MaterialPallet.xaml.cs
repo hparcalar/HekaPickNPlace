@@ -53,12 +53,33 @@ namespace PickNPlace.UserControls
                 if (value == "HAMMADDE")
                     lblRecipeTitle.Content = "Stok";
                 else
-                    lblRecipeTitle.Content = "Stok";
+                    lblRecipeTitle.Content = "Durum";
             }
         }
         public static readonly DependencyProperty PickingTextProperty =
             DependencyProperty.Register("PickingText", typeof(string),
             typeof(MaterialPallet), new PropertyMetadata("")
+        );
+
+        public TimeSpan? EllapsedTime
+        {
+            get { return (TimeSpan?)GetValue(EllapsedTimeProperty); }
+            set
+            {
+                SetValue(EllapsedTimeProperty, value);
+                if (value != null && value != TimeSpan.Zero)
+                {
+                    lblEllapsedTime.Content = "Geçen süre: " + string.Format("{0:mm\\:ss}", value);
+                }
+                else
+                {
+                    lblEllapsedTime.Content = string.Empty;
+                }
+            }
+        }
+        public static readonly DependencyProperty EllapsedTimeProperty =
+            DependencyProperty.Register("EllapsedTime", typeof(TimeSpan?),
+            typeof(MaterialPallet), new PropertyMetadata(TimeSpan.Zero)
         );
 
         public string PickingColor

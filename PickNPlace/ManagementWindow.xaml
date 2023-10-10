@@ -71,6 +71,14 @@
                  TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="45" FontWeight="Bold" FontSize="18"/>
         <Button Visibility="Hidden" Content="BOŞ PALETE BIRAK" HorizontalContentAlignment="Center" x:Name="btnPlaceAnItem" HorizontalAlignment="Left" Margin="824,278,0,0" VerticalAlignment="Top" Height="45" Width="162" Click="btnPlaceAnItem_Click" />
         <Button Visibility="Hidden" Content="OTOMATİK HESAPLA" HorizontalContentAlignment="Center" x:Name="btnAutoCalcTest" HorizontalAlignment="Left" Margin="824,342,0,0" VerticalAlignment="Top" Height="45" Width="162" Click="btnAutoCalcTest_Click" />
+        <Label Content="Robot Çalışma Hızı" HorizontalAlignment="Left" Margin="17,274,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="234"/>
+        <ComboBox Name="cmbRobotSpeed" HorizontalAlignment="Left" Margin="23,307,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="146" Height="47" FontFamily="Calibri" FontWeight="Bold" FontSize="22" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Content="%25"/>
+            <ComboBoxItem Content="%50"/>
+            <ComboBoxItem Content="%75"/>
+            <ComboBoxItem Content="%90"/>
+            <ComboBoxItem Content="%100" IsSelected="True" />
+        </ComboBox>
 
     </Grid>
 </Window>

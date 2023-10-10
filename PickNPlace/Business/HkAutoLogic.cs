@@ -40,6 +40,7 @@ namespace PickNPlace.Business
                     plt.PlaceRecipeCode = "";
                     plt.IsEnabled = false;
                     plt.SackType = 0;
+                    plt.EllapsedTime = TimeSpan.Zero;
                 }
                 else
                 {
@@ -49,6 +50,23 @@ namespace PickNPlace.Business
                         _requestData.Remove(palletNo);
                 }
             }
+        }
+
+        public void AddEllapsedTime(int palletNo, TimeSpan ts)
+        {
+            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null)
+            {
+                plt.EllapsedTime = plt.EllapsedTime.Add(ts);
+            }
+        }
+
+        public TimeSpan? GetEllapsedTime(int palletNo)
+        {
+            var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
+            if (plt != null)
+                return plt.EllapsedTime;
+            return null;
         }
 
         public void SetRequestForPallet(PlaceRequestDTO request, int palletNo)
@@ -80,7 +98,7 @@ namespace PickNPlace.Business
                 case 2: // small size
                     return new HkSackSize { Width = 325, Height = 550 };
                 case 3: // large size
-                    return new HkSackSize { Width = 415, Height = 650 };
+                    return new HkSackSize { Width = 420, Height = 650 };
                 default:
                     break;
             }
@@ -476,11 +494,11 @@ namespace PickNPlace.Business
         {
             try
             {
-                var waitingItem = GetWaitingItem(palletNo);
-                if (waitingItem != null)
-                {
-                    RemoveLastPlacedItem(palletNo);
-                }
+                //var waitingItem = GetWaitingItem(palletNo);
+                //if (waitingItem != null)
+                //{
+                //    RemoveLastPlacedItem(palletNo);
+                //}
 
                 var sackSize = GetSackSize(sackType);
 
@@ -531,7 +549,7 @@ namespace PickNPlace.Business
                         if (waitingItem != null)
                         {
                             waitingItem.IsPlaced = true;
-                            break;
+                            return true;
                         }
                     }
 
@@ -552,7 +570,7 @@ namespace PickNPlace.Business
             try
             {
                 var plt = _pallets.FirstOrDefault(d => d.PalletNo == palletNo);
-                if (plt != null)
+                if (plt != null && plt.Floors != null)
                 {
                     foreach (var floor in plt.Floors)
                     {

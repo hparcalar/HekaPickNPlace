@@ -87,7 +87,9 @@ namespace PickNPlace.Business
         private Task _taskLoop;
         private bool _oldSystemMode = false;
         private bool _oldPendantMode = true;
+        private bool _oldEmgMode = false;
         private bool _runLoop;
+        private TimeSpan _ellapsedCycle;
 
         // flag variables
         int _currentTargetPalletNo = 0;
@@ -353,7 +355,7 @@ namespace PickNPlace.Business
         public void ResetFlags()
         {
             _currentRawPalletNo = 1;
-            _currentTargetPalletNo = 6;
+            _currentTargetPalletNo = 7;
             _rawMaterialSelectionPalletOk = false;
             _targetSelectionPalletOk = false;
             _captureOk = false;
@@ -368,6 +370,17 @@ namespace PickNPlace.Business
 
             while (_runLoop)
             {
+                // handle emergency
+                var emgExists = _plcWorker.Get_PlcEmergency();
+                if (!emgExists && _oldEmgMode)
+                    OnError?.Invoke("");
+                if (emgExists && !_oldEmgMode)
+                {
+                    _plcWorker.Set_SystemAuto(0);
+                    OnError?.Invoke("SİSTEM ACİL DURUMUNA GEÇTİ.");
+                }
+                _oldEmgMode = emgExists;
+
                 // handle system working mode
                 var systemAuto = _plcWorker.Get_SystemAuto();
                 _plcDb.System_Auto = systemAuto;
@@ -385,17 +398,18 @@ namespace PickNPlace.Business
 
                 if (systemAuto)
                 {
+                    _ellapsedCycle = DateTime.Now.TimeOfDay;
                     await PrepareRawMaterial();
-
-                    // select next pallet to place
-                    if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 6)
-                    {
-                        _currentTargetPalletNo = 6;
-                        _targetSelectionPalletOk = false;
-                    }
 
                     if (!_targetSelectionPalletOk)
                         CheckNextTargetPallet();
+
+                    // select next pallet to place
+                    if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 7)
+                    {
+                        _currentTargetPalletNo = 7;
+                        _targetSelectionPalletOk = false;
+                    }
 
                     if (_targetSelectionPalletOk)
                     {
@@ -448,7 +462,6 @@ namespace PickNPlace.Business
                         }
                     }
 
-
                     // wait for placed down signal from robot and then reset all flags to // pick & place // again
                     var robotPlacingOk = _plcWorker.Get_RobotPlacingOk();
                     if (_robotSentToPlaceDown && robotPlacingOk)
@@ -478,6 +491,9 @@ namespace PickNPlace.Business
                         //else
                         //    _plcWorker.ReConnect();
                     }
+
+                    var passedTime = DateTime.Now.TimeOfDay - _ellapsedCycle;
+                    _autoLogic.AddEllapsedTime(_currentTargetPalletNo, passedTime);
                 }
 
                 await Task.Delay(200);
@@ -617,7 +633,7 @@ namespace PickNPlace.Business
             var _oldTargetPallet = _currentTargetPalletNo;
 
             if (_currentTargetPalletNo <= 0)
-                _currentTargetPalletNo = 6;
+                _currentTargetPalletNo = 7;
 
             var currentRawPallet = _palletList.FirstOrDefault(d => d.PalletNo == _currentRawPalletNo);
             var currentRawMaterial = currentRawPallet != null ? currentRawPallet.RawMaterialCode : "";
@@ -642,7 +658,7 @@ namespace PickNPlace.Business
 
                             if (_currentTargetPalletNo <= 0)
                             {
-                                _currentTargetPalletNo = 0;
+                                _currentTargetPalletNo = 7;
                                 break;
                             }
 
@@ -694,7 +710,7 @@ namespace PickNPlace.Business
 
                         this._plcWorker.Set_RobotX_ForTarget(posItem.PlacedX - 50);
                         this._plcWorker.Set_RobotY_ForTarget(posItem.PlacedY - 50);
-                        this._plcWorker.Set_RobotZ_ForTarget((currentFloor * 9 * 10 * -1) + 80);
+                        this._plcWorker.Set_RobotZ_ForTarget((currentFloor * 11 * 10 * -1) + 80);
                         this._plcWorker.Set_RobotRX_ForTarget(0);
                         this._plcWorker.Set_RobotRY_ForTarget(0);
 

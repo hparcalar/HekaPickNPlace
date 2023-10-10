@@ -34,6 +34,7 @@ namespace PickNPlace.DTO
         public int SackType { get; set; }
         public bool IsEnabled { get; set; }
         public HkAutoFloor[] Floors { get; set; }
+        public TimeSpan EllapsedTime { get; set; }
     }
 
     public class HkAutoFloor

@@ -101,6 +101,9 @@
                VerticalContentAlignment="Center" 
                HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="72" FontFamily="Calibri"/>
         </Border>
+
+        <Label Name="lblEllapsedTime" Grid.Row="0" Margin="20,0,0,20" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16"></Label>
+
         <DockPanel Grid.Row="0" Visibility="Hidden" Name="pnlIsActive" Background="#9993C1F0"></DockPanel>
     </Grid>
 </UserControl>

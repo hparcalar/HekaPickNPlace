@@ -39,8 +39,8 @@
             <Button Content="{Binding ElementName=MaterialPalletWnd, Path=PickingText}" Grid.Column="0" Padding="5,0,5,0" FontWeight="Bold" Name="btnPickingStatus" Click="btnPickingStatus_Click" Background="{Binding ElementName=MaterialPalletWnd, Path=PickingColor}" FontSize="16" FontFamily="Calibri"/>
             <Button Grid.Column="1" Padding="5,0,5,0" FontWeight="Normal" Name="btnSelectRecipe" Click="btnSelectRecipe_Click" >
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="/UserControls/generic_sack.png" Height="48"></Image>
-                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Name="lblRecipeTitle" Content="{Binding ElementName=MaterialPalletWnd, Path=RecipeText}" FontFamily="Calibri"></Label>
+                    <Image Source="/UserControls/layout.png" Height="48"></Image>
+                    <Label VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Name="lblRecipeTitle" Content="Durum" FontFamily="Calibri"></Label>
                 </StackPanel>
             </Button>
             <Button Grid.Column="2" Padding="5,0,5,0" FontWeight="Bold" Name="btnPalletEnable" Click="btnPalletEnable_Click" Foreground="#FFFFFF"
@@ -67,6 +67,9 @@
         </Border>
         <Label Name="txtMatName" Grid.Row="1" HorizontalAlignment="Right" Margin="0,20,10,0" VerticalAlignment="Top" Width="312" HorizontalContentAlignment="Right" FontSize="14" FontWeight="Bold" />
         <Label Name="txtSackType" Grid.Row="1" HorizontalAlignment="Right" Margin="0,50,10,0" VerticalAlignment="Top" Width="312" HorizontalContentAlignment="Right" FontSize="14" />
+
+        <Label Name="lblEllapsedTime" Grid.Row="1" Margin="20,0,0,20" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16"></Label>
+
         <DockPanel Grid.Row="1" Visibility="Hidden" Name="pnlIsActive" Background="#99F2FBBB"></DockPanel>
     </Grid>
 </UserControl>

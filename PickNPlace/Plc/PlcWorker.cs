@@ -676,6 +676,35 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_RobotSpeed(int val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 50, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         #region SETTING TARGET PALLET COORDS TO ROBOT VIA PLC
         public bool Set_RobotX_ForTarget(int val)
         {
@@ -960,6 +989,59 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_PlcEmergency(byte val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 1, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+        public bool Set_PlcEmgReset(byte val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 49 * 8 + 0, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         private void ValidateConnection()
         {
             bool plcAlive = false;
@@ -1167,6 +1249,30 @@ namespace PickNPlace.Plc
             {
                 S7MultiVar Reader = new S7MultiVar(this._plc);
                 Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 7, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PlcEmergency()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 48 * 8 + 1, 1, ref data);
                 Reader.Read();
             }
             catch (Exception)

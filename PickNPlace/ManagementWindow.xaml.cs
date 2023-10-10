@@ -468,5 +468,41 @@ namespace PickNPlace
                 int xx = 5;
             }
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var speedIndex = cmbRobotSpeed.SelectedIndex;
+                int speed = 100;
+
+                switch (speedIndex)
+                {
+                    case 0:
+                        speed = 25;
+                        break;
+                    case 1:
+                        speed = 50;
+                        break;
+                    case 2:
+                        speed = 75;
+                        break;
+                    case 3:
+                        speed = 90;
+                        break;
+                    case 4:
+                        speed = 100;
+                        break;
+                    default:
+                        break;
+                }
+
+                _plc.Set_RobotSpeed(speed);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
     }
 }

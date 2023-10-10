@@ -59,6 +59,27 @@ namespace PickNPlace.UserControls
             typeof(EmptyPalletDown), new PropertyMetadata(false)
         );
 
+        public TimeSpan? EllapsedTime
+        {
+            get { return (TimeSpan?)GetValue(EllapsedTimeProperty); }
+            set
+            {
+                SetValue(EllapsedTimeProperty, value);
+                if (value != null && value != TimeSpan.Zero)
+                {
+                    lblEllapsedTime.Content = "Geçen süre: " + string.Format("{0:mm\\:ss}", value);
+                }
+                else
+                {
+                    lblEllapsedTime.Content = string.Empty;
+                }
+            }
+        }
+        public static readonly DependencyProperty EllapsedTimeProperty =
+            DependencyProperty.Register("EllapsedTime", typeof(TimeSpan?),
+            typeof(EmptyPalletDown), new PropertyMetadata(TimeSpan.Zero)
+        );
+
         public bool IsActivePallet
         {
             get { return (bool)GetValue(IsActivePalletProperty); }
@@ -109,17 +130,25 @@ namespace PickNPlace.UserControls
 
         public void BindState()
         {
+            HkAutoFloor[] floorsData = null;
             if (Pallet != null && Pallet.Floors != null)
             {
+                List<HkAutoFloor> _tempData = new List<HkAutoFloor>();
+
                 foreach (var flr in Pallet.Floors)
                 {
-                    if (flr.Items != null)
-                        flr.Items = flr.Items.Where(d => d.IsPlaced == true).ToArray();
+                    _tempData.Add(new HkAutoFloor
+                    {
+                        FloorNo = flr.FloorNo,
+                        Items = flr.Items.Where(d => d.IsPlaced == true).ToArray()
+                    });
                 }
+
+                floorsData = _tempData.ToArray();
             }
 
             containerFloors.ItemsSource = null;
-            containerFloors.ItemsSource = Pallet != null && Pallet.Floors != null ? Pallet.Floors.OrderByDescending(d => d.FloorNo).ToArray() : null;
+            containerFloors.ItemsSource = floorsData != null ? floorsData.OrderByDescending(d => d.FloorNo).ToArray() : null;
         }
     }
 }
