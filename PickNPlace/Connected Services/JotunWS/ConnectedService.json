@@ -1,0 +1,36 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "C:/Users/Hakan/Desktop/YASKAWA_Robot.wsdl"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, JotunWS"
+    ],
+    "references": [
+      "Microsoft.EntityFrameworkCore, {Microsoft.EntityFrameworkCore, 5.0.17}",
+      "Microsoft.EntityFrameworkCore.Abstractions, {Microsoft.EntityFrameworkCore.Abstractions, 5.0.17}",
+      "Microsoft.EntityFrameworkCore.Relational, {Microsoft.EntityFrameworkCore.Relational, 5.0.17}",
+      "Microsoft.Extensions.Caching.Abstractions, {Microsoft.Extensions.Caching.Abstractions, 5.0.0}",
+      "Microsoft.Extensions.Caching.Memory, {Microsoft.Extensions.Caching.Memory, 5.0.0}",
+      "Microsoft.Extensions.Configuration.Abstractions, {Microsoft.Extensions.Configuration.Abstractions, 5.0.0}",
+      "Microsoft.Extensions.DependencyInjection, {Microsoft.Extensions.DependencyInjection, 5.0.2}",
+      "Microsoft.Extensions.DependencyInjection.Abstractions, {Microsoft.Extensions.DependencyInjection.Abstractions, 5.0.0}",
+      "Microsoft.Extensions.Logging, {Microsoft.Extensions.Logging, 5.0.0}",
+      "Microsoft.Extensions.Logging.Abstractions, {Microsoft.Extensions.Logging.Abstractions, 5.0.0}",
+      "Microsoft.Extensions.Options, {Microsoft.Extensions.Options, 5.0.0}",
+      "Microsoft.Extensions.Primitives, {Microsoft.Extensions.Primitives, 5.0.0}",
+      "Npgsql, {Npgsql, 5.0.10}",
+      "Npgsql.EntityFrameworkCore.PostgreSQL, {Npgsql.EntityFrameworkCore.PostgreSQL, 5.0.10}",
+      "System.Collections.Immutable, {System.Collections.Immutable, 5.0.0}",
+      "System.ComponentModel.Annotations, {System.ComponentModel.Annotations, 5.0.0}",
+      "System.Diagnostics.DiagnosticSource, {System.Diagnostics.DiagnosticSource, 5.0.1}",
+      "System.Runtime.CompilerServices.Unsafe, {System.Runtime.CompilerServices.Unsafe, 4.6.0}"
+    ],
+    "targetFramework": "net5.0",
+    "typeReuseMode": "All"
+  }
+}

@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using PickNPlace.DataAccess;
 using PickNPlace.Business;
 using System.Timers;
+using JotunWS;
 
 
 namespace PickNPlace
@@ -657,6 +658,21 @@ namespace PickNPlace
                     using (HekaDbContext db = SchemaFactory.CreateContext())
                     {
                         var dbRecipe = db.PlaceRequest.FirstOrDefault(d => d.RequestNo == txtRecipeBarocde.Text);
+                        if (dbRecipe == null)
+                        {
+                            try
+                            {
+                                YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
+                                wsClient.OpenAsync().Wait();
+                                var result = wsClient.GET_REQUEST_DETAILAsync("55555", txtRecipeBarocde.Text).Result;
+                                wsClient.Close();
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                        }
+
                         if (dbRecipe != null)
                         {
                             foreach (var plt in _palletList)

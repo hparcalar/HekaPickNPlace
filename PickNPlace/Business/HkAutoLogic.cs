@@ -494,11 +494,11 @@ namespace PickNPlace.Business
         {
             try
             {
-                //var waitingItem = GetWaitingItem(palletNo);
-                //if (waitingItem != null)
-                //{
-                //    RemoveLastPlacedItem(palletNo);
-                //}
+                var waitingItem = GetWaitingItem(palletNo);
+                if (waitingItem != null)
+                {
+                    RemoveLastPlacedItem(palletNo);
+                }
 
                 var sackSize = GetSackSize(sackType);
 
