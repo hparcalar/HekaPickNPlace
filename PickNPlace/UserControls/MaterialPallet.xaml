@@ -17,6 +17,43 @@
             <RowDefinition Height="30*"></RowDefinition>
             <RowDefinition Height="70*"></RowDefinition>
         </Grid.RowDefinitions>
+
+        <!-- dynamic status of pallet -->
+        <Grid Grid.Column="0" Grid.Row="1" Margin="150,0,20,32" Opacity="0.75">
+            <ItemsControl Name="containerFloors" Margin="0,0,10,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                            <Label Content="{Binding FloorNo}" FontFamily="Calibri" FontWeight="Bold" FontSize="16" Padding="5" VerticalAlignment="Center" Background="#FF93C1F0"></Label>
+
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"></StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Width="50" Height="35">
+                                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Label Content="{Binding ItemOrder}" HorizontalAlignment="Center" FontFamily="Calibri" Foreground="#FF3232C3" FontWeight="Bold" FontSize="12" Margin="0,5,0,0" ></Label>
+                                                <Label Content="{Binding SackTypeText}" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Calibri" FontSize="12" Margin="0,-5,0,5"></Label>
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+
         <Image Source="/UserControls/euro_pallet.png" Stretch="Uniform" Grid.Row="1" Grid.Column="0" RenderTransformOrigin="0.9,0.5">
             <Image.RenderTransform>
                 <TransformGroup>

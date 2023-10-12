@@ -19,7 +19,7 @@ using PickNPlace.DataAccess;
 using PickNPlace.Business;
 using System.Timers;
 using JotunWS;
-
+using System.Data;
 
 namespace PickNPlace
 {
@@ -284,8 +284,9 @@ namespace PickNPlace
                         plt2.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 2;
 
                         var palletData2 = _logicWorker.GetPalletData(item.PalletNo);
-
                         plt2.EllapsedTime = palletData2 != null ? palletData2.EllapsedTime : null;
+                        plt2.Pallet = palletData2;
+                        plt2.BindState();
                     }
                     else if (item.PalletNo == 3)
                     {
@@ -665,7 +666,80 @@ namespace PickNPlace
                                 YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
                                 wsClient.OpenAsync().Wait();
                                 var result = wsClient.GET_REQUEST_DETAILAsync("55555", txtRecipeBarocde.Text).Result;
+
+                                if (result != null)
+                                {
+                                    System.IO.Stream xmlStream = new System.IO.MemoryStream();
+                                    result.WriteXml(System.Xml.XmlWriter.Create(xmlStream));
+
+                                    if (xmlStream != null && xmlStream.Length > 0)
+                                    {
+                                        DataSet ds = new DataSet();
+                                        ds.ReadXml(xmlStream, XmlReadMode.DiffGram);
+
+                                        if (ds.Tables.Count > 0)
+                                        {
+                                            dbRecipe = new PlaceRequest
+                                            {
+                                                BatchCount = 0,
+                                                RequestNo = txtRecipeBarocde.Text,
+                                            };
+                                            db.PlaceRequest.Add(dbRecipe);
+
+                                            List<string> itemCodes = new List<string>();
+                                            List<RawMaterial> addedMats = new List<RawMaterial>();
+
+                                            foreach (DataTable table in ds.Tables)
+                                            {
+                                                foreach (DataRow row in table.Rows)
+                                                {
+                                                    if (itemCodes.Any(d => d == (string)row[4]))
+                                                        break;
+
+                                                    string imCode = (string)row[4];
+
+                                                    itemCodes.Add(imCode);
+
+                                                    // set recipe header information
+                                                    dbRecipe.RecipeCode = (string)row[2];
+                                                    dbRecipe.RecipeName = (string)row[3];
+
+                                                    // set raw material record
+                                                    var dbItem = db.RawMaterial.FirstOrDefault(d => d.ItemCode == imCode);
+                                                    if (dbItem == null)
+                                                    {
+                                                        dbItem = addedMats.FirstOrDefault(d => d.ItemCode == imCode);
+                                                    }
+
+                                                    if (dbItem == null)
+                                                    {
+                                                        dbItem = new RawMaterial
+                                                        {
+                                                            ItemCode = imCode,
+                                                            ItemName = (string)row[5],
+                                                            ItemNetWeight = 0,
+                                                        };
+                                                        db.RawMaterial.Add(dbItem);
+                                                        addedMats.Add(dbItem);
+                                                    }
+
+                                                    // set recipe detail item
+                                                    var dbRecItem = new PlaceRequestItem
+                                                    {
+                                                        PiecesPerBatch = Convert.ToInt32(row[6]),
+                                                        PlaceRequest = dbRecipe,
+                                                        RawMaterial = dbItem,
+                                                    };
+                                                    db.PlaceRequestItem.Add(dbRecItem);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 wsClient.Close();
+
+                                db.SaveChanges();
                             }
                             catch (Exception)
                             {
@@ -873,6 +947,45 @@ namespace PickNPlace
                     this.BindLivePalletStates();
                     this.BindLivePalletStates();
                 });
+            }
+        }
+
+        private void cmbRobotSpeed_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var speedIndex = cmbRobotSpeed.SelectedIndex;
+            int speed = 100;
+
+            switch (speedIndex)
+            {
+                case 0:
+                    speed = 25;
+                    break;
+                case 1:
+                    speed = 50;
+                    break;
+                case 2:
+                    speed = 60;
+                    break;
+                case 3:
+                    speed = 75;
+                    break;
+                case 4:
+                    speed = 90;
+                    break;
+                case 5:
+                    speed = 100;
+                    break;
+                default:
+                    break;
+            }
+
+            try
+            {
+                _plc.Set_RobotSpeed(speed);
+            }
+            catch (Exception)
+            {
+
             }
         }
     }

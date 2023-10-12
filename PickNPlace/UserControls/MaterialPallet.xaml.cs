@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PickNPlace.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,9 +52,15 @@ namespace PickNPlace.UserControls
             get { return (string)GetValue(PickingTextProperty); }
             set { SetValue(PickingTextProperty, value);
                 if (value == "HAMMADDE")
+                {
                     lblRecipeTitle.Content = "Stok";
+                    containerFloors.Visibility = Visibility.Hidden;
+                }
                 else
+                {
                     lblRecipeTitle.Content = "Durum";
+                    containerFloors.Visibility = Visibility.Visible;
+                }
             }
         }
         public static readonly DependencyProperty PickingTextProperty =
@@ -191,6 +198,44 @@ namespace PickNPlace.UserControls
         private void btnSelectRecipe_Click(object sender, RoutedEventArgs e)
         {
             OnSelectRecipeSignal?.Invoke(PalletNo);
+        }
+
+        public HkAutoPallet Pallet { get; set; }
+
+        public void BindState()
+        {
+            HkAutoFloor[] floorsData = null;
+            if (Pallet != null && Pallet.Floors != null)
+            {
+                List<HkAutoFloor> _tempData = new List<HkAutoFloor>();
+
+                foreach (var flr in Pallet.Floors)
+                {
+                    _tempData.Add(new HkAutoFloor
+                    {
+                        FloorNo = flr.FloorNo,
+                        Items = flr.Items.Where(d => d.IsPlaced == true)
+                        .Select(d => new HkAutoItem
+                        {
+                            IsPlaced = d.IsPlaced,
+                            IsRotated = d.IsRotated,
+                            ItemCode = d.ItemCode,
+                            ItemHeight = d.ItemHeight,
+                            ItemOrder = d.ItemOrder,
+                            ItemWidth = d.ItemWidth,
+                            PlacedX = d.PlacedX,
+                            PlacedY = d.PlacedY,
+                            SackType = d.SackType,
+                        })
+                        .ToArray()
+                    });
+                }
+
+                floorsData = _tempData.ToArray();
+            }
+
+            containerFloors.ItemsSource = null;
+            containerFloors.ItemsSource = floorsData != null ? floorsData.OrderByDescending(d => d.FloorNo).ToArray() : null;
         }
     }
 }

@@ -146,7 +146,20 @@ namespace PickNPlace.UserControls
                     _tempData.Add(new HkAutoFloor
                     {
                         FloorNo = flr.FloorNo,
-                        Items = flr.Items.Where(d => d.IsPlaced == true).ToArray()
+                        Items = flr.Items.Where(d => d.IsPlaced == true)
+                        .Select(d => new HkAutoItem
+                        {
+                            IsPlaced = d.IsPlaced,
+                            IsRotated = d.IsRotated,
+                            ItemCode = d.ItemCode,
+                            ItemHeight = d.ItemHeight,
+                            ItemOrder = d.ItemOrder,
+                            ItemWidth = d.ItemWidth,
+                            PlacedX = d.PlacedX,
+                            PlacedY = d.PlacedY,
+                            SackType = d.SackType,
+                        })
+                        .ToArray()
                     });
                 }
 
