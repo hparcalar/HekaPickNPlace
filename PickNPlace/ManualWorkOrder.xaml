@@ -118,7 +118,9 @@
             <TextBox Grid.Column="1" Name="txtPallet2Count" IsReadOnly="True" Margin="40,131,335,14" Text="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="24"></TextBox>
             <Button Grid.Column="1" Name="btnPallet2Minus" Click="btnPallet2Minus_Click" Margin="115,131,265,14" Content="-" FontWeight="Bold" FontSize="26" Background="#FFF74545"></Button>
             <Button Grid.Column="1" Name="btnPallet2Plus" Click="btnPallet2Plus_Click" Margin="185,131,195,14" Content="+" FontWeight="Bold" FontSize="26" Background="#FF34F045"></Button>
-            <CheckBox Grid.Column="1" Content="Aynı Hammadde" Name="chkSameMaterial" FontSize="13" FontWeight="Bold" Margin="322,152,0,0" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"></CheckBox>
+            <CheckBox Grid.Column="1" Content="Aynı Hammadde" Name="chkSameMaterial" FontSize="13" FontWeight="Bold" Margin="301,152,0,0" Height="30" VerticalAlignment="Top"
+                      VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="2"
+                      HorizontalAlignment="Left" Width="141" BorderBrush="#FF4F4E4E"></CheckBox>
         </Grid>
 
     </Grid>

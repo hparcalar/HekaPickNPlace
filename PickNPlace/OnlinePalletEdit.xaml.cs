@@ -57,7 +57,10 @@ namespace PickNPlace
                 new SackTypeDTO{ SackType = 2, Explanation="30x50" },
                 new SackTypeDTO{ SackType = 3, Explanation="50x70" },
             };
-            dgSackType.SelectedIndex = currentSackIndex;
+            if (currentSackIndex > -1)
+                dgSackType.SelectedIndex = currentSackIndex;
+            else
+                dgSackType.SelectedItem = (dgSackType.ItemsSource as SackTypeDTO[])[2];
 
             this.Title = (Pallet != null ? Pallet.PalletNo.ToString() : "") + ". PALET - Dizilim Düzenleme";
         }

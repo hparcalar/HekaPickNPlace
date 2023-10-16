@@ -676,6 +676,35 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_RawPalletNo(int val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[2];
+                S7.SetIntAt(data, 0, (short)val);
+
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLInt, DB_NUMBER, 52, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         public bool Set_RobotSpeed(int val)
         {
             while (_isSetRunning)

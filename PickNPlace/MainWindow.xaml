@@ -94,7 +94,7 @@
                 <Label Margin="5,10,0,0" FontWeight="Bold" Name="txtActiveRecipeCode"></Label>
                 <Label Margin="5,17,0,0" FontWeight="Bold" Name="txtActiveRecipeName"></Label>
             </StackPanel>
-            <Label Content="Robot Taşıma Hızı" FontWeight="Bold" Width="234" Height="100" Margin="0,10,0,0"/>
+           
 
         </StackPanel>
 
@@ -158,8 +158,9 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-            <ComboBox x:Name="cmbRobotSpeed" VerticalContentAlignment="Center" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontFamily="Calibri" FontWeight="Bold" FontSize="22" 
-                      SelectionChanged="cmbRobotSpeed_SelectionChanged" Grid.ColumnSpan="2" Margin="599,43,0,0" Width="114" Height="47">
+            <Label Content="Robot Taşıma Hızı" Grid.Column="1" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Right" Width="133" Height="30" Margin="0,10,445,0"/>
+            <ComboBox x:Name="cmbRobotSpeed" VerticalContentAlignment="Center" VerticalAlignment="Top" HorizontalAlignment="Right" HorizontalContentAlignment="Center" FontFamily="Calibri" FontWeight="Bold" FontSize="22" 
+                      SelectionChanged="cmbRobotSpeed_SelectionChanged" Margin="0,43,465,0" Width="112" Height="47" Grid.Column="1">
                 <ComboBoxItem Content="%25"/>
                 <ComboBoxItem Content="%50"/>
                 <ComboBoxItem Content="%60" IsSelected="True"/>

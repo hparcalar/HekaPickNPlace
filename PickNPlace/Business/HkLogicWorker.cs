@@ -370,130 +370,127 @@ namespace PickNPlace.Business
 
             while (_runLoop)
             {
-                // handle emergency
-                var emgExists = _plcWorker.Get_PlcEmergency();
-                if (!emgExists && _oldEmgMode)
-                    OnError?.Invoke("");
-                if (emgExists && !_oldEmgMode)
+                try
                 {
-                    _plcWorker.Set_SystemAuto(0);
-                    OnError?.Invoke("SİSTEM ACİL DURUMUNA GEÇTİ.");
-                }
-                _oldEmgMode = emgExists;
-
-                // handle system working mode
-                var systemAuto = _plcWorker.Get_SystemAuto();
-                _plcDb.System_Auto = systemAuto;
-                if (_oldSystemMode != systemAuto)
-                    OnSystemModeChanged?.Invoke(systemAuto);
-                _oldSystemMode = systemAuto;
-
-                // handle robot pendant mode
-                var pendantRemoteMode = _plcWorker.Get_RobotRemoteMode();
-                if (pendantRemoteMode != _oldPendantMode && pendantRemoteMode)
-                    OnPalletIsPlaced?.Invoke(1);
-                else if (pendantRemoteMode != _oldPendantMode && !pendantRemoteMode)
-                    OnError.Invoke("ROBOT KUMANDASINI REMOTE ÇALIŞMA MODUNA ALINIZ.");
-                _oldPendantMode = pendantRemoteMode;
-
-                if (systemAuto)
-                {
-                    _ellapsedCycle = DateTime.Now.TimeOfDay;
-                    await PrepareRawMaterial();
-
-                    if (!_targetSelectionPalletOk)
-                        CheckNextTargetPallet();
-
-                    // select next pallet to place
-                    if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 7)
+                    // handle emergency
+                    var emgExists = _plcWorker.Get_PlcEmergency();
+                    if (!emgExists && _oldEmgMode)
+                        OnError?.Invoke("");
+                    if (emgExists && !_oldEmgMode)
                     {
-                        _currentTargetPalletNo = 7;
-                        _targetSelectionPalletOk = false;
+                        _plcWorker.Set_SystemAuto(0);
+                        _plcWorker.Set_RobotHold(1);
+                        OnError?.Invoke("SİSTEM ACİL DURUMUNA GEÇTİ.");
                     }
+                    _oldEmgMode = emgExists;
 
-                    if (_targetSelectionPalletOk)
+                    // handle system working mode
+                    var systemAuto = _plcWorker.Get_SystemAuto();
+                    _plcDb.System_Auto = systemAuto;
+                    if (_oldSystemMode != systemAuto)
+                        OnSystemModeChanged?.Invoke(systemAuto);
+                    _oldSystemMode = systemAuto;
+
+                    // handle robot pendant mode
+                    var pendantRemoteMode = _plcWorker.Get_RobotRemoteMode();
+                    if (pendantRemoteMode != _oldPendantMode && pendantRemoteMode)
+                        OnPalletIsPlaced?.Invoke(1);
+                    else if (pendantRemoteMode != _oldPendantMode && !pendantRemoteMode)
+                        OnError.Invoke("ROBOT KUMANDASINI REMOTE ÇALIŞMA MODUNA ALINIZ.");
+                    _oldPendantMode = pendantRemoteMode;
+
+                    if (systemAuto)
                     {
-                        if (!_robotTargetCoordsReady)
+                        _ellapsedCycle = DateTime.Now.TimeOfDay;
+                        await PrepareRawMaterial();
+
+                        if (!_targetSelectionPalletOk)
+                            CheckNextTargetPallet();
+
+                        // select next pallet to place
+                        if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 7)
                         {
-                            var sendResult = SendRobotToPlaceDown();
-                            if (sendResult)
-                                _robotTargetCoordsReady = true;
-                            //else
-                            //    _plcWorker.ReConnect();
+                            _currentTargetPalletNo = 7;
+                            _targetSelectionPalletOk = false;
                         }
 
-                        var isRiskyPos = _plcWorker.Get_RobotRiskyPos();
-                        if (isRiskyPos)
+                        if (_targetSelectionPalletOk)
                         {
-                            _plcWorker.Set_RobotHold(1);
-                            _plcWorker.Set_RobotRiskyPos(0);
-                            OnCamSentRiskyPos?.Invoke();
-                            OnError?.Invoke("KAMERA RİSKLİ BİR POZİSYON GÖNDERDİ.");
-                        }
-
-                        var robotPickingOk = _plcWorker.Get_RobotPickingOk();
-                        if (robotPickingOk && _robotTargetCoordsReady && _captureOk)
-                        {
-                            wrResult = _plcWorker.Set_RobotNextTargetOk(1);
-                            if (wrResult)
+                            if (!_robotTargetCoordsReady)
                             {
-                                var zeroResult = _plcWorker.Set_CaptureOk(0);
-                                if (zeroResult)
+                                var sendResult = SendRobotToPlaceDown();
+                                if (sendResult)
+                                    _robotTargetCoordsReady = true;
+                            }
+
+                            var isRiskyPos = _plcWorker.Get_RobotRiskyPos();
+                            if (isRiskyPos)
+                            {
+                                _plcWorker.Set_RobotHold(1);
+                                _plcWorker.Set_RobotRiskyPos(0);
+                                OnCamSentRiskyPos?.Invoke();
+                                OnError?.Invoke("KAMERA RİSKLİ BİR POZİSYON GÖNDERDİ.");
+                            }
+
+                            var robotPickingOk = _plcWorker.Get_RobotPickingOk();
+                            if (robotPickingOk && _robotTargetCoordsReady && _captureOk)
+                            {
+                                wrResult = _plcWorker.Set_RobotNextTargetOk(1);
+                                if (wrResult)
                                 {
-                                    zeroResult = _plcWorker.Set_RobotPickingOk(0);
+                                    var zeroResult = _plcWorker.Set_CaptureOk(0);
                                     if (zeroResult)
                                     {
-                                        wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
-                                        if (wrResult)
+                                        zeroResult = _plcWorker.Set_RobotPickingOk(0);
+                                        if (zeroResult)
                                         {
-                                            _robotSentToPlaceDown = true;
+                                            wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
+                                            if (wrResult)
+                                            {
+                                                _robotSentToPlaceDown = true;
+                                            }
                                         }
-                                        //else
-                                        //    _plcWorker.ReConnect();
                                     }
-                                    //else
-                                    //    _plcWorker.ReConnect();
                                 }
-                                //else
-                                //    _plcWorker.ReConnect();
                             }
-                            //else
-                            //    _plcWorker.ReConnect();
                         }
-                    }
 
-                    // wait for placed down signal from robot and then reset all flags to // pick & place // again
-                    var robotPlacingOk = _plcWorker.Get_RobotPlacingOk();
-                    if (_robotSentToPlaceDown && robotPlacingOk)
-                    {
-                        wrResult = _plcWorker.Set_RobotPlacingOk(0);
-                        if (wrResult)
+                        // wait for placed down signal from robot and then reset all flags to // pick & place // again
+                        var robotPlacingOk = _plcWorker.Get_RobotPlacingOk();
+                        if (_robotSentToPlaceDown && robotPlacingOk)
                         {
-                            var placingLogicOk = _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
-                            if (placingLogicOk)
+                            wrResult = _plcWorker.Set_RobotPlacingOk(0);
+                            if (wrResult)
                             {
-                                OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                                var placingLogicOk = _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
+                                if (placingLogicOk)
+                                {
+                                    OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                                }
+
+                                _plcWorker.Set_PlaceCalculationOk(0);
+                                _plcWorker.Set_CaptureOk(0);
+                                _plcWorker.Set_RobotNextTargetOk(0);
+
+                                _robotTargetCoordsReady = false;
+                                _captureOk = false;
+                                _robotPickedUp = false;
+                                _targetSelectionPalletOk = false;
+                                _robotSentToPlaceDown = false;
+                                _rawMaterialSelectionPalletOk = false;
+
+                                await PrepareRawMaterial();
                             }
-
-                            _plcWorker.Set_PlaceCalculationOk(0);
-                            _plcWorker.Set_CaptureOk(0);
-                            _plcWorker.Set_RobotNextTargetOk(0);
-
-                            _robotTargetCoordsReady = false;
-                            _captureOk = false;
-                            _robotPickedUp = false;
-                            _targetSelectionPalletOk = false;
-                            _robotSentToPlaceDown = false;
-                            _rawMaterialSelectionPalletOk = false;
-
-                            await PrepareRawMaterial();
                         }
-                        //else
-                        //    _plcWorker.ReConnect();
-                    }
 
-                    var passedTime = DateTime.Now.TimeOfDay - _ellapsedCycle;
-                    _autoLogic.AddEllapsedTime(_currentTargetPalletNo, passedTime);
+                        var passedTime = DateTime.Now.TimeOfDay - _ellapsedCycle;
+                        _autoLogic.AddEllapsedTime(_currentTargetPalletNo, passedTime);
+                        _autoLogic.AddEllapsedTime(_currentTargetPalletNo, TimeSpan.FromMilliseconds(200));
+                    }
+                }
+                catch (Exception)
+                {
+
                 }
 
                 await Task.Delay(200);
@@ -518,6 +515,8 @@ namespace PickNPlace.Business
             // trigger camera and pick up
             if (_rawMaterialSelectionPalletOk && !_captureOk)
             {
+                _plcWorker.Set_RawPalletNo(_currentRawPalletNo);
+
                 var trgOk = TriggerCamera(_currentRawPalletNo.ToString());
                 if (trgOk)
                 {

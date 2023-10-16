@@ -86,5 +86,10 @@ namespace PickNPlace
             else
                 dgItems.ItemsSource = null;
         }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

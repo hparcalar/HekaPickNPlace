@@ -75,7 +75,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid Grid.Row="1" Grid.Column="0" Name="dgSackType" AutoGenerateColumns="False" RowHeight="30" VerticalContentAlignment="Center">
+            <DataGrid Grid.Row="1" Grid.Column="0" Name="dgSackType" AutoGenerateColumns="False" RowHeight="30" VerticalContentAlignment="Center" IsEnabled="False">
                 <DataGrid.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DodgerBlue"/>
                 </DataGrid.Resources>

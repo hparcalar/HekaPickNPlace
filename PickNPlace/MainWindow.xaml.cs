@@ -661,6 +661,7 @@ namespace PickNPlace
                         var dbRecipe = db.PlaceRequest.FirstOrDefault(d => d.RequestNo == txtRecipeBarocde.Text);
                         if (dbRecipe == null)
                         {
+                            // try fetch data from web service
                             try
                             {
                                 YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
@@ -669,77 +670,112 @@ namespace PickNPlace
 
                                 if (result != null)
                                 {
-                                    System.IO.Stream xmlStream = new System.IO.MemoryStream();
-                                    result.WriteXml(System.Xml.XmlWriter.Create(xmlStream));
+                                    //System.IO.Stream xmlStream = new System.IO.MemoryStream();
+                                    var xmlStg = new System.Xml.XmlWriterSettings();
+                                    xmlStg.ConformanceLevel = System.Xml.ConformanceLevel.Auto;
+                                    //var xmlWriter = System.Xml.XmlWriter.Create(xmlStream, xmlStg);
+                                    //result.WriteXml(xmlWriter);
+                                    //xmlWriter.Flush();
+                                    //xmlWriter.Close();
 
-                                    if (xmlStream != null && xmlStream.Length > 0)
-                                    {
-                                        DataSet ds = new DataSet();
-                                        ds.ReadXml(xmlStream, XmlReadMode.DiffGram);
-
-                                        if (ds.Tables.Count > 0)
-                                        {
-                                            dbRecipe = new PlaceRequest
-                                            {
-                                                BatchCount = 0,
-                                                RequestNo = txtRecipeBarocde.Text,
-                                            };
-                                            db.PlaceRequest.Add(dbRecipe);
-
-                                            List<string> itemCodes = new List<string>();
-                                            List<RawMaterial> addedMats = new List<RawMaterial>();
-
-                                            foreach (DataTable table in ds.Tables)
-                                            {
-                                                foreach (DataRow row in table.Rows)
-                                                {
-                                                    if (itemCodes.Any(d => d == (string)row[4]))
-                                                        break;
-
-                                                    string imCode = (string)row[4];
-
-                                                    itemCodes.Add(imCode);
-
-                                                    // set recipe header information
-                                                    dbRecipe.RecipeCode = (string)row[2];
-                                                    dbRecipe.RecipeName = (string)row[3];
-
-                                                    // set raw material record
-                                                    var dbItem = db.RawMaterial.FirstOrDefault(d => d.ItemCode == imCode);
-                                                    if (dbItem == null)
-                                                    {
-                                                        dbItem = addedMats.FirstOrDefault(d => d.ItemCode == imCode);
-                                                    }
-
-                                                    if (dbItem == null)
-                                                    {
-                                                        dbItem = new RawMaterial
-                                                        {
-                                                            ItemCode = imCode,
-                                                            ItemName = (string)row[5],
-                                                            ItemNetWeight = 0,
-                                                        };
-                                                        db.RawMaterial.Add(dbItem);
-                                                        addedMats.Add(dbItem);
-                                                    }
-
-                                                    // set recipe detail item
-                                                    var dbRecItem = new PlaceRequestItem
-                                                    {
-                                                        PiecesPerBatch = Convert.ToInt32(row[6]),
-                                                        PlaceRequest = dbRecipe,
-                                                        RawMaterial = dbItem,
-                                                    };
-                                                    db.PlaceRequestItem.Add(dbRecItem);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    var xmlFileWriter = System.Xml.XmlWriter.Create("test_int.xml", xmlStg);
+                                    result.WriteXml(xmlFileWriter);
+                                    xmlFileWriter.Flush();
+                                    xmlFileWriter.Close();
                                 }
 
                                 wsClient.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
 
-                                db.SaveChanges();
+                            // try import from xml dataset
+                            try
+                            {
+                                DataSet ds = new DataSet();
+                                ds.ReadXml("test_int.xml", XmlReadMode.Fragment);
+
+                                if (ds.Tables.Count > 0)
+                                {
+                                    dbRecipe = new PlaceRequest
+                                    {
+                                        BatchCount = 0,
+                                        RequestNo = txtRecipeBarocde.Text,
+                                    };
+                                    db.PlaceRequest.Add(dbRecipe);
+
+                                    List<string> itemCodes = new List<string>();
+                                    List<RawMaterial> addedMats = new List<RawMaterial>();
+
+                                    bool breakUpperLoop = false;
+
+                                    foreach (DataTable table in ds.Tables)
+                                    {
+                                        if (breakUpperLoop)
+                                            break;
+
+                                        foreach (DataRow row in table.Rows)
+                                        {
+                                            string imCode = (string)row[4];
+
+                                            if (itemCodes.Contains(imCode))
+                                            {
+                                                breakUpperLoop = true;
+                                                break;
+                                            }
+
+                                            itemCodes.Add(imCode);
+
+                                            // set recipe header information
+                                            dbRecipe.RecipeCode = (string)row[2];
+                                            dbRecipe.RecipeName = (string)row[3];
+
+                                            // set raw material record
+                                            var dbItem = db.RawMaterial.FirstOrDefault(d => d.ItemCode == imCode);
+                                            if (dbItem == null)
+                                            {
+                                                dbItem = addedMats.FirstOrDefault(d => d.ItemCode == imCode);
+                                            }
+
+                                            if (dbItem == null)
+                                            {
+                                                dbItem = new RawMaterial
+                                                {
+                                                    ItemCode = imCode,
+                                                    ItemName = (string)row[5],
+                                                    ItemNetWeight = 0,
+                                                };
+                                                db.RawMaterial.Add(dbItem);
+                                                addedMats.Add(dbItem);
+                                            }
+
+                                            // set recipe detail item
+                                            var dbRecItem = new PlaceRequestItem
+                                            {
+                                                PiecesPerBatch = Convert.ToInt32(row[6]),
+                                                PlaceRequest = dbRecipe,
+                                                RawMaterial = dbItem,
+                                            };
+                                            db.PlaceRequestItem.Add(dbRecItem);
+                                        }
+                                    }
+
+                                    db.SaveChanges();
+                                }
+                                else
+                                    MessageBox.Show("Sonuç bulunamadı. Tables=0");
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+
+                            // delete the last imported data file
+                            try
+                            {
+                                System.IO.File.Delete("test_int.xml");
                             }
                             catch (Exception)
                             {

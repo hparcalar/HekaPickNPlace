@@ -75,6 +75,7 @@ namespace PickNPlace
                 new SackTypeDTO{ SackType = 2, Explanation="30x50" },
                 new SackTypeDTO{ SackType = 3, Explanation="50x70" },
             };
+            dgSackType.SelectedItem = (dgSackType.ItemsSource as SackTypeDTO[])[2];
 
             // sign existing selections and show them to the user
             if (!string.IsNullOrEmpty(ItemCode))
@@ -99,6 +100,11 @@ namespace PickNPlace
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.BindList();
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

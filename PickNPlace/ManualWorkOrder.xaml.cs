@@ -335,6 +335,8 @@ namespace PickNPlace
                     && MessageBox.Show("Yeni bir hammadde türüne geçmek istediğinizden emin misiniz?", "Uyarı", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
             {
                 RawMatCode1 = GenerateRawMatCode(1);
+                chkSameMaterial.IsChecked = false;
+
                 if (!string.IsNullOrEmpty(RawMatCode1))
                 {
                     btnSelectMat1.Content = "HAMMADDE TÜRÜNÜ DEĞİŞTİR";
