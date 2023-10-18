@@ -73,7 +73,6 @@ namespace PickNPlace
             this.Dispatcher.Invoke((Action)delegate
             {
                 this.BindLivePalletStates();
-                this.BindLivePalletStates();
             });
         }
 
@@ -108,7 +107,6 @@ namespace PickNPlace
         {
             this.Dispatcher.Invoke((Action)delegate
             {
-                this.BindLivePalletStates();
                 this.BindLivePalletStates();
             });
         }
@@ -166,7 +164,6 @@ namespace PickNPlace
             {
                 this._plc.Set_SystemAuto(0);
                 this.BindLivePalletStates();
-                this.BindLivePalletStates();
             });
         }
 
@@ -174,7 +171,6 @@ namespace PickNPlace
         {
             this.Dispatcher.Invoke((Action)delegate
             {
-                this.BindLivePalletStates();
                 this.BindLivePalletStates();
                 lblError.Content = "";
             });
@@ -244,164 +240,172 @@ namespace PickNPlace
             //    }).ToArray();
             //}
 
-            if (_logicWorker != null)
+            try
             {
-                if (_palletList == null || _palletList.Length == 0)
+                if (_logicWorker != null)
                 {
-                    _logicWorker.SetPalletAttributes(1, true, false, "");
-                    _logicWorker.SetPalletAttributes(2, true, false, "");
-                    _logicWorker.SetPalletAttributes(3, false, false, "");
-                    _logicWorker.SetPalletAttributes(4, false, false, "");
-                    _logicWorker.SetPalletAttributes(5, false, false, "");
-                    _logicWorker.SetPalletAttributes(6, false, false, "");
-                    _logicWorker.SetPalletAttributes(7, false, false, "");
+                    if (_palletList == null || _palletList.Length == 0)
+                    {
+                        _logicWorker.SetPalletAttributes(1, true, false, "");
+                        _logicWorker.SetPalletAttributes(2, true, false, "");
+                        _logicWorker.SetPalletAttributes(3, false, false, "");
+                        _logicWorker.SetPalletAttributes(4, false, false, "");
+                        _logicWorker.SetPalletAttributes(5, false, false, "");
+                        _logicWorker.SetPalletAttributes(6, false, false, "");
+                        _logicWorker.SetPalletAttributes(7, false, false, "");
+                    }
+
+                    _palletList = _logicWorker.GetPalletList().ToArray();
                 }
 
-                _palletList = _logicWorker.GetPalletList().ToArray();
-            }
-
-            // update pallet visuals
-            if (_palletList != null)
-            {
-                foreach (var item in _palletList)
+                // update pallet visuals
+                if (_palletList != null)
                 {
-                    if (item.PalletNo == 1)
+                    foreach (var item in _palletList)
                     {
-                        plt1.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
-                        plt1.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
-                        plt1.IsPalletEnabled = item.IsEnabled;
-                        plt1.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
-                        plt1.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
-                        plt1.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 1;
-                    }
-                    else if (item.PalletNo == 2)
-                    {
-                        plt2.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
-                        plt2.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
-                        plt2.IsPalletEnabled = item.IsEnabled;
-                        plt2.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
-                        plt2.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
-                        plt2.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 2;
+                        if (item.PalletNo == 1)
+                        {
+                            plt1.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
+                            plt1.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
+                            plt1.IsPalletEnabled = item.IsEnabled;
+                            plt1.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
+                            plt1.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
+                            plt1.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 1;
+                        }
+                        else if (item.PalletNo == 2)
+                        {
+                            plt2.PickingText = item.IsRawMaterial == true ? "HAMMADDE" : "BOŞ PALET";
+                            plt2.PickingColor = item.IsRawMaterial == true ? "#FFF2FBBB" : "#FF93C1F0";
+                            plt2.IsPalletEnabled = item.IsEnabled;
+                            plt2.RecipeName = item.IsRawMaterial ? item.RawMaterialCode : item.PlaceRecipeCode;
+                            plt2.SackType = item.IsEnabled ? (item.SackType == 1 ? "40x60" : item.SackType == 2 ? "30x50" : item.SackType == 3 ? "50x70" : "") : "";
+                            plt2.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentRawPalletNo == 2;
 
-                        var palletData2 = _logicWorker.GetPalletData(item.PalletNo);
-                        plt2.EllapsedTime = palletData2 != null ? palletData2.EllapsedTime : null;
-                        plt2.Pallet = palletData2;
-                        plt2.BindState();
-                    }
-                    else if (item.PalletNo == 3)
-                    {
-                        plt3.IsPalletEnabled = item.IsEnabled;
-                        plt3.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 3;
-                        plt3.Pallet = _logicWorker.GetPalletData(item.PalletNo);
-                        plt3.BindState();
-                        plt3.EllapsedTime = plt3.Pallet != null ? plt3.Pallet.EllapsedTime : null;
-                    }
-                    else if (item.PalletNo == 4)
-                    {
-                        plt4.IsPalletEnabled = item.IsEnabled;
-                        plt4.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 4;
-                        plt4.Pallet = _logicWorker.GetPalletData(item.PalletNo);
-                        plt4.BindState();
-                        plt4.EllapsedTime = plt4.Pallet != null ? plt4.Pallet.EllapsedTime : null;
-                    }
-                    else if (item.PalletNo == 5)
-                    {
-                        plt5.IsPalletEnabled = item.IsEnabled;
-                        plt5.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 5;
-                        plt5.Pallet = _logicWorker.GetPalletData(item.PalletNo);
-                        plt5.BindState();
-                        plt5.EllapsedTime = plt5.Pallet != null ? plt5.Pallet.EllapsedTime : null;
-                    }
-                    else if (item.PalletNo == 6)
-                    {
-                        plt6.IsPalletEnabled = item.IsEnabled;
-                        plt6.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 6;
-                        plt6.Pallet = _logicWorker.GetPalletData(item.PalletNo);
-                        plt6.BindState();
-                        plt6.EllapsedTime = plt6.Pallet != null ? plt6.Pallet.EllapsedTime : null;
-                    }
-                    else if (item.PalletNo == 7)
-                    {
-                        plt7.IsPalletEnabled = item.IsEnabled;
-                        plt7.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 7;
-                        plt7.Pallet = _logicWorker.GetPalletData(item.PalletNo);
-                        plt7.BindState();
-                        plt7.EllapsedTime = plt7.Pallet != null ? plt7.Pallet.EllapsedTime : null;
+                            var palletData2 = _logicWorker.GetPalletData(item.PalletNo);
+                            plt2.EllapsedTime = palletData2 != null ? palletData2.EllapsedTime : null;
+                            plt2.Pallet = palletData2;
+                            plt2.BindState();
+                        }
+                        else if (item.PalletNo == 3)
+                        {
+                            plt3.IsPalletEnabled = item.IsEnabled;
+                            plt3.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 3;
+                            plt3.Pallet = _logicWorker.GetPalletData(item.PalletNo);
+                            plt3.BindState();
+                            plt3.EllapsedTime = plt3.Pallet != null ? plt3.Pallet.EllapsedTime : null;
+                        }
+                        else if (item.PalletNo == 4)
+                        {
+                            plt4.IsPalletEnabled = item.IsEnabled;
+                            plt4.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 4;
+                            plt4.Pallet = _logicWorker.GetPalletData(item.PalletNo);
+                            plt4.BindState();
+                            plt4.EllapsedTime = plt4.Pallet != null ? plt4.Pallet.EllapsedTime : null;
+                        }
+                        else if (item.PalletNo == 5)
+                        {
+                            plt5.IsPalletEnabled = item.IsEnabled;
+                            plt5.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 5;
+                            plt5.Pallet = _logicWorker.GetPalletData(item.PalletNo);
+                            plt5.BindState();
+                            plt5.EllapsedTime = plt5.Pallet != null ? plt5.Pallet.EllapsedTime : null;
+                        }
+                        else if (item.PalletNo == 6)
+                        {
+                            plt6.IsPalletEnabled = item.IsEnabled;
+                            plt6.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 6;
+                            plt6.Pallet = _logicWorker.GetPalletData(item.PalletNo);
+                            plt6.BindState();
+                            plt6.EllapsedTime = plt6.Pallet != null ? plt6.Pallet.EllapsedTime : null;
+                        }
+                        else if (item.PalletNo == 7)
+                        {
+                            plt7.IsPalletEnabled = item.IsEnabled;
+                            plt7.IsActivePallet = _plcDB.System_Auto && _logicWorker.CurrentTargetPalletNo == 7;
+                            plt7.Pallet = _logicWorker.GetPalletData(item.PalletNo);
+                            plt7.BindState();
+                            plt7.EllapsedTime = plt7.Pallet != null ? plt7.Pallet.EllapsedTime : null;
+                        }
                     }
                 }
+
             }
+            catch (Exception)
+            {
+
+            }
+
         }
 
         private void plt_OnPickingStatusChanged(int palletNo)
         {
-            if (_palletList != null)
+            this.Dispatcher.Invoke((Action)delegate
             {
-                var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
-                if (pallet != null)
+                if (_palletList != null)
                 {
-                    if (pallet.PalletNo == 1 && pallet.IsRawMaterial)
+                    var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+                    if (pallet != null)
                     {
-                        MessageBox.Show("1. Palet hammadde olmak zorundadır.", "Uyarı", MessageBoxButton.OK);
-                        return;
-                    }
+                        if (pallet.PalletNo == 1 && pallet.IsRawMaterial)
+                        {
+                            MessageBox.Show("1. Palet hammadde olmak zorundadır.", "Uyarı", MessageBoxButton.OK);
+                            return;
+                        }
 
-                    pallet.IsRawMaterial = !pallet.IsRawMaterial;
-                    _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
+                        pallet.IsRawMaterial = !pallet.IsRawMaterial;
+                        _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
 
-                    this.Dispatcher.Invoke((Action)delegate
-                    {
                         this.BindLivePalletStates();
-                    });
+                    }
                 }
-            }   
+            });
         }
 
         private void plt_OnPalletEnabledChanged(int palletNo, bool enabled)
         {
-            if (_palletList != null)
+            this.Dispatcher.Invoke((Action)delegate
             {
-                var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
-                if (pallet != null)
+                if (_palletList != null)
                 {
-                    pallet.IsEnabled = !pallet.IsEnabled;
-
-                    if (_placeByRecipe)
+                    var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+                    if (pallet != null)
                     {
-                        // auto assign active recipe to lately enabled pallet
-                        if (_activeRecipe != null && !pallet.IsRawMaterial && pallet.IsEnabled)
+                        pallet.IsEnabled = !pallet.IsEnabled;
+
+                        if (_placeByRecipe)
                         {
-                            pallet.PlaceRecipeCode = _activeRecipe.RequestNo;
+                            // auto assign active recipe to lately enabled pallet
+                            if (_activeRecipe != null && !pallet.IsRawMaterial && pallet.IsEnabled)
+                            {
+                                pallet.PlaceRecipeCode = _activeRecipe.RequestNo;
+                            }
+                            else if (!pallet.IsEnabled && !pallet.IsRawMaterial)
+                            {
+                                pallet.PlaceRecipeCode = string.Empty;
+                            }
+
+                            _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
                         }
-                        else if (!pallet.IsEnabled && !pallet.IsRawMaterial)
+                        else
                         {
-                            pallet.PlaceRecipeCode = string.Empty;
+                            if (_manualRecipe != null && !pallet.IsRawMaterial && pallet.IsEnabled)
+                            {
+                                _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, _manualRecipe, string.Empty);
+                            }
+                            else if (!pallet.IsEnabled && !pallet.IsRawMaterial)
+                            {
+                                _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
+                            }
+                            //else if (!pallet.IsEnabled && pallet.IsRawMaterial)
+                            //{
+                            //    _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
+                            //}
                         }
 
-                        _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, pallet.PlaceRecipeCode);
-                    }
-                    else
-                    {
-                        if (_manualRecipe != null && !pallet.IsRawMaterial && pallet.IsEnabled)
-                        {
-                            _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, pallet.IsEnabled, _manualRecipe, string.Empty);
-                        }
-                        else if (!pallet.IsEnabled && !pallet.IsRawMaterial)
-                        {
-                            _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
-                        }
-                        //else if (!pallet.IsEnabled && pallet.IsRawMaterial)
-                        //{
-                        //    _logicWorker.SetPalletAttributes(palletNo, pallet.IsRawMaterial, false, null, string.Empty);
-                        //}
-                    }
-
-                    this.Dispatcher.Invoke((Action)delegate
-                    {
                         this.BindLivePalletStates();
-                        this.BindLivePalletStates();
-                    });
+                    }
                 }
-            }
+            });
         }
 
         private void plt_OnSelectRecipeSignal(int palletNo)
@@ -980,7 +984,6 @@ namespace PickNPlace
 
                 this.Dispatcher.Invoke((Action)delegate
                 {
-                    this.BindLivePalletStates();
                     this.BindLivePalletStates();
                 });
             }

@@ -433,7 +433,7 @@ namespace PickNPlace.Business
                             }
 
                             var robotPickingOk = _plcWorker.Get_RobotPickingOk();
-                            if (robotPickingOk && _robotTargetCoordsReady && _captureOk)
+                            if (robotPickingOk && _robotTargetCoordsReady && _captureOk && !_robotSentToPlaceDown)
                             {
                                 wrResult = _plcWorker.Set_RobotNextTargetOk(1);
                                 if (wrResult)
@@ -441,15 +441,21 @@ namespace PickNPlace.Business
                                     var zeroResult = _plcWorker.Set_CaptureOk(0);
                                     if (zeroResult)
                                     {
-                                        zeroResult = _plcWorker.Set_RobotPickingOk(0);
-                                        if (zeroResult)
+                                        wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
+                                        if (wrResult)
                                         {
-                                            wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
-                                            if (wrResult)
-                                            {
-                                                _robotSentToPlaceDown = true;
-                                            }
+                                            _robotSentToPlaceDown = true;
                                         }
+
+                                        //zeroResult = _plcWorker.Set_RobotPickingOk(0);
+                                        //if (zeroResult)
+                                        //{
+                                        //    wrResult = this._plcWorker.Set_PlaceCalculationOk(1);
+                                        //    if (wrResult)
+                                        //    {
+                                        //        _robotSentToPlaceDown = true;
+                                        //    }
+                                        //}
                                     }
                                 }
                             }
@@ -462,24 +468,28 @@ namespace PickNPlace.Business
                             wrResult = _plcWorker.Set_RobotPlacingOk(0);
                             if (wrResult)
                             {
-                                var placingLogicOk = _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
-                                if (placingLogicOk)
+                                wrResult = _plcWorker.Set_RobotPickingOk(0);
+                                if (wrResult)
                                 {
-                                    OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                                    var placingLogicOk = _autoLogic.SignWaitingPlacementIsMade(_currentTargetPalletNo);
+                                    if (placingLogicOk)
+                                    {
+                                        OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                                    }
+
+                                    _plcWorker.Set_PlaceCalculationOk(0);
+                                    _plcWorker.Set_CaptureOk(0);
+                                    _plcWorker.Set_RobotNextTargetOk(0);
+
+                                    _robotTargetCoordsReady = false;
+                                    _captureOk = false;
+                                    _robotPickedUp = false;
+                                    _targetSelectionPalletOk = false;
+                                    _robotSentToPlaceDown = false;
+                                    _rawMaterialSelectionPalletOk = false;
+
+                                    await PrepareRawMaterial();
                                 }
-
-                                _plcWorker.Set_PlaceCalculationOk(0);
-                                _plcWorker.Set_CaptureOk(0);
-                                _plcWorker.Set_RobotNextTargetOk(0);
-
-                                _robotTargetCoordsReady = false;
-                                _captureOk = false;
-                                _robotPickedUp = false;
-                                _targetSelectionPalletOk = false;
-                                _robotSentToPlaceDown = false;
-                                _rawMaterialSelectionPalletOk = false;
-
-                                await PrepareRawMaterial();
                             }
                         }
 
@@ -644,39 +654,32 @@ namespace PickNPlace.Business
                     var nextPallet = _palletList
                             .Where(d => !d.IsRawMaterial && d.IsEnabled && d.PalletNo <= _currentTargetPalletNo)
                             .OrderByDescending(d => d.PalletNo).FirstOrDefault();
-                    //var nextPallet = _palletList
-                    //    .Where(d => !d.IsRawMaterial && d.IsEnabled && d.PalletNo < _currentTargetPalletNo)
-                    //    .OrderByDescending(d => d.PalletNo).FirstOrDefault();
 
-                    if (nextPallet != null)
+                    while (nextPallet == null || !_autoLogic.CheckIsProperItem(nextPallet.PalletNo, currentRawMaterial) || !nextPallet.IsEnabled)
                     {
+                        _currentTargetPalletNo--;
 
-                        while (!_autoLogic.CheckIsProperItem(nextPallet.PalletNo, currentRawMaterial) || !nextPallet.IsEnabled)
+                        if (_currentTargetPalletNo <= 0)
                         {
-                            _currentTargetPalletNo--;
-
-                            if (_currentTargetPalletNo <= 0)
-                            {
-                                _currentTargetPalletNo = 7;
-                                break;
-                            }
-
-                            nextPallet = _palletList
-                                .Where(d => !d.IsRawMaterial && d.IsEnabled && d.PalletNo <= _currentTargetPalletNo)
-                                .OrderByDescending(d => d.PalletNo).FirstOrDefault();
+                            _currentTargetPalletNo = 7;
+                            break;
                         }
 
-                        if (_autoLogic.CheckIsProperItem(nextPallet.PalletNo, currentRawMaterial) && nextPallet.IsEnabled)
-                        {
-                            _currentTargetPalletNo = nextPallet.PalletNo;
-                            this._plcWorker.Set_EmptyPalletNo(_currentTargetPalletNo);
-                            _targetSelectionPalletOk = true;
-                        }
-                        else
-                        {
-                            // light up red buzzer
-                            OnError?.Invoke("SIRADAKİ YERLEŞTİRİLECEK PALET İÇİN UYGUN BİR HEDEF BULUNAMADI.");
-                        }
+                        nextPallet = _palletList
+                            .Where(d => !d.IsRawMaterial && d.IsEnabled && d.PalletNo <= _currentTargetPalletNo)
+                            .OrderByDescending(d => d.PalletNo).FirstOrDefault();
+                    }
+
+                    if (_autoLogic.CheckIsProperItem(nextPallet.PalletNo, currentRawMaterial) && nextPallet.IsEnabled)
+                    {
+                        _currentTargetPalletNo = nextPallet.PalletNo;
+                        this._plcWorker.Set_EmptyPalletNo(_currentTargetPalletNo);
+                        _targetSelectionPalletOk = true;
+                    }
+                    else
+                    {
+                        // light up red buzzer
+                        OnError?.Invoke("SIRADAKİ YERLEŞTİRİLECEK PALET İÇİN UYGUN BİR HEDEF BULUNAMADI.");
                     }
                 }
 
