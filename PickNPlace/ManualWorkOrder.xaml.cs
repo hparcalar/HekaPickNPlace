@@ -194,6 +194,8 @@ namespace PickNPlace
                                 SackType = 3,
                             });
 
+                            WorkOrder.Items = currentList.ToArray();
+
                             return "HM_" + string.Format("{0:000}", Convert.ToInt32(numPart) + 1);
                         }
                     }
@@ -220,9 +222,9 @@ namespace PickNPlace
                     return "HM_001";
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                MessageBox.Show(ex.Message);
             }
 
             return string.Empty;

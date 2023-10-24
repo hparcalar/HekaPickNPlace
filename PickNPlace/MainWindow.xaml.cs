@@ -840,34 +840,48 @@ namespace PickNPlace
                 lblError.Content = "";
             });
 
-            _plc.Set_Reset_Plc_Variables(1);
-            _logicWorker.ResetFlags();
-            _plc.Set_PlcEmgReset(1);
-            _plc.Set_PlcEmergency(0);
+            try
+            {
+                _plc.Set_Reset_Plc_Variables(1);
+                _logicWorker.ResetFlags();
+                _plc.Set_PlcEmgReset(1);
+                _plc.Set_PlcEmergency(0);
 
-            this._plc.Set_Robot_Start(0);
-            this._plc.Set_Robot_Start(1);
-            _plc.Set_RobotHold(0);
-            this._plc.Set_Robot_Start(0);
-            this._plc.Set_Robot_Start(1);
+                this._plc.Set_Robot_Start(0);
+                this._plc.Set_Robot_Start(1);
+                _plc.Set_RobotHold(0);
+                this._plc.Set_Robot_Start(0);
+                this._plc.Set_Robot_Start(1);
 
-            _tmrResetInvoker.Stop();
-            _tmrResetInvoker.Enabled = true;
-            _tmrResetInvoker.Start();
+                _tmrResetInvoker.Stop();
+                _tmrResetInvoker.Enabled = true;
+                _tmrResetInvoker.Start();
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         private void _tmrResetInvoker_Elapsed(object sender, ElapsedEventArgs e)
         {
             this.Dispatcher.Invoke((Action)delegate
             {
-                _plc.Set_Reset_Plc_Variables(1);
+                try
+                {
+                    _plc.Set_Reset_Plc_Variables(1);
 
-                _logicWorker.ResetFlags();
-                this._plc.Set_Robot_Start(0);
-                this._plc.Set_Robot_Start(1);
-                _plc.Set_RobotHold(0);
-                this._plc.Set_Robot_Start(0);
-                this._plc.Set_Robot_Start(1);
+                    _logicWorker.ResetFlags();
+                    this._plc.Set_Robot_Start(0);
+                    this._plc.Set_Robot_Start(1);
+                    _plc.Set_RobotHold(0);
+                    this._plc.Set_Robot_Start(0);
+                    this._plc.Set_Robot_Start(1);
+                }
+                catch (Exception)
+                {
+
+                }
             });
         }
 
