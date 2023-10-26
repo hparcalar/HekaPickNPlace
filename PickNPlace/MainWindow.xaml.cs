@@ -138,6 +138,8 @@ namespace PickNPlace
             _logicWorker.OnPalletIsPlaced += _logicWorker_OnPalletIsPlaced;
             _logicWorker.OnRawPalletsAreFinished += _logicWorker_OnRawPalletsAreFinished;
             _logicWorker.OnCamSentRiskyPos += _logicWorker_OnCamSentRiskyPos;
+            _logicWorker.OnPalletSensorChanged += _logicWorker_OnPalletSensorChanged;
+            _logicWorker.OnPalletPlaceLog += _logicWorker_OnPalletPlaceLog;
 
             _tmrStateUpdater.Enabled = true;
 
@@ -145,6 +147,51 @@ namespace PickNPlace
             {
                 this.CreateInitialData();
                 //this.BindLivePalletStates();
+            });
+        }
+
+        private void _logicWorker_OnPalletPlaceLog(int palletNo, bool isPlaced)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                try
+                {
+                    using (HekaDbContext db = SchemaFactory.CreateContext())
+                    {
+                        var dbLog = new PlaceLog
+                        {
+                            PalletNo = palletNo,
+                            IsDropped = !isPlaced,
+                            IsPlaced = isPlaced,
+                            PlaceDate = DateTime.Now,
+                        };
+                        db.PlaceLog.Add(dbLog);
+                        db.SaveChanges();
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            });
+        }
+
+        private void _logicWorker_OnPalletSensorChanged(int palletNo, bool state)
+        {
+            this.Dispatcher.Invoke((Action)delegate
+            {
+                try
+                {
+                    var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+                    if (plt == null || !plt.IsRawMaterial)
+                    {
+                        this.plt_OnPalletEnabledChanged(palletNo, state);
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
             });
         }
 
@@ -370,6 +417,24 @@ namespace PickNPlace
                     var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
                     if (pallet != null)
                     {
+                        // check level and existence sensor
+                        if (!pallet.IsRawMaterial && enabled)
+                        {
+                            var isPalletExists = _logicWorker.IsPalletFull(palletNo);
+                            if (!isPalletExists)
+                            {
+                                MessageBox.Show("Burada fiziksel olarak bir palet görünmüyor. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
+                                return;
+                            }
+
+                            var isLevelFull = _logicWorker.IsPalletLevelFull(palletNo);
+                            if (isLevelFull)
+                            {
+                                MessageBox.Show("Dolu olan paleti önce boşaltmanız gerekmektedir. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
+                                return;
+                            }
+                        }
+
                         pallet.IsEnabled = !pallet.IsEnabled;
 
                         if (_placeByRecipe)
@@ -500,7 +565,13 @@ namespace PickNPlace
                             var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
                             foreach (var plt in activePallets)
                             {
-                                _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, _manualRecipe, plt.RawMaterialCode);                                
+                                var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
+                                var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
+
+                                if (plt.IsEnabled || (palletExists && !palletLevelIsFull))
+                                {
+                                    _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, _manualRecipe, plt.RawMaterialCode);
+                                }                            
                             }
 
                             this.BindLivePalletStates();
@@ -987,19 +1058,39 @@ namespace PickNPlace
 
         private void btnPalletReset_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Tüm palet durumlarını sıfırlamak istediğinizden emin misiniz?", "Uyarı", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            try
             {
-                _manualRecipe = null;
-                _activeRecipe = null;
-                txtActiveRecipeCode.Content = "";
-                txtActiveRecipeName.Content = "";
-
-                _logicWorker.ClearPallets();
-
-                this.Dispatcher.Invoke((Action)delegate
+                foreach (var item in _palletList)
                 {
-                    this.BindLivePalletStates();
-                });
+                    if (!item.IsRawMaterial && item.IsEnabled)
+                    {
+                        var _palletLevel = _logicWorker.IsPalletLevelFull(item.PalletNo);
+                        if (_palletLevel)
+                        {
+                            MessageBox.Show("Dolu olan paletleri boşaltmadan yeni partiye başlayamazsınız.", "Uyarı", MessageBoxButton.OK);
+                            return;
+                        }
+                    }
+                }
+
+                if (MessageBox.Show("Tüm palet durumlarını sıfırlamak istediğinizden emin misiniz?", "Uyarı", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    _manualRecipe = null;
+                    _activeRecipe = null;
+                    txtActiveRecipeCode.Content = "";
+                    txtActiveRecipeName.Content = "";
+
+                    _logicWorker.ClearPallets();
+
+                    this.Dispatcher.Invoke((Action)delegate
+                    {
+                        this.BindLivePalletStates();
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
             }
         }
 

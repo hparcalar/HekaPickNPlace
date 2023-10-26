@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PickNPlace.DataAccess;
@@ -9,9 +10,10 @@ using PickNPlace.DataAccess;
 namespace PickNPlace.Migrations
 {
     [DbContext(typeof(HekaDbContext))]
-    partial class HekaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231026062506_PlaceLogging")]
+    partial class PlaceLogging
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

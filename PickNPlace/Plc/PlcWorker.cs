@@ -1336,6 +1336,328 @@ namespace PickNPlace.Plc
             return data[0] == 1;
         }
 
+        public bool Get_PltSns_1()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 0, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_2()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 1, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_3()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 2, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_4()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 3, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_5()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 4, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_6()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 5, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltSns_7()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 6, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        // level sensors for the empty pallets
+        public bool Get_PltLevelSns_1()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 54 * 8 + 7, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_2()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 0, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_3()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 1, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_4()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 2, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_5()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 3, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_6()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 4, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PltLevelSns_7()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 5, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
         #endregion
 
         private async Task _ListenLoop()

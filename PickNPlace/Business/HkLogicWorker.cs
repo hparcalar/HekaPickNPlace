@@ -77,6 +77,12 @@ namespace PickNPlace.Business
 
         public delegate void CamSentRiskyPos();
         public event CamSentRiskyPos OnCamSentRiskyPos;
+
+        public delegate void PalletSensorStateChanged(int palletNo, bool state);
+        public event PalletSensorStateChanged OnPalletSensorChanged;
+
+        public delegate void PalletPlaceLog(int palletNo, bool isPlaced);
+        public event PalletPlaceLog OnPalletPlaceLog;
         #endregion
 
         // environmental variables
@@ -103,9 +109,87 @@ namespace PickNPlace.Business
         bool _makeSwitchCamera = false;
         bool _captureOk = false;
 
+        bool _oldSnsPlt_1 = false;
+        bool _oldSnsPlt_2 = false;
+        bool _oldSnsPlt_3 = false;
+        bool _oldSnsPlt_4 = false;
+        bool _oldSnsPlt_5 = false;
+        bool _oldSnsPlt_6 = false;
+        bool _oldSnsPlt_7 = false;
+
+        bool _pltSns_1 = false;
+        bool _pltSns_2 = false;
+        bool _pltSns_3 = false;
+        bool _pltSns_4 = false;
+        bool _pltSns_5 = false;
+        bool _pltSns_6 = false;
+        bool _pltSns_7 = false;
+
+        bool _pltLevel_1 = false;
+        bool _pltLevel_2 = false;
+        bool _pltLevel_3 = false;
+        bool _pltLevel_4 = false;
+        bool _pltLevel_5 = false;
+        bool _pltLevel_6 = false;
+        bool _pltLevel_7 = false;
+
         public HkAutoPallet GetPalletData(int palletNo)
         {
             return _autoLogic.GetPalletData(palletNo);
+        }
+
+        public bool IsPalletLevelFull(int palletNo)
+        {
+            bool retVal = false;
+
+            switch (palletNo)
+            {
+                case 1:
+                    return _pltLevel_1;
+                case 2:
+                    return _pltLevel_2;
+                case 3:
+                    return _pltLevel_3;
+                case 4:
+                    return _pltLevel_4;
+                case 5:
+                    return _pltLevel_5;
+                case 6:
+                    return _pltLevel_6;
+                case 7:
+                    return _pltLevel_7;
+                default:
+                    break;
+            }
+
+            return retVal;
+        }
+
+        public bool IsPalletFull(int palletNo)
+        {
+            bool retVal = false;
+
+            switch (palletNo)
+            {
+                case 1:
+                    return _pltSns_1;
+                case 2:
+                    return _pltSns_2;
+                case 3:
+                    return _pltSns_3;
+                case 4:
+                    return _pltSns_4;
+                case 5:
+                    return _pltSns_5;
+                case 6:
+                    return _pltSns_6;
+                case 7:
+                    return _pltSns_7;
+                default:
+                    break;
+            }
+
+            return retVal;
         }
 
         public PlaceRequestDTO GetPalletRequest(int palletNo)
@@ -364,6 +448,7 @@ namespace PickNPlace.Business
             _robotPickedUp = false;
         }
 
+        // main logic loop
         private async Task LoopFunc()
         {
             bool wrResult = false;
@@ -381,6 +466,11 @@ namespace PickNPlace.Business
                         _plcWorker.Set_SystemAuto(0);
                         _plcWorker.Set_RobotHold(1);
                         OnError?.Invoke("SİSTEM ACİL DURUMUNA GEÇTİ.");
+
+                        if (_robotSentToPlaceDown)
+                        {
+                            OnPalletPlaceLog?.Invoke(_currentTargetPalletNo, false);
+                        }
                     }
                     _oldEmgMode = emgExists;
 
@@ -399,19 +489,88 @@ namespace PickNPlace.Business
                         OnError.Invoke("ROBOT KUMANDASINI REMOTE ÇALIŞMA MODUNA ALINIZ.");
                     _oldPendantMode = pendantRemoteMode;
 
+                    #region check pallet sensors
+                    // pallet-2
+                    var pltState = _plcWorker.Get_PltSns_2();
+                    _pltSns_2 = pltState;
+                    if (!_oldSnsPlt_2 && pltState)
+                        OnPalletSensorChanged.Invoke(2, true);
+                    else if (_oldSnsPlt_2 && !pltState)
+                        OnPalletSensorChanged.Invoke(2, false);
+                    _oldSnsPlt_2 = pltState;
+                    _pltLevel_2 = _plcWorker.Get_PltLevelSns_2();
+
+                    // pallet-3
+                    pltState = _plcWorker.Get_PltSns_3();
+                    _pltSns_3 = pltState;
+                    if (!_oldSnsPlt_3 && pltState)
+                        OnPalletSensorChanged.Invoke(3, true);
+                    else if (_oldSnsPlt_3 && !pltState)
+                        OnPalletSensorChanged.Invoke(3, false);
+                    _oldSnsPlt_3 = pltState;
+                    _pltLevel_3 = _plcWorker.Get_PltLevelSns_3();
+
+                    // pallet-4
+                    pltState = _plcWorker.Get_PltSns_4();
+                    _pltSns_4 = pltState;
+                    if (!_oldSnsPlt_4 && pltState)
+                        OnPalletSensorChanged.Invoke(4, true);
+                    else if (_oldSnsPlt_4 && !pltState)
+                        OnPalletSensorChanged.Invoke(4, false);
+                    _oldSnsPlt_4 = pltState;
+                    _pltLevel_4 = _plcWorker.Get_PltLevelSns_4();
+
+                    // pallet-5
+                    pltState = _plcWorker.Get_PltSns_5();
+                    _pltSns_5 = pltState;
+                    if (!_oldSnsPlt_5 && pltState)
+                        OnPalletSensorChanged.Invoke(5, true);
+                    else if (_oldSnsPlt_5 && !pltState)
+                        OnPalletSensorChanged.Invoke(5, false);
+                    _oldSnsPlt_5 = pltState;
+                    _pltLevel_5 = _plcWorker.Get_PltLevelSns_5();
+
+                    // pallet-6
+                    pltState = _plcWorker.Get_PltSns_6();
+                    _pltSns_6 = pltState;
+                    if (!_oldSnsPlt_6 && pltState)
+                        OnPalletSensorChanged.Invoke(6, true);
+                    else if (_oldSnsPlt_6 && !pltState)
+                        OnPalletSensorChanged.Invoke(6, false);
+                    _oldSnsPlt_6 = pltState;
+                    _pltLevel_6 = _plcWorker.Get_PltLevelSns_6();
+
+                    // pallet-7
+                    pltState = _plcWorker.Get_PltSns_7();
+                    _pltSns_7 = pltState;
+                    if (!_oldSnsPlt_7 && pltState)
+                        OnPalletSensorChanged.Invoke(7, true);
+                    else if (_oldSnsPlt_7 && !pltState)
+                        OnPalletSensorChanged.Invoke(7, false);
+                    _oldSnsPlt_7 = pltState;
+                    _pltLevel_7 = _plcWorker.Get_PltLevelSns_7();
+                    #endregion
+
                     if (systemAuto)
                     {
                         _ellapsedCycle = DateTime.Now.TimeOfDay;
                         await PrepareRawMaterial();
-
-                        if (!_targetSelectionPalletOk)
-                            CheckNextTargetPallet();
 
                         // select next pallet to place
                         if (_currentTargetPalletNo <= 0 || _currentTargetPalletNo > 7)
                         {
                             _currentTargetPalletNo = 7;
                             _targetSelectionPalletOk = false;
+                        }
+
+                        if (!_targetSelectionPalletOk)
+                            CheckNextTargetPallet();
+                        
+                        if (!_targetSelectionPalletOk)
+                        {
+                            _plcWorker.Set_SystemAuto(0);
+                            _plcWorker.Set_RobotHold(1);
+                            OnError?.Invoke("DAĞITILACAK YENİ HAMMADDEYİ BELİRLEYİN.");
                         }
 
                         if (_targetSelectionPalletOk)
@@ -475,6 +634,7 @@ namespace PickNPlace.Business
                                     if (placingLogicOk)
                                     {
                                         OnPalletIsPlaced?.Invoke(_currentTargetPalletNo);
+                                        OnPalletPlaceLog?.Invoke(_currentTargetPalletNo, true);
                                     }
 
                                     _plcWorker.Set_PlaceCalculationOk(0);

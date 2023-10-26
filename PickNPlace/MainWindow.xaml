@@ -141,7 +141,7 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="Images/back_jotun.png" Stretch="Uniform" Height="40"></Image>
-                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">PALETLERİ SIFIRLA</TextBlock>
+                        <TextBlock FontFamily="Calibri" HorizontalAlignment="Center">YENİ PARTİ</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Name="btnManagement" Click="btnManagement_Click" Padding="20,0,20,0" FontWeight="Bold" HorizontalAlignment="Right">
