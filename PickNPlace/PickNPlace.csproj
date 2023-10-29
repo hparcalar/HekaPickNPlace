@@ -31,6 +31,7 @@
     <None Remove="reset.png" />
     <None Remove="robot.png" />
     <None Remove="robot_int.png" />
+    <None Remove="safety-robot.png" />
     <None Remove="save.png" />
     <None Remove="select.png" />
     <None Remove="servo_double.png" />
@@ -89,6 +90,7 @@
     <Resource Include="Images\start.png" />
     <Resource Include="Images\stop.png" />
     <Resource Include="Images\urun_recetesi.png" />
+    <Resource Include="Images\safety-robot.png" />
     <Resource Include="UserControls\euro_pallet.png" />
     <Resource Include="UserControls\generic_sack.png" />
     <Resource Include="UserControls\layout.png" />

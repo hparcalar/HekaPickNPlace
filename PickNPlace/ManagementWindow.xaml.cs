@@ -43,30 +43,37 @@ namespace PickNPlace
 
         private void BindDefaults()
         {
-            using (HekaDbContext db = SchemaFactory.CreateContext())
+            try
             {
-                int tryValue = 0;
-
-                var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                using (HekaDbContext db = SchemaFactory.CreateContext())
                 {
-                    txtServoSpeed.Text = prmData.ParamValue;
+                    int tryValue = 0;
+
+                    var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
+                    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                    {
+                        txtServoSpeed.Text = prmData.ParamValue;
+                    }
+
+                    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
+                    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                    {
+                        txtServoPosCam1.Text = prmData.ParamValue;
+                    }
+
+                    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
+                    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
+                    {
+                        txtServoPosCam2.Text = prmData.ParamValue;
+                    }
                 }
 
-                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-                {
-                    txtServoPosCam1.Text = prmData.ParamValue;
-                }
-
-                prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
-                if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-                {
-                    txtServoPosCam2.Text = prmData.ParamValue;
-                }
+                txtTargetPos.Text = this._db.Servo_CurrentPos.ToString();
             }
+            catch (Exception)
+            {
 
-            txtTargetPos.Text = this._db.Servo_CurrentPos.ToString();
+            }
         }
 
         private void btnSendTargetPos_Click(object sender, RoutedEventArgs e)

@@ -593,8 +593,16 @@ namespace PickNPlace
 
         private void btnManagement_Click(object sender, RoutedEventArgs e)
         {
-            ManagementWindow wnd = new ManagementWindow();
-            wnd.Show();
+            if (_plcDB.System_Auto)
+            {
+                MessageBox.Show("Sistemi durdurduktan sonra ayarlara girebilirsiniz.", "Uyarı", MessageBoxButton.OK);
+                return;
+            }
+            else
+            {
+                ManagementWindow wnd = new ManagementWindow();
+                wnd.Show();
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -636,6 +644,15 @@ namespace PickNPlace
             else
             {
                 this._plc.Set_RobotHold(1);
+            }
+
+            if (targetInfo)
+            {
+                RobotStartWarning wnd = new RobotStartWarning();
+                wnd.ShowDialog();
+
+                if (!wnd.IsAccepted)
+                    return;
             }
 
             this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
@@ -906,31 +923,37 @@ namespace PickNPlace
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            RobotStartWarning wnd = new RobotStartWarning();
+            wnd.ShowDialog();
+
+            if (wnd.IsAccepted)
             {
-                lblError.Content = "";
-            });
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    lblError.Content = "";
+                });
 
-            try
-            {
-                _plc.Set_Reset_Plc_Variables(1);
-                _logicWorker.ResetFlags();
-                _plc.Set_PlcEmgReset(1);
-                _plc.Set_PlcEmergency(0);
+                try
+                {
+                    _plc.Set_Reset_Plc_Variables(1);
+                    _logicWorker.ResetFlags();
+                    _plc.Set_PlcEmgReset(1);
+                    _plc.Set_PlcEmergency(0);
 
-                this._plc.Set_Robot_Start(0);
-                this._plc.Set_Robot_Start(1);
-                _plc.Set_RobotHold(0);
-                this._plc.Set_Robot_Start(0);
-                this._plc.Set_Robot_Start(1);
+                    this._plc.Set_Robot_Start(0);
+                    this._plc.Set_Robot_Start(1);
+                    _plc.Set_RobotHold(0);
+                    this._plc.Set_Robot_Start(0);
+                    this._plc.Set_Robot_Start(1);
 
-                _tmrResetInvoker.Stop();
-                _tmrResetInvoker.Enabled = true;
-                _tmrResetInvoker.Start();
-            }
-            catch (Exception)
-            {
+                    _tmrResetInvoker.Stop();
+                    _tmrResetInvoker.Enabled = true;
+                    _tmrResetInvoker.Start();
+                }
+                catch (Exception)
+                {
 
+                }
             }
         }
 
@@ -1080,7 +1103,16 @@ namespace PickNPlace
                     txtActiveRecipeCode.Content = "";
                     txtActiveRecipeName.Content = "";
 
-                    _logicWorker.ClearPallets();
+                    foreach (var item in _palletList)
+                    {
+                        if (item.IsRawMaterial)
+                        {
+                            _logicWorker.SetPalletAttributes(item.PalletNo, true, false, null, string.Empty);
+                            _logicWorker.SetPalletDisabled(item.PalletNo);
+                        }
+                    }
+
+                    //_logicWorker.ClearPallets();
 
                     this.Dispatcher.Invoke((Action)delegate
                     {
@@ -1125,7 +1157,8 @@ namespace PickNPlace
 
             try
             {
-                _plc.Set_RobotSpeed(speed);
+                if (_plc != null)
+                    _plc.Set_RobotSpeed(speed);
             }
             catch (Exception)
             {
