@@ -16,6 +16,7 @@ namespace PickNPlace.DTO
 
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
+        public string BgColor { get; set; }
         public string SackTypeText
         {
             get

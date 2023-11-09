@@ -22,7 +22,7 @@ namespace JotunWS
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GET_REQUEST_DETAIL", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        System.Threading.Tasks.Task<JotunWS.ArrayOfXElement> GET_REQUEST_DETAILAsync(string SYS, string RequestNo);
+        System.Threading.Tasks.Task<JotunWS.ArrayOfXElement> GET_REQUEST_DETAILAsync(string SYS, string Batch_No);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.3-preview3.21351.2")]
@@ -73,9 +73,9 @@ namespace JotunWS
             return base.Channel.HelloWorldAsync();
         }
         
-        public System.Threading.Tasks.Task<JotunWS.ArrayOfXElement> GET_REQUEST_DETAILAsync(string SYS, string RequestNo)
+        public System.Threading.Tasks.Task<JotunWS.ArrayOfXElement> GET_REQUEST_DETAILAsync(string SYS, string Batch_No)
         {
-            return base.Channel.GET_REQUEST_DETAILAsync(SYS, RequestNo);
+            return base.Channel.GET_REQUEST_DETAILAsync(SYS, Batch_No);
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync()

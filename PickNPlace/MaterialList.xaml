@@ -6,6 +6,13 @@
         xmlns:local="clr-namespace:PickNPlace"
         mc:Ignorable="d"
         Title="Hammadde Listesi" Height="450" Width="800" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Window.Resources>
+        <Style TargetType="{x:Type DataGridRow}">
+            <Style.Setters>
+                <Setter Property="Background" Value="{Binding Path=BgColor}"></Setter>
+            </Style.Setters>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>

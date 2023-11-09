@@ -566,12 +566,13 @@ namespace PickNPlace.Business
                         if (!_targetSelectionPalletOk)
                             CheckNextTargetPallet();
                         
-                        if (!_targetSelectionPalletOk)
-                        {
-                            _plcWorker.Set_SystemAuto(0);
-                            _plcWorker.Set_RobotHold(1);
-                            OnError?.Invoke("DAĞITILACAK YENİ HAMMADDEYİ BELİRLEYİN.");
-                        }
+                        // son çuvalın dağıtımında robotun durmasını ve hata reseti engellediği için kaldırıldı
+                        //if (!_targetSelectionPalletOk)
+                        //{
+                        //    _plcWorker.Set_SystemAuto(0);
+                        //    _plcWorker.Set_RobotHold(1);
+                        //    OnError?.Invoke("DAĞITILACAK YENİ HAMMADDEYİ BELİRLEYİN.");
+                        //}
 
                         if (_targetSelectionPalletOk)
                         {

@@ -742,6 +742,7 @@ namespace PickNPlace
             wnd.ShowDialog();
         }
 
+        YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
         private void txtRecipeBarocde_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -756,73 +757,108 @@ namespace PickNPlace
                             // try fetch data from web service
                             try
                             {
-                                YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
-                                wsClient.OpenAsync().Wait();
+                                if (wsClient == null)
+                                    wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
+
+                                if (wsClient.State != System.ServiceModel.CommunicationState.Opened)
+                                    wsClient.OpenAsync().Wait();
+
                                 var result = wsClient.GET_REQUEST_DETAILAsync("55555", txtRecipeBarocde.Text).Result;
 
                                 if (result != null)
                                 {
-                                    //System.IO.Stream xmlStream = new System.IO.MemoryStream();
                                     var xmlStg = new System.Xml.XmlWriterSettings();
                                     xmlStg.ConformanceLevel = System.Xml.ConformanceLevel.Auto;
-                                    //var xmlWriter = System.Xml.XmlWriter.Create(xmlStream, xmlStg);
-                                    //result.WriteXml(xmlWriter);
-                                    //xmlWriter.Flush();
-                                    //xmlWriter.Close();
-
-                                    var xmlFileWriter = System.Xml.XmlWriter.Create("test_int.xml", xmlStg);
-                                    result.WriteXml(xmlFileWriter);
-                                    xmlFileWriter.Flush();
-                                    xmlFileWriter.Close();
-                                }
-
-                                wsClient.Close();
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
-                            }
-
-                            // try import from xml dataset
-                            try
-                            {
-                                DataSet ds = new DataSet();
-                                ds.ReadXml("test_int.xml", XmlReadMode.Fragment);
-
-                                if (ds.Tables.Count > 0)
-                                {
-                                    dbRecipe = new PlaceRequest
-                                    {
-                                        BatchCount = 0,
-                                        RequestNo = txtRecipeBarocde.Text,
-                                    };
-                                    db.PlaceRequest.Add(dbRecipe);
 
                                     List<string> itemCodes = new List<string>();
                                     List<RawMaterial> addedMats = new List<RawMaterial>();
 
-                                    bool breakUpperLoop = false;
+                                    bool recipeChecked = false;
+                                    bool makeSave = false;
+                                    var rootElm = ((System.Xml.Linq.XContainer)result.Nodes[1].FirstNode).FirstNode as System.Xml.Linq.XContainer;
 
-                                    foreach (DataTable table in ds.Tables)
+                                    //if (rootElm != null)
+                                    //{
+                                    //    dbRecipe = new PlaceRequest
+                                    //    {
+                                    //        BatchCount = 0,
+                                    //        RequestNo = txtRecipeBarocde.Text,
+                                    //    };
+                                    //    db.PlaceRequest.Add(dbRecipe);
+                                    //    makeSave = true;
+                                    //}
+
+                                    while (rootElm != null)
                                     {
-                                        if (breakUpperLoop)
-                                            break;
+                                        string imCode = "";
+                                        string imName = "";
+                                        int piecesPerBatch = 0;
+                                        string rcpCode = "";
+                                        string rcpName = "";
+                                        string reqCode = "";
 
-                                        foreach (DataRow row in table.Rows)
+                                        var chElm = rootElm.FirstNode as System.Xml.Linq.XContainer;
+                                        int elmIdx = 0;
+                                        while (chElm != null)
                                         {
-                                            string imCode = (string)row[4];
+                                            if (elmIdx == 0)
+                                                reqCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            if (elmIdx == 2)
+                                                rcpCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            else if (elmIdx == 3)
+                                                rcpName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            else if (elmIdx == 5)
+                                                imName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            else if (elmIdx == 4)
+                                                imCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            else if (elmIdx == 6)
+                                                piecesPerBatch = Convert.ToInt32(((System.Xml.Linq.XElement)chElm).Value);
 
-                                            if (itemCodes.Contains(imCode))
+                                            if (!string.IsNullOrEmpty(reqCode))
                                             {
-                                                breakUpperLoop = true;
-                                                break;
+                                                if (dbRecipe != null)
+                                                    dbRecipe.RequestNo = reqCode;
                                             }
 
+                                            // move next prop
+                                            chElm = chElm.NextNode as System.Xml.Linq.XContainer;
+
+                                            elmIdx++;
+                                        }
+
+                                        if (!string.IsNullOrEmpty(reqCode))
+                                        {
+                                            var existingRecipe = db.PlaceRequest.FirstOrDefault(d => d.RequestNo == reqCode);
+                                            if (existingRecipe != null && !recipeChecked)
+                                            {
+                                                dbRecipe = existingRecipe;
+                                                makeSave = false;
+                                                break;
+                                            }
+                                            else if (!recipeChecked)
+                                            {
+                                                dbRecipe = new PlaceRequest
+                                                {
+                                                    BatchCount = 0,
+                                                    RequestNo = reqCode,
+                                                };
+                                                db.PlaceRequest.Add(dbRecipe);
+                                                makeSave = true;
+                                            }
+
+                                            recipeChecked = true;
+                                        }
+
+                                        if (itemCodes.Contains(imCode))
+                                            break;
+
+                                        if (makeSave)
+                                        {
                                             itemCodes.Add(imCode);
 
                                             // set recipe header information
-                                            dbRecipe.RecipeCode = (string)row[2];
-                                            dbRecipe.RecipeName = (string)row[3];
+                                            dbRecipe.RecipeCode = rcpCode;
+                                            dbRecipe.RecipeName = rcpName;
 
                                             // set raw material record
                                             var dbItem = db.RawMaterial.FirstOrDefault(d => d.ItemCode == imCode);
@@ -836,7 +872,7 @@ namespace PickNPlace
                                                 dbItem = new RawMaterial
                                                 {
                                                     ItemCode = imCode,
-                                                    ItemName = (string)row[5],
+                                                    ItemName = imName,
                                                     ItemNetWeight = 0,
                                                 };
                                                 db.RawMaterial.Add(dbItem);
@@ -846,47 +882,69 @@ namespace PickNPlace
                                             // set recipe detail item
                                             var dbRecItem = new PlaceRequestItem
                                             {
-                                                PiecesPerBatch = Convert.ToInt32(row[6]),
+                                                PiecesPerBatch = piecesPerBatch,
                                                 PlaceRequest = dbRecipe,
                                                 RawMaterial = dbItem,
                                             };
                                             db.PlaceRequestItem.Add(dbRecItem);
+
+                                            // move next record
+                                            if (rootElm != null)
+                                                rootElm = rootElm.NextNode as System.Xml.Linq.XContainer;
                                         }
                                     }
 
-                                    db.SaveChanges();
+                                    if (makeSave)
+                                        db.SaveChanges();
                                 }
-                                else
-                                    MessageBox.Show("Sonuç bulunamadı. Tables=0");
+
+                               // wsClient.CloseAsync().Wait();
                             }
                             catch (Exception ex)
                             {
+                                MessageBox.Show(ex.Message);
+                                //try
+                                //{
+                                //    if (wsClient != null && wsClient.State == System.ServiceModel.CommunicationState.Opened)
+                                //        wsClient.Close();
+                                //}
+                                //catch (Exception)
+                                //{
 
-                            }
-
-                            // delete the last imported data file
-                            try
-                            {
-                                System.IO.File.Delete("test_int.xml");
-                            }
-                            catch (Exception)
-                            {
-
+                                //}
+                                
                             }
                         }
 
                         if (dbRecipe != null)
                         {
-                            foreach (var plt in _palletList)
+                            if (_palletList != null)
                             {
-                                if (!plt.IsRawMaterial)
+                                // set manual recipe of active pallets
+                                var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
+                                foreach (var plt in activePallets)
                                 {
-                                    plt.PlaceRecipeCode = dbRecipe.RecipeCode;
-                                    _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
+                                    var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
+                                    var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
+
+                                    if (plt.IsEnabled || (palletExists && !palletLevelIsFull))
+                                    {
+                                        plt.PlaceRecipeCode = dbRecipe.RecipeCode;
+                                        _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
+                                    }
                                 }
+
+                                //foreach (var plt in _palletList)
+                                //{
+                                //    if (!plt.IsRawMaterial)
+                                //    {
+                                //        plt.PlaceRecipeCode = dbRecipe.RecipeCode;
+                                //        _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
+                                //    }
+                                //}
                             }
 
-                            _activeRecipe.RequestNo = txtRecipeBarocde.Text;
+                            _activeRecipe.RequestNo = dbRecipe.RequestNo;
                             _activeRecipe.RecipeName = dbRecipe.RecipeName;
 
                             txtRecipeBarocde.Text = "";
@@ -896,10 +954,12 @@ namespace PickNPlace
                         }
                         else
                         {
+                            if (_palletList != null)
                             foreach (var plt in _palletList)
                             {
                                 if (!plt.IsRawMaterial)
                                 {
+
                                     plt.PlaceRecipeCode = "";
                                     _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, "");
                                 }
@@ -1072,7 +1132,7 @@ namespace PickNPlace
 
         private void btnClearRecipe_Click(object sender, RoutedEventArgs e)
         {
-            _activeRecipe = null;
+            _activeRecipe = new PlaceRequestDTO();
             _placeByRecipe = false;
             txtActiveRecipeCode.Content = "";
             txtActiveRecipeName.Content = "";

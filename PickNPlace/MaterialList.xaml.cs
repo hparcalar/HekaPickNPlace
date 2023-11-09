@@ -65,6 +65,18 @@ namespace PickNPlace
                     ItemName = d.RawMaterial != null ? d.RawMaterial.ItemName : "",
                     PlaceRequestId = d.PlaceRequestId,
                 }).OrderByDescending(d => d.Id).ToArray();
+
+                foreach (var item in _listData)
+                {
+                    if (item.ItemName.Contains("BARYT") || item.ItemName.Contains("BARIUM") || item.ItemName.Contains("BARYUM") || item.ItemName.Contains("BARITE"))
+                    {
+                        item.BgColor = "#FF0000";
+                    }
+                    else
+                    {
+                        item.BgColor = "#FFFFFF";
+                    }
+                }
             }
 
             dgRecipe.ItemsSource = _listData;
