@@ -550,6 +550,9 @@ namespace PickNPlace
 
                     if (wnd.SelectionOk)
                     {
+                        this._plc.Set_SystemAuto(0);
+                        this._plc.Set_RobotHold(1);
+
                         if (_logicWorker != null)
                         {
                             _manualRecipe = wnd.WorkOrder;
@@ -804,15 +807,23 @@ namespace PickNPlace
                                             if (elmIdx == 0)
                                                 reqCode = ((System.Xml.Linq.XElement)chElm).Value;
                                             if (elmIdx == 2)
+                                            {
                                                 rcpCode = ((System.Xml.Linq.XElement)chElm).Value;
-                                            else if (elmIdx == 3)
                                                 rcpName = ((System.Xml.Linq.XElement)chElm).Value;
-                                            else if (elmIdx == 5)
-                                                imName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            }
                                             else if (elmIdx == 4)
+                                                imName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            else if (elmIdx == 3)
                                                 imCode = ((System.Xml.Linq.XElement)chElm).Value;
-                                            else if (elmIdx == 6)
-                                                piecesPerBatch = Convert.ToInt32(((System.Xml.Linq.XElement)chElm).Value);
+                                            else if (elmIdx == 5)
+                                                try
+                                                {
+                                                    piecesPerBatch = Convert.ToInt32(((System.Xml.Linq.XElement)chElm).Value);
+                                                }
+                                                catch (Exception)
+                                                {
+
+                                                }
 
                                             if (!string.IsNullOrEmpty(reqCode))
                                             {
@@ -988,32 +999,36 @@ namespace PickNPlace
 
             if (wnd.IsAccepted)
             {
-                this.Dispatcher.Invoke((Action)delegate
-                {
-                    lblError.Content = "";
-                });
-
                 try
                 {
-                    _plc.Set_Reset_Plc_Variables(1);
-                    _logicWorker.ResetFlags();
-                    _plc.Set_PlcEmgReset(1);
-                    _plc.Set_PlcEmergency(0);
+                    this.Dispatcher.Invoke((Action)delegate
+                    {
+                        _plc.Set_Reset_Plc_Variables(1);
+                        _logicWorker.ResetFlags();
+                        _plc.Set_PlcEmgReset(1);
+                        _plc.Set_PlcEmergency(0);
 
-                    this._plc.Set_Robot_Start(0);
-                    this._plc.Set_Robot_Start(1);
-                    _plc.Set_RobotHold(0);
-                    this._plc.Set_Robot_Start(0);
-                    this._plc.Set_Robot_Start(1);
+                        this._plc.Set_Robot_Start(0);
+                        this._plc.Set_Robot_Start(1);
+                        _plc.Set_RobotHold(0);
+                        this._plc.Set_Robot_Start(0);
+                        this._plc.Set_Robot_Start(1);
 
-                    _tmrResetInvoker.Stop();
-                    _tmrResetInvoker.Enabled = true;
-                    _tmrResetInvoker.Start();
+                        _tmrResetInvoker.Stop();
+                        _tmrResetInvoker.Enabled = true;
+                        _tmrResetInvoker.Start();
+                    });
+                    
                 }
                 catch (Exception)
                 {
 
                 }
+
+                this.Dispatcher.Invoke((Action)delegate
+                {
+                    lblError.Content = "";
+                });
             }
         }
 
