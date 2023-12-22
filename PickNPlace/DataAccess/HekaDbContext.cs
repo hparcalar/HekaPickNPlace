@@ -18,6 +18,7 @@ namespace PickNPlace.DataAccess
         public DbSet<PalletStateLive> PalletStateLive { get; set; }
         public DbSet<SysParam> SysParam { get; set; }
         public DbSet<PlaceLog> PlaceLog { get; set; }
+        public DbSet<StoredState> StoredState { get; set; }
 
         public HekaDbContext() : base() { }
         public HekaDbContext(Microsoft.EntityFrameworkCore.DbContextOptions options) : base(options) { }

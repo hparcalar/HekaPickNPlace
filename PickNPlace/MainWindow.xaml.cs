@@ -20,6 +20,7 @@ using PickNPlace.Business;
 using System.Timers;
 using JotunWS;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace PickNPlace
 {
@@ -31,6 +32,7 @@ namespace PickNPlace
         // local variables
         private bool _isStarted = false;
         private bool _placeByRecipe = false;
+        private bool _restoreLastState = false;
         private PlcWorker _plc;
         private PlcDB _plcDB;
         private Task _flagListener;
@@ -40,7 +42,6 @@ namespace PickNPlace
         private PlaceRequestDTO _activeRecipe = new PlaceRequestDTO();
         private PlaceRequestDTO _manualRecipe = new PlaceRequestDTO();
         private Timer _tmrError = new Timer(10000);
-        private Timer _tmrResetInvoker = new Timer(750);
         private Timer _tmrStateUpdater = new Timer(1000);
 
         public MainWindow()
@@ -49,9 +50,6 @@ namespace PickNPlace
 
             // make db migrations
             SchemaFactory.ApplyMigrations();
-
-            _tmrResetInvoker.AutoReset = false;
-            _tmrResetInvoker.Elapsed += _tmrResetInvoker_Elapsed;
 
             _tmrError.AutoReset = false;
             _tmrError.Elapsed += _tmrError_Elapsed;
@@ -62,7 +60,7 @@ namespace PickNPlace
 
         private void _tmrStateUpdater_Elapsed(object sender, ElapsedEventArgs e)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 this.BindLivePalletStates();
             });
@@ -70,7 +68,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnPalletIsFull(int palletNo)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 this.BindLivePalletStates();
             });
@@ -78,7 +76,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnSystemModeChanged(bool mode)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 _plcDB.System_Auto = mode;
                 this.UpdateSystemStatus();
@@ -92,7 +90,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnError(string message)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 lblError.Content = message;
 
@@ -105,7 +103,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnActivePalletChanged()
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 this.BindLivePalletStates();
             });
@@ -114,9 +112,7 @@ namespace PickNPlace
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Task.Run(InitLogicWorker);
-
-            //_runFlagListener = true;
-            //_flagListener = Task.Run(this.LoopFlagListen);
+            this.RestoreLastState();
         }
 
         private void InitLogicWorker()
@@ -140,6 +136,7 @@ namespace PickNPlace
             _logicWorker.OnCamSentRiskyPos += _logicWorker_OnCamSentRiskyPos;
             _logicWorker.OnPalletSensorChanged += _logicWorker_OnPalletSensorChanged;
             _logicWorker.OnPalletPlaceLog += _logicWorker_OnPalletPlaceLog;
+            _logicWorker.OnRadarStatusChanged += _logicWorker_OnRadarStatusChanged;
 
             _tmrStateUpdater.Enabled = true;
 
@@ -150,24 +147,46 @@ namespace PickNPlace
             });
         }
 
-        private void _logicWorker_OnPalletPlaceLog(int palletNo, bool isPlaced)
+        private void RestoreLastState()
         {
-            this.Dispatcher.Invoke((Action)delegate
+            try
+            {
+                using (HekaDbContext db = SchemaFactory.CreateContext())
+                {
+                    var states = db.StoredState.ToArray();
+                    foreach (var plt in states)
+                    {
+                        StoredStateDTO stData = null;
+                        if (!string.IsNullOrEmpty(plt.FullContent))
+                            stData = JsonConvert.DeserializeObject<StoredStateDTO>(plt.FullContent);
+
+                        if (stData != null)
+                        {
+                            if (stData.PalletData.IsRawMaterial)
+                            {
+                                
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void _logicWorker_OnRadarStatusChanged(bool status)
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 try
                 {
-                    using (HekaDbContext db = SchemaFactory.CreateContext())
-                    {
-                        var dbLog = new PlaceLog
-                        {
-                            PalletNo = palletNo,
-                            IsDropped = !isPlaced,
-                            IsPlaced = isPlaced,
-                            PlaceDate = DateTime.Now,
-                        };
-                        db.PlaceLog.Add(dbLog);
-                        db.SaveChanges();
-                    }
+                    imgRadarOk.Source = new BitmapImage(new Uri(status ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
                 }
                 catch (Exception)
                 {
@@ -176,9 +195,68 @@ namespace PickNPlace
             });
         }
 
+        private void _logicWorker_OnPalletPlaceLog(int palletNo, bool isPlaced)
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                try
+                {
+                    //using (HekaDbContext db = SchemaFactory.CreateContext())
+                    //{
+                    //    var dbLog = new PlaceLog
+                    //    {
+                    //        PalletNo = palletNo,
+                    //        IsDropped = !isPlaced,
+                    //        IsPlaced = isPlaced,
+                    //        PlaceDate = DateTime.Now,
+                    //    };
+                    //    db.PlaceLog.Add(dbLog);
+                    //    db.SaveChanges();
+                    //}
+
+                    this.UpdateLastStoredState();
+                }
+                catch (Exception)
+                {
+
+                }
+            });
+        }
+
+        private void UpdateLastStoredState()
+        {
+            using (HekaDbContext db = SchemaFactory.CreateContext())
+            {
+                foreach (var plt in _palletList)
+                {
+                    var palletData = _logicWorker.GetPalletData(plt.PalletNo);
+                    var reqData = _logicWorker.GetPalletRequest(plt.PalletNo);
+
+                    var dbState = db.StoredState.FirstOrDefault(d => d.PalletNo == plt.PalletNo);
+                    if (dbState == null)
+                    {
+                        dbState = new StoredState
+                        {
+                            PalletNo = plt.PalletNo,
+                        };
+                        db.StoredState.Add(dbState);
+                    }
+
+                    dbState.FullContent = JsonConvert.SerializeObject(new StoredStateDTO
+                    {
+                        PalletData = palletData,
+                        RequestData = reqData,
+                        ItemCode = plt.IsRawMaterial ? plt.RawMaterialCode : "",
+                    });
+                }
+
+                db.SaveChanges();
+            }
+        }
+
         private void _logicWorker_OnPalletSensorChanged(int palletNo, bool state)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 try
                 {
@@ -197,7 +275,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnCamSentRiskyPos()
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 _plc.Set_SystemAuto(0);
                 _plc.Set_Reset_Plc_Variables(1);
@@ -207,7 +285,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnRawPalletsAreFinished()
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 this._plc.Set_SystemAuto(0);
                 this.BindLivePalletStates();
@@ -216,7 +294,7 @@ namespace PickNPlace
 
         private void _logicWorker_OnPalletIsPlaced(int palletNo)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 this.BindLivePalletStates();
                 lblError.Content = "";
@@ -386,7 +464,7 @@ namespace PickNPlace
 
         private void plt_OnPickingStatusChanged(int palletNo)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 if (_palletList != null)
                 {
@@ -410,7 +488,7 @@ namespace PickNPlace
 
         private void plt_OnPalletEnabledChanged(int palletNo, bool enabled)
         {
-            this.Dispatcher.Invoke((Action)delegate
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
                 if (_palletList != null)
                 {
@@ -489,9 +567,9 @@ namespace PickNPlace
                     OnlinePalletEdit wnd = new OnlinePalletEdit();
                     wnd.Pallet = palletData;
                     wnd.PlaceRequest = reqData;
-                    wnd.ShowDialog();
+                    wnd.Show();
 
-                    this.BindLivePalletStates();
+                    //this.BindLivePalletStates();
                 }
             }
 
@@ -521,7 +599,7 @@ namespace PickNPlace
                                 _logicWorker.SetPalletAttributes(palletNo, true, true, plt.RawMaterialCode);
                                 _logicWorker.SetPalletSackType(palletNo, plt.SackType);
 
-                                this.Dispatcher.Invoke((Action)delegate
+                                this.Dispatcher.BeginInvoke((Action)delegate
                                 {
                                     this.BindLivePalletStates();
                                 });
@@ -577,8 +655,10 @@ namespace PickNPlace
                                 }                            
                             }
 
-                            this.BindLivePalletStates();
-                            this.BindLivePalletStates();
+                            this.Dispatcher.BeginInvoke((Action)delegate
+                            {
+                                this.BindLivePalletStates();
+                            });
                         }
                     }
                 }
@@ -589,8 +669,15 @@ namespace PickNPlace
         {
             this.Dispatcher.BeginInvoke((Action)delegate
             {
-                imgPlcOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
-                imgRobotOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
+                try
+                {
+                    imgPlcOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
+                    imgRobotOk.Source = new BitmapImage(new Uri(connected ? "Images/green_circle.png" : "Images/red_circle.png", UriKind.Relative));
+                }
+                catch (Exception)
+                {
+
+                }
             });
         }
 
@@ -631,88 +718,100 @@ namespace PickNPlace
 
         private void btnStartToggle_Click(object sender, RoutedEventArgs e)
         {
-            //this.BindDefaults();
-
-            var targetInfo = !_plcDB.System_Auto;
-
-            if (targetInfo)
+            this.Dispatcher.BeginInvoke((Action)delegate
             {
-                var rawPallets = _palletList.Any(d => d.IsRawMaterial && d.IsEnabled);
-                if (!rawPallets)
+                try
                 {
-                    MessageBox.Show("Sistemi başlatabilmek için en az 1 hammadde paleti seçmelisiniz.", "Uyarı", MessageBoxButton.OK);
-                    return;
+                    var targetInfo = !_plcDB.System_Auto;
+
+                    if (targetInfo)
+                    {
+                        var rawPallets = _palletList.Any(d => d.IsRawMaterial && d.IsEnabled);
+                        if (!rawPallets)
+                        {
+                            MessageBox.Show("Sistemi başlatabilmek için en az 1 hammadde paleti seçmelisiniz.", "Uyarı", MessageBoxButton.OK);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            this._plc.Set_RobotHold(1);
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+
+                    if (targetInfo)
+                    {
+                        System.Threading.SynchronizationContext.Current.Post((_) => {
+                            RobotStartWarning wnd = new RobotStartWarning();
+                            wnd.OnIsAccepted += Wnd_OnIsAccepted;
+                            wnd.Show();
+                        }, null);
+
+                        //RobotStartWarning wnd = new RobotStartWarning();
+                        //wnd.OnIsAccepted += Wnd_OnIsAccepted;
+                        //wnd.Show();
+                    }
                 }
-            }
-            else
-            {
-                this._plc.Set_RobotHold(1);
-            }
+                catch (Exception)
+                {
 
-            if (targetInfo)
-            {
-                RobotStartWarning wnd = new RobotStartWarning();
-                wnd.ShowDialog();
-
-                if (!wnd.IsAccepted)
-                    return;
-            }
-
-            this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
-            if (targetInfo)
-            {
-                _plc.Set_PlcEmgReset(1);
-                _plc.Set_PlcEmergency(0);
-                this._plc.Set_RobotHold(0);
-                this._plc.Set_Robot_Start(0);
-                this._plc.Set_Robot_Start(1);
-            }
-
-            //this.Dispatcher.Invoke((Action)delegate
-            //{
-            //    this.UpdateSystemStatus();
-            //});
+                }
+               
+            });
         }
 
-        private void BindDefaults()
+        private void Wnd_OnIsAccepted(Window self)
         {
-            //using (HekaDbContext db = SchemaFactory.CreateContext())
-            //{
-            //    int tryValue = 0;
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                try
+                {
+                    var targetInfo = !_plcDB.System_Auto;
 
-            //    var prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoSpeed");
-            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-            //    {
-            //        this._plc.Set_ServoSpeed(Convert.ToInt32(prmData.ParamValue));
-            //    }
+                    self.Close();
 
-            //    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam1");
-            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-            //    {
-            //        this._plc.Set_ServoPosCam1(Convert.ToInt32(prmData.ParamValue));
-            //    }
+                    this._plc.Set_SystemAuto((byte)(targetInfo ? 1 : 0));
+                    if (targetInfo)
+                    {
+                        _plc.Set_RobotRestart(0);
+                        _plc.Set_PlcEmgReset(1);
+                        _plc.Set_PlcEmergency(0);
+                        this._plc.Set_RobotHold(0);
+                        this._plc.Set_Robot_Start(0);
+                        this._plc.Set_Robot_Start(1);
+                    }
+                }
+                catch (Exception)
+                {
 
-            //    prmData = db.SysParam.FirstOrDefault(d => d.ParamCode == "ServoPosCam2");
-            //    if (prmData != null && Int32.TryParse(prmData.ParamValue, out tryValue))
-            //    {
-            //        this._plc.Set_ServoPosCam2(Convert.ToInt32(prmData.ParamValue));
-            //    }
-
-            //    this._plc.Set_ServoStart(1);
-            //}
+                }
+            });
         }
 
         private void UpdateSystemStatus()
         {
-            if (_plcDB.System_Auto)
+            try
             {
-                txtStart.Text = "SİSTEMİ DURAKLAT";
-                imgStart.Source = new BitmapImage(new Uri("Images/stop.png", UriKind.Relative));
+                if (_plcDB.System_Auto)
+                {
+                    txtStart.Text = "SİSTEMİ DURAKLAT";
+                    imgStart.Source = new BitmapImage(new Uri("Images/stop.png", UriKind.Relative));
+                }
+                else
+                {
+                    txtStart.Text = "SİSTEMİ BAŞLAT";
+                    imgStart.Source = new BitmapImage(new Uri("Images/start.png", UriKind.Relative));
+                }
             }
-            else
+            catch (Exception)
             {
-                txtStart.Text = "SİSTEMİ BAŞLAT";
-                imgStart.Source = new BitmapImage(new Uri("Images/start.png", UriKind.Relative));
+
             }
         }
 
@@ -742,7 +841,7 @@ namespace PickNPlace
         private void btnShowPalletRecipes_Click(object sender, RoutedEventArgs e)
         {
             PalletRecipeWindow wnd = new PalletRecipeWindow();
-            wnd.ShowDialog();
+            wnd.Show();
         }
 
         YASKAWA_RobotSoapClient wsClient = new YASKAWA_RobotSoapClient(YASKAWA_RobotSoapClient.EndpointConfiguration.YASKAWA_RobotSoap);
@@ -804,18 +903,27 @@ namespace PickNPlace
                                         int elmIdx = 0;
                                         while (chElm != null)
                                         {
-                                            if (elmIdx == 0)
+                                            if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "request_no"){
                                                 reqCode = ((System.Xml.Linq.XElement)chElm).Value;
-                                            if (elmIdx == 2)
+                                            }
+                                            else if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "recipe_code")
                                             {
                                                 rcpCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            }
+                                            else if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "ITEM_NAME")
+                                            {
                                                 rcpName = ((System.Xml.Linq.XElement)chElm).Value;
                                             }
-                                            else if (elmIdx == 4)
-                                                imName = ((System.Xml.Linq.XElement)chElm).Value;
-                                            else if (elmIdx == 3)
+                                            else if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "RM_CODE")
+                                            {
                                                 imCode = ((System.Xml.Linq.XElement)chElm).Value;
-                                            else if (elmIdx == 5)
+                                            }
+                                            else if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "RM_NAME")
+                                            {
+                                                imName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            }
+                                            else if (((System.Xml.Linq.XElement)chElm).Name.LocalName == "nof_pac")
+                                            {
                                                 try
                                                 {
                                                     piecesPerBatch = Convert.ToInt32(((System.Xml.Linq.XElement)chElm).Value);
@@ -824,6 +932,32 @@ namespace PickNPlace
                                                 {
 
                                                 }
+                                            }
+
+                                            //if (elmIdx == 0)
+                                            //    reqCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            //if (elmIdx == 2)
+                                            //{
+                                            //    rcpCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                                
+                                            //}
+                                            //else if (elmIdx == 3)
+                                            //{
+                                            //    rcpName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            //}
+                                            //else if (elmIdx == 5)
+                                            //    imName = ((System.Xml.Linq.XElement)chElm).Value;
+                                            //else if (elmIdx == 4)
+                                            //    imCode = ((System.Xml.Linq.XElement)chElm).Value;
+                                            //else if (elmIdx == 6)
+                                            //    try
+                                            //    {
+                                            //        piecesPerBatch = Convert.ToInt32(((System.Xml.Linq.XElement)chElm).Value);
+                                            //    }
+                                            //    catch (Exception)
+                                            //    {
+
+                                            //    }
 
                                             if (!string.IsNullOrEmpty(reqCode))
                                             {
@@ -994,19 +1128,47 @@ namespace PickNPlace
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            RobotStartWarning wnd = new RobotStartWarning();
-            wnd.ShowDialog();
+            System.Threading.SynchronizationContext.Current.Post((_) => {
+                RobotStartWarning wnd = new RobotStartWarning();
+                wnd.OnIsAccepted += Wnd_OnIsAccepted_Reset;
+                wnd.Show();
+            }, null);
 
-            if (wnd.IsAccepted)
+            //this.Dispatcher.BeginInvoke((Action)delegate
+            //{
+            //    RobotStartWarning wnd = new RobotStartWarning();
+            //    wnd.OnIsAccepted += Wnd_OnIsAccepted_Reset;
+            //    wnd.Show();
+            //});
+        }
+
+        private void Wnd_OnIsAccepted_Reset(Window self)
+        {
+            try
             {
-                try
+                this.Dispatcher.BeginInvoke((Action)delegate
                 {
-                    this.Dispatcher.Invoke((Action)delegate
+                    try
                     {
+                        self.Close();
+
+                        _plc.Set_RobotRestart(1);
                         _plc.Set_Reset_Plc_Variables(1);
                         _logicWorker.ResetFlags();
                         _plc.Set_PlcEmgReset(1);
                         _plc.Set_PlcEmergency(0);
+
+                        bool robRest = _plc.Get_RobotRestart();
+                        int tryCount = 0;
+                        while (!robRest)
+                        {
+                            if (tryCount > 5)
+                                break;
+
+                            tryCount++;
+
+                            robRest = _plc.Get_RobotRestart();
+                        }
 
                         this._plc.Set_Robot_Start(0);
                         this._plc.Set_Robot_Start(1);
@@ -1014,27 +1176,31 @@ namespace PickNPlace
                         this._plc.Set_Robot_Start(0);
                         this._plc.Set_Robot_Start(1);
 
-                        _tmrResetInvoker.Stop();
-                        _tmrResetInvoker.Enabled = true;
-                        _tmrResetInvoker.Start();
-                    });
-                    
-                }
-                catch (Exception)
-                {
+                        this.DelayResetInvoker().Wait();
+                    }
+                    catch (Exception)
+                    {
 
-                }
-
-                this.Dispatcher.Invoke((Action)delegate
-                {
-                    lblError.Content = "";
+                    }
                 });
+
             }
+            catch (Exception)
+            {
+
+            }
+
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                lblError.Content = "";
+            });
         }
 
-        private void _tmrResetInvoker_Elapsed(object sender, ElapsedEventArgs e)
+        private async Task DelayResetInvoker()
         {
-            this.Dispatcher.Invoke((Action)delegate
+            await Task.Delay(750);
+
+            await this.Dispatcher.BeginInvoke((Action)delegate
             {
                 try
                 {
@@ -1057,7 +1223,7 @@ namespace PickNPlace
         private void btnPlaceRequests_Click(object sender, RoutedEventArgs e)
         {
             ProductRecipeWindow wnd = new ProductRecipeWindow();
-            wnd.ShowDialog();
+            wnd.Show();
         }
 
         private void plt_OnlineEditRequested(int palletNo)
@@ -1068,12 +1234,21 @@ namespace PickNPlace
                 var reqData = _logicWorker.GetPalletRequest(palletNo);
 
                 OnlinePalletEdit wnd = new OnlinePalletEdit();
+                wnd.Closing += Wnd_Closing;
                 wnd.Pallet = palletData;
                 wnd.PlaceRequest = reqData;
-                wnd.ShowDialog();
+                wnd.Show();
 
-                this.BindLivePalletStates();
+                //this.BindLivePalletStates();
             }
+        }
+
+        private void Wnd_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.Dispatcher.BeginInvoke((Action)delegate
+            {
+                this.UpdateLastStoredState();
+            });
         }
 
         private void btnSelectRecipe_Click(object sender, RoutedEventArgs e)

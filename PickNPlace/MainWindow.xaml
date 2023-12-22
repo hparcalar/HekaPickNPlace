@@ -251,6 +251,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="10*"></ColumnDefinition>
                 <ColumnDefinition Width="10*"></ColumnDefinition>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
                 <ColumnDefinition Width="80*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
@@ -266,9 +267,17 @@
                 <Image Name="imgRobotOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
-            <Label Grid.Column="2" HorizontalContentAlignment="Right" HorizontalAlignment="Right" VerticalContentAlignment="Center"
+            <!-- RADAR STATUS -->
+            <StackPanel Margin="20,0,0,0" Grid.Column="2" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" FontWeight="Bold">RADAR</Label>
+                <Image Name="imgRadarOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
+            </StackPanel>
+
+            <Label Grid.Column="3" HorizontalContentAlignment="Right" HorizontalAlignment="Right" VerticalContentAlignment="Center"
                    Name="lblError"
                    FontWeight="Bold" FontSize="16" Foreground="#FFE40F0F" Background="#FFF7F2F2"></Label>
+
+           
 
         </Grid>
     </Grid>

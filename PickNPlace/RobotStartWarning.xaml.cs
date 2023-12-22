@@ -19,6 +19,9 @@ namespace PickNPlace
     /// </summary>
     public partial class RobotStartWarning : Window
     {
+        public delegate void AcceptedEvent(Window self);
+        public event AcceptedEvent OnIsAccepted;
+
         public RobotStartWarning()
         {
             InitializeComponent();
@@ -31,7 +34,7 @@ namespace PickNPlace
         private void btnYes_Click(object sender, RoutedEventArgs e)
         {
             IsAccepted = true;
-            this.Close();
+            OnIsAccepted?.Invoke(this);
         }
 
         private void btnNo_Click(object sender, RoutedEventArgs e)

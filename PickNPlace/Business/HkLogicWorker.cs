@@ -83,6 +83,9 @@ namespace PickNPlace.Business
 
         public delegate void PalletPlaceLog(int palletNo, bool isPlaced);
         public event PalletPlaceLog OnPalletPlaceLog;
+
+        public delegate void RadarStatus(bool status);
+        public event RadarStatus OnRadarStatusChanged;
         #endregion
 
         // environmental variables
@@ -132,6 +135,8 @@ namespace PickNPlace.Business
         bool _pltLevel_5 = false;
         bool _pltLevel_6 = false;
         bool _pltLevel_7 = false;
+
+        bool _oldRadarStatus = false;
 
         public HkAutoPallet GetPalletData(int palletNo)
         {
@@ -474,6 +479,18 @@ namespace PickNPlace.Business
                     }
                     _oldEmgMode = emgExists;
 
+                    #region check someone inside
+                    var someoneInside = _plcWorker.Get_PC_SomeoneInside();
+                    if (someoneInside)
+                    {
+                        _plcWorker.Set_SystemAuto(0);
+                        _plcWorker.Set_RobotHold(1);
+                        OnError.Invoke("İÇERİDE HAREKET TESPİT EDİLDİĞİNDEN SİSTEM BAŞLATILMADI.");
+
+                        _plcWorker.Set_PC_SomeoneInside(0);
+                    }
+                    #endregion
+
                     // handle system working mode
                     var systemAuto = _plcWorker.Get_SystemAuto();
                     _plcDb.System_Auto = systemAuto;
@@ -549,6 +566,15 @@ namespace PickNPlace.Business
                         OnPalletSensorChanged.Invoke(7, false);
                     _oldSnsPlt_7 = pltState;
                     _pltLevel_7 = _plcWorker.Get_PltLevelSns_7();
+                    #endregion
+
+                    #region update radar sensor status
+                    var radarStatus = _plcWorker.Get_PC_RadarStatus();
+                    if (radarStatus != _oldRadarStatus)
+                    {
+                        OnRadarStatusChanged?.Invoke(radarStatus);
+                    }
+                    _oldRadarStatus = radarStatus;
                     #endregion
 
                     if (systemAuto)

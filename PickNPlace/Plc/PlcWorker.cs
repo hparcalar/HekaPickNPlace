@@ -101,6 +101,31 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_RobotRestart(byte val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 6, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            _isSetRunning = false;
+            return result;
+        }
+
         public bool Set_SystemAuto(byte val)
         {
             while (_isSetRunning)
@@ -1071,6 +1096,33 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_PC_SomeoneInside(byte val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 7, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         private void ValidateConnection()
         {
             bool plcAlive = false;
@@ -1108,7 +1160,7 @@ namespace PickNPlace.Plc
 
                     try
                     {
-                        this._plc.ConnectTo("192.168.0.3", 0, 1);
+                        this._plc.ConnectTo("192.168.0.1", 0, 1);
                     }
                     catch (Exception)
                     {
@@ -1134,11 +1186,6 @@ namespace PickNPlace.Plc
 
             }
            
-        }
-
-        public void ReConnect()
-        {
-            //ValidateConnection();
         }
 
         #endregion
@@ -1648,6 +1695,75 @@ namespace PickNPlace.Plc
             {
                 S7MultiVar Reader = new S7MultiVar(this._plc);
                 Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 5, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_RobotRestart()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 6, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PC_SomeoneInside()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 55 * 8 + 7, 1, ref data);
+                Reader.Read();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _isSetRunning = false;
+            return data[0] == 1;
+        }
+
+        public bool Get_PC_RadarStatus()
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            byte[] data = new byte[1] { 0 };
+            try
+            {
+                S7MultiVar Reader = new S7MultiVar(this._plc);
+                Reader.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 56 * 8 + 0, 1, ref data);
                 Reader.Read();
             }
             catch (Exception)
