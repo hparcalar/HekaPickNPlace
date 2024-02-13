@@ -17,6 +17,10 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
+        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,20" Name="warningPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Panel.ZIndex="99999">
+            <uc:StartConfirmation OnIsAccepted="Wnd_OnIsAccepted" />
+        </WrapPanel>
+
         <!-- ÜST KONTROL BUTON PANELİ -->
         <StackPanel Margin="20,0,0,0" Grid.Row="0" Orientation="Horizontal">
             <StackPanel.Background>
@@ -172,7 +176,7 @@
 
 
         <!-- PALET DİZİLİM KONTROL ARAYÜZÜ -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Name="gridContentPanel">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30*"></RowDefinition>
                 <RowDefinition Height="20*"></RowDefinition>
@@ -240,7 +244,7 @@
 
 
         <!-- UYARI BİLDİRİM ÇUBUĞU -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Name="notifyPanel">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFABC3EC" Offset="0"/>
@@ -252,7 +256,8 @@
                 <ColumnDefinition Width="10*"></ColumnDefinition>
                 <ColumnDefinition Width="10*"></ColumnDefinition>
                 <ColumnDefinition Width="10*"></ColumnDefinition>
-                <ColumnDefinition Width="80*"></ColumnDefinition>
+                <ColumnDefinition Width="20*"></ColumnDefinition>
+                <ColumnDefinition Width="70*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <!-- PLC OK STATUS -->
@@ -273,7 +278,11 @@
                 <Image Name="imgRadarOk" Source="Images/red_circle.png" Height="24" Margin="10,0,0,0" VerticalAlignment="Center"></Image>
             </StackPanel>
 
-            <Label Grid.Column="3" HorizontalContentAlignment="Right" HorizontalAlignment="Right" VerticalContentAlignment="Center"
+            <Button Grid.Column="3" FontWeight="Bold" Margin="20,0,0,0" Name="btnManVacuum" Foreground="#000" FontSize="13" Click="btnManVacuum_Click">
+                VAKUM KAPAT
+            </Button>
+
+            <Label Grid.Column="4" HorizontalContentAlignment="Right" HorizontalAlignment="Right" VerticalContentAlignment="Center"
                    Name="lblError"
                    FontWeight="Bold" FontSize="16" Foreground="#FFE40F0F" Background="#FFF7F2F2"></Label>
 

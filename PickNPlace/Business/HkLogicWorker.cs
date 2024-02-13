@@ -140,7 +140,13 @@ namespace PickNPlace.Business
 
         public HkAutoPallet GetPalletData(int palletNo)
         {
+            //return _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
             return _autoLogic.GetPalletData(palletNo);
+        }
+
+        public HkAutoPallet GetPalletDataForStore(int palletNo)
+        {
+            return _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
         }
 
         public bool IsPalletLevelFull(int palletNo)
@@ -507,65 +513,68 @@ namespace PickNPlace.Business
                     _oldPendantMode = pendantRemoteMode;
 
                     #region check pallet sensors
-                    // pallet-2
-                    var pltState = _plcWorker.Get_PltSns_2();
-                    _pltSns_2 = pltState;
-                    if (!_oldSnsPlt_2 && pltState)
-                        OnPalletSensorChanged.Invoke(2, true);
-                    else if (_oldSnsPlt_2 && !pltState)
-                        OnPalletSensorChanged.Invoke(2, false);
-                    _oldSnsPlt_2 = pltState;
-                    _pltLevel_2 = _plcWorker.Get_PltLevelSns_2();
+                    if (systemAuto && !emgExists)
+                    {
+                        // pallet-2
+                        var pltState = _plcWorker.Get_PltSns_2();
+                        _pltSns_2 = pltState;
+                        if (!_oldSnsPlt_2 && pltState)
+                            OnPalletSensorChanged.Invoke(2, true);
+                        else if (_oldSnsPlt_2 && !pltState)
+                            OnPalletSensorChanged.Invoke(2, false);
+                        _oldSnsPlt_2 = pltState;
+                        _pltLevel_2 = _plcWorker.Get_PltLevelSns_2();
 
-                    // pallet-3
-                    pltState = _plcWorker.Get_PltSns_3();
-                    _pltSns_3 = pltState;
-                    if (!_oldSnsPlt_3 && pltState)
-                        OnPalletSensorChanged.Invoke(3, true);
-                    else if (_oldSnsPlt_3 && !pltState)
-                        OnPalletSensorChanged.Invoke(3, false);
-                    _oldSnsPlt_3 = pltState;
-                    _pltLevel_3 = _plcWorker.Get_PltLevelSns_3();
+                        // pallet-3
+                        pltState = _plcWorker.Get_PltSns_3();
+                        _pltSns_3 = pltState;
+                        if (!_oldSnsPlt_3 && pltState)
+                            OnPalletSensorChanged.Invoke(3, true);
+                        else if (_oldSnsPlt_3 && !pltState)
+                            OnPalletSensorChanged.Invoke(3, false);
+                        _oldSnsPlt_3 = pltState;
+                        _pltLevel_3 = _plcWorker.Get_PltLevelSns_3();
 
-                    // pallet-4
-                    pltState = _plcWorker.Get_PltSns_4();
-                    _pltSns_4 = pltState;
-                    if (!_oldSnsPlt_4 && pltState)
-                        OnPalletSensorChanged.Invoke(4, true);
-                    else if (_oldSnsPlt_4 && !pltState)
-                        OnPalletSensorChanged.Invoke(4, false);
-                    _oldSnsPlt_4 = pltState;
-                    _pltLevel_4 = _plcWorker.Get_PltLevelSns_4();
+                        // pallet-4
+                        pltState = _plcWorker.Get_PltSns_4();
+                        _pltSns_4 = pltState;
+                        if (!_oldSnsPlt_4 && pltState)
+                            OnPalletSensorChanged.Invoke(4, true);
+                        else if (_oldSnsPlt_4 && !pltState)
+                            OnPalletSensorChanged.Invoke(4, false);
+                        _oldSnsPlt_4 = pltState;
+                        _pltLevel_4 = _plcWorker.Get_PltLevelSns_4();
 
-                    // pallet-5
-                    pltState = _plcWorker.Get_PltSns_5();
-                    _pltSns_5 = pltState;
-                    if (!_oldSnsPlt_5 && pltState)
-                        OnPalletSensorChanged.Invoke(5, true);
-                    else if (_oldSnsPlt_5 && !pltState)
-                        OnPalletSensorChanged.Invoke(5, false);
-                    _oldSnsPlt_5 = pltState;
-                    _pltLevel_5 = _plcWorker.Get_PltLevelSns_5();
+                        // pallet-5
+                        pltState = _plcWorker.Get_PltSns_5();
+                        _pltSns_5 = pltState;
+                        if (!_oldSnsPlt_5 && pltState)
+                            OnPalletSensorChanged.Invoke(5, true);
+                        else if (_oldSnsPlt_5 && !pltState)
+                            OnPalletSensorChanged.Invoke(5, false);
+                        _oldSnsPlt_5 = pltState;
+                        _pltLevel_5 = _plcWorker.Get_PltLevelSns_5();
 
-                    // pallet-6
-                    pltState = _plcWorker.Get_PltSns_6();
-                    _pltSns_6 = pltState;
-                    if (!_oldSnsPlt_6 && pltState)
-                        OnPalletSensorChanged.Invoke(6, true);
-                    else if (_oldSnsPlt_6 && !pltState)
-                        OnPalletSensorChanged.Invoke(6, false);
-                    _oldSnsPlt_6 = pltState;
-                    _pltLevel_6 = _plcWorker.Get_PltLevelSns_6();
+                        // pallet-6
+                        pltState = _plcWorker.Get_PltSns_6();
+                        _pltSns_6 = pltState;
+                        if (!_oldSnsPlt_6 && pltState)
+                            OnPalletSensorChanged.Invoke(6, true);
+                        else if (_oldSnsPlt_6 && !pltState)
+                            OnPalletSensorChanged.Invoke(6, false);
+                        _oldSnsPlt_6 = pltState;
+                        _pltLevel_6 = _plcWorker.Get_PltLevelSns_6();
 
-                    // pallet-7
-                    pltState = _plcWorker.Get_PltSns_7();
-                    _pltSns_7 = pltState;
-                    if (!_oldSnsPlt_7 && pltState)
-                        OnPalletSensorChanged.Invoke(7, true);
-                    else if (_oldSnsPlt_7 && !pltState)
-                        OnPalletSensorChanged.Invoke(7, false);
-                    _oldSnsPlt_7 = pltState;
-                    _pltLevel_7 = _plcWorker.Get_PltLevelSns_7();
+                        // pallet-7
+                        pltState = _plcWorker.Get_PltSns_7();
+                        _pltSns_7 = pltState;
+                        if (!_oldSnsPlt_7 && pltState)
+                            OnPalletSensorChanged.Invoke(7, true);
+                        else if (_oldSnsPlt_7 && !pltState)
+                            OnPalletSensorChanged.Invoke(7, false);
+                        _oldSnsPlt_7 = pltState;
+                        _pltLevel_7 = _plcWorker.Get_PltLevelSns_7();
+                    }
                     #endregion
 
                     #region update radar sensor status
@@ -698,29 +707,36 @@ namespace PickNPlace.Business
         {
             bool wrResult = false;
 
-            if (!_palletList.Any(d => d.IsRawMaterial && d.IsEnabled))
+            try
             {
-                _currentRawPalletNo = 1;
-                _rawMaterialSelectionPalletOk = false;
-                _captureOk = false;
-            }
-
-            // select proper raw material pallet
-            if (!_rawMaterialSelectionPalletOk)
-                await CheckRawPallets();
-
-            // trigger camera and pick up
-            if (_rawMaterialSelectionPalletOk && !_captureOk)
-            {
-                _plcWorker.Set_RawPalletNo(_currentRawPalletNo);
-
-                var trgOk = TriggerCamera(_currentRawPalletNo.ToString());
-                if (trgOk)
+                if (!_palletList.Any(d => d.IsRawMaterial && d.IsEnabled))
                 {
-                    wrResult = this._plcWorker.Set_CaptureOk(1);
-                    if (wrResult)
-                        _captureOk = true;
+                    _currentRawPalletNo = 1;
+                    _rawMaterialSelectionPalletOk = false;
+                    _captureOk = false;
                 }
+
+                // select proper raw material pallet
+                if (!_rawMaterialSelectionPalletOk)
+                    await CheckRawPallets();
+
+                // trigger camera and pick up
+                if (_rawMaterialSelectionPalletOk && !_captureOk)
+                {
+                    _plcWorker.Set_RawPalletNo(_currentRawPalletNo);
+
+                    var trgOk = TriggerCamera(_currentRawPalletNo.ToString());
+                    if (trgOk)
+                    {
+                        wrResult = this._plcWorker.Set_CaptureOk(1);
+                        if (wrResult)
+                            _captureOk = true;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
             }
         }
 
@@ -826,16 +842,18 @@ namespace PickNPlace.Business
         {
             _targetSelectionPalletOk = false;
 
-            var _oldTargetPallet = _currentTargetPalletNo;
-
-            if (_currentTargetPalletNo <= 0)
-                _currentTargetPalletNo = 7;
-
-            var currentRawPallet = _palletList.FirstOrDefault(d => d.PalletNo == _currentRawPalletNo);
-            var currentRawMaterial = currentRawPallet != null ? currentRawPallet.RawMaterialCode : "";
+            
 
             try
             {
+                var _oldTargetPallet = _currentTargetPalletNo;
+
+                if (_currentTargetPalletNo <= 0)
+                    _currentTargetPalletNo = 7;
+
+                var currentRawPallet = _palletList.FirstOrDefault(d => d.PalletNo == _currentRawPalletNo);
+                var currentRawMaterial = currentRawPallet != null ? currentRawPallet.RawMaterialCode : "";
+
                 if (!string.IsNullOrEmpty(currentRawMaterial))
                 {
                     var nextPallet = _palletList
@@ -924,17 +942,25 @@ namespace PickNPlace.Business
 
         private async Task SwitchCamera(int rawPalletNo)
         {
-            if (rawPalletNo == 1)
+            try
             {
-                this._plcWorker.Set_ServoTargetPos(_plcDb.Servo_PosCam1);
-            }
-            else if (rawPalletNo == 2)
-            {
-                this._plcWorker.Set_ServoTargetPos(_plcDb.Servo_PosCam2);
-            }
+                if (rawPalletNo == 1)
+                {
+                    this._plcWorker.Set_ServoTargetPos(_plcDb.Servo_PosCam1);
+                }
+                else if (rawPalletNo == 2)
+                {
+                    this._plcWorker.Set_ServoTargetPos(_plcDb.Servo_PosCam2);
+                }
 
-            while (!_plcWorker.Get_ServoIsArrived())
-                await Task.Delay(500);
+                while (!_plcWorker.Get_ServoIsArrived())
+                    await Task.Delay(500);
+            }
+            catch (Exception)
+            {
+
+            }
+           
         }
 
         private bool TriggerCamera(string programId)
@@ -943,47 +969,56 @@ namespace PickNPlace.Business
 
             bool wrResult = false;
 
-            MechWorker camera = new MechWorker();
-            if (camera.TriggerCamera(programId))
+            try
             {
-                wrResult = this._plcWorker.Set_PlaceCalculationOk(0);
-                if (wrResult)
+                MechWorker camera = new MechWorker();
+                if (camera.TriggerCamera(programId))
                 {
-                    string posRaw = camera.GetVisionTargets(programId);
-
-                    int[] posData = new int[0];
-
-                    try
+                    wrResult = this._plcWorker.Set_PlaceCalculationOk(0);
+                    if (wrResult)
                     {
-                        posData = (posRaw.Split(',')).Skip(5).Take(6).Select(d => Convert.ToInt32(Convert.ToSingle(d))).ToArray();
-                    }
-                    catch (Exception)
-                    {
+                        string posRaw = camera.GetVisionTargets(programId);
 
-                    }
+                        int[] posData = new int[0];
 
-                    if (posData.Length > 0)
-                    {
-                        this._plcWorker.Set_RobotX(posData[0]);
-                        this._plcWorker.Set_RobotY(posData[1]);
-                        this._plcWorker.Set_RobotZ(posData[2]);
-                        this._plcWorker.Set_RobotRX(posData[3]);
-                        this._plcWorker.Set_RobotRY(posData[4]);
-                        wrResult = this._plcWorker.Set_RobotRZ(posData[5]);
+                        try
+                        {
+                            posData = (posRaw.Split(',')).Skip(5).Take(6).Select(d => Convert.ToInt32(Convert.ToSingle(d))).ToArray();
+                        }
+                        catch (Exception)
+                        {
 
-                        if (wrResult)
-                            result = true;
-                    }
-                    else
-                    {
-                        _makeSwitchCamera = true;
-                        _rawMaterialSelectionPalletOk = false;
-                        OnError?.Invoke("KAMERA ÇUVAL TESPİT EDEMEDİ.");
+                        }
+
+                        if (posData.Length > 0)
+                        {
+                            this._plcWorker.Set_RobotX(posData[0]);
+                            this._plcWorker.Set_RobotY(posData[1]);
+                            this._plcWorker.Set_RobotZ(posData[2]);
+                            this._plcWorker.Set_RobotRX(posData[3]);
+                            this._plcWorker.Set_RobotRY(posData[4]);
+                            wrResult = this._plcWorker.Set_RobotRZ(posData[5]);
+
+                            if (wrResult)
+                                result = true;
+                        }
+                        else
+                        {
+                            _makeSwitchCamera = true;
+                            _rawMaterialSelectionPalletOk = false;
+                            OnError?.Invoke("KAMERA ÇUVAL TESPİT EDEMEDİ.");
+                        }
                     }
                 }
+                else
+                    OnError?.Invoke("KAMERAYA TETİK VERİLEMEDİ. HABERLEŞME BAĞLANTISINI KONTROL EDİNİZ.");
             }
-            else
-                OnError?.Invoke("KAMERAYA TETİK VERİLEMEDİ. HABERLEŞME BAĞLANTISINI KONTROL EDİNİZ.");
+            catch (Exception)
+            {
+
+            }
+
+           
 
             return result;
         }

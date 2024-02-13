@@ -1123,6 +1123,33 @@ namespace PickNPlace.Plc
             return result;
         }
 
+        public bool Set_PC_ManVacuum(byte val)
+        {
+            while (_isSetRunning)
+                ;
+            _isSetRunning = true;
+            ValidateConnection();
+
+            bool result = false;
+            try
+            {
+                byte[] data = new byte[1] { val };
+                S7MultiVar Writer = new S7MultiVar(this._plc);
+                Writer.Add(S7Consts.S7AreaDB, S7Consts.S7WLBit, DB_NUMBER, 56 * 8 + 1, 1, ref data);
+
+                int writeResult = Writer.Write();
+                result = writeResult == 0;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            _isSetRunning = false;
+
+            return result;
+        }
+
         private void ValidateConnection()
         {
             bool plcAlive = false;
@@ -1160,7 +1187,7 @@ namespace PickNPlace.Plc
 
                     try
                     {
-                        this._plc.ConnectTo("192.168.0.1", 0, 1);
+                        this._plc.ConnectTo("192.168.0.3", 0, 1);
                     }
                     catch (Exception)
                     {

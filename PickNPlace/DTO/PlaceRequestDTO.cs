@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PickNPlace.DTO
 {
+    [Serializable()]
     public class PlaceRequestDTO
     {
         public int Id { get; set; }

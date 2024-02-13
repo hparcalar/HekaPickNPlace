@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PickNPlace.DTO
 {
+    [Serializable()]
     public class HkAutoPallet
     {
         public int PalletNo { get; set; }
