@@ -512,8 +512,8 @@ namespace PickNPlace.Business
                         OnError.Invoke("ROBOT KUMANDASINI REMOTE ÇALIŞMA MODUNA ALINIZ.");
                     _oldPendantMode = pendantRemoteMode;
 
-                    #region check pallet sensors
-                    if (systemAuto && !emgExists)
+                    #region check pallet sensors -- deactivated --
+                    if (false)
                     {
                         // pallet-2
                         var pltState = _plcWorker.Get_PltSns_2();

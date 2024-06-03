@@ -377,21 +377,21 @@ namespace PickNPlace
 
         private void _logicWorker_OnPalletSensorChanged(int palletNo, bool state)
         {
-            this.Dispatcher.BeginInvoke((Action)delegate
-            {
-                try
-                {
-                    var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
-                    if (plt == null || !plt.IsRawMaterial)
-                    {
-                        this.plt_OnPalletEnabledChanged(palletNo, state);
-                    }
-                }
-                catch (Exception)
-                {
+            //this.Dispatcher.BeginInvoke((Action)delegate
+            //{
+            //    try
+            //    {
+            //        var plt = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
+            //        if (plt == null || !plt.IsRawMaterial)
+            //        {
+            //            this.plt_OnPalletEnabledChanged(palletNo, state);
+            //        }
+            //    }
+            //    catch (Exception)
+            //    {
 
-                }
-            });
+            //    }
+            //});
         }
 
         private void _logicWorker_OnCamSentRiskyPos()
@@ -616,23 +616,23 @@ namespace PickNPlace
                     var pallet = _palletList.FirstOrDefault(d => d.PalletNo == palletNo);
                     if (pallet != null)
                     {
-                        // check level and existence sensor
-                        if (!pallet.IsRawMaterial && enabled)
-                        {
-                            var isPalletExists = _logicWorker.IsPalletFull(palletNo);
-                            if (!isPalletExists)
-                            {
-                                MessageBox.Show("Burada fiziksel olarak bir palet görünmüyor. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
-                                return;
-                            }
+                        // check level and existence sensor -- disabled --
+                        //if (!pallet.IsRawMaterial && enabled)
+                        //{
+                        //    var isPalletExists = _logicWorker.IsPalletFull(palletNo);
+                        //    if (!isPalletExists)
+                        //    {
+                        //        MessageBox.Show("Burada fiziksel olarak bir palet görünmüyor. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
+                        //        return;
+                        //    }
 
-                            var isLevelFull = _logicWorker.IsPalletLevelFull(palletNo);
-                            if (isLevelFull)
-                            {
-                                MessageBox.Show("Dolu olan paleti önce boşaltmanız gerekmektedir. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
-                                return;
-                            }
-                        }
+                        //    var isLevelFull = _logicWorker.IsPalletLevelFull(palletNo);
+                        //    if (isLevelFull)
+                        //    {
+                        //        MessageBox.Show("Dolu olan paleti önce boşaltmanız gerekmektedir. Palet No: " + palletNo, "Uyarı", MessageBoxButton.OK);
+                        //        return;
+                        //    }
+                        //}
 
                         pallet.IsEnabled = !pallet.IsEnabled;
 
@@ -768,10 +768,10 @@ namespace PickNPlace
                             var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
                             foreach (var plt in activePallets)
                             {
-                                var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
-                                var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
+                                //var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
+                                //var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
 
-                                if (plt.IsEnabled || (palletExists && !palletLevelIsFull))
+                                if (plt.IsEnabled)
                                 {
                                     _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, _manualRecipe, plt.RawMaterialCode);
                                 }                            
@@ -1259,10 +1259,10 @@ namespace PickNPlace
                                 var activePallets = _palletList.Where(d => !d.IsRawMaterial).ToArray();
                                 foreach (var plt in activePallets)
                                 {
-                                    var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
-                                    var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
+                                    //var palletExists = _logicWorker.IsPalletFull(plt.PalletNo);
+                                    //var palletLevelIsFull = _logicWorker.IsPalletLevelFull(plt.PalletNo);
 
-                                    if (plt.IsEnabled || (palletExists && !palletLevelIsFull))
+                                    if (plt.IsEnabled)
                                     {
                                         plt.PlaceRecipeCode = dbRecipe.RecipeCode;
                                         _logicWorker.SetPalletAttributes(plt.PalletNo, false, true, dbRecipe.RequestNo);
@@ -1475,18 +1475,18 @@ namespace PickNPlace
         {
             try
             {
-                foreach (var item in _palletList)
-                {
-                    if (!item.IsRawMaterial && item.IsEnabled)
-                    {
-                        var _palletLevel = _logicWorker.IsPalletLevelFull(item.PalletNo);
-                        if (_palletLevel)
-                        {
-                            MessageBox.Show("Dolu olan paletleri boşaltmadan yeni partiye başlayamazsınız.", "Uyarı", MessageBoxButton.OK);
-                            return;
-                        }
-                    }
-                }
+                //foreach (var item in _palletList)
+                //{
+                //    if (!item.IsRawMaterial && item.IsEnabled)
+                //    {
+                //        var _palletLevel = _logicWorker.IsPalletLevelFull(item.PalletNo);
+                //        if (_palletLevel)
+                //        {
+                //            MessageBox.Show("Dolu olan paletleri boşaltmadan yeni partiye başlayamazsınız.", "Uyarı", MessageBoxButton.OK);
+                //            return;
+                //        }
+                //    }
+                //}
 
                 if (MessageBox.Show("Tüm palet durumlarını sıfırlamak istediğinizden emin misiniz?", "Uyarı", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
